@@ -3,11 +3,15 @@
 <config charset="UTF-8">
 
     <include path="functions.xml"/>
-    
-    <!-- defines search keyword and start URL -->             
+
+    <!-- defines search keyword and start URL -->
     <var-def name="search">platon</var-def>
     <var-def name="url">
-        <template>http://images.google.com/images?q=${search}&amp;hl=en&amp;btnG=Search+Images&amp;nojs=1</template>
+        <xpath expression="//noscript//a/@href[1]">
+            <html-to-xml>
+                <http url="http://images.google.com/images?q=${search}&amp;hl=en&amp;btnG=Search+Images"/>
+            </html-to-xml>
+        </xpath>
     </var-def>
 
     <!-- collects all image URLs -->
@@ -19,7 +23,7 @@
             <call-param name="maxloops">5</call-param>
         </call>
     </var-def>
-    
+
     <!-- download images and saves them to the files -->
     <loop item="link" index="i" filter="unique">
         <list>
