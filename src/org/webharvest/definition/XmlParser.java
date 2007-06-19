@@ -37,16 +37,17 @@
 package org.webharvest.definition;
 
 import org.apache.log4j.Logger;
+import org.webharvest.exception.ParserException;
 import org.webharvest.utils.Stack;
 import org.xml.sax.Attributes;
+import org.xml.sax.InputSource;
+import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
+import org.xml.sax.helpers.LocatorImpl;
 
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-import java.io.IOException;
-import java.io.InputStream;
 
 
 public class XmlParser extends DefaultHandler {
@@ -57,8 +58,9 @@ public class XmlParser extends DefaultHandler {
 
     // working stack of elements
     private transient Stack elementStack = new Stack();
+    private Locator locator;
 
-    public static XmlNode parse(InputStream in) {
+    public static XmlNode parse(InputSource in) {
         long startTime = System.currentTimeMillis();
 
         XmlParser handler = new XmlParser();
@@ -73,18 +75,20 @@ public class XmlParser extends DefaultHandler {
             parser.parse(in, handler);
 
             log.info("XML parsed in " + (System.currentTimeMillis() - startTime) + "ms.");
-        } catch (SAXException e) {
-            // handle exception
-            e.printStackTrace();
-        } catch (IOException e) {
-            // handle exception
-            e.printStackTrace();
-        } catch (ParserConfigurationException e) {
-            // handle exception
-            e.printStackTrace();
+        } catch (Exception e) {
+            throw new ParserException(e.getMessage(), e);
         }
 
         return handler.root;
+    }
+
+    public XmlParser() {
+        this.setDocumentLocator(new LocatorImpl());
+    }
+
+
+    public void setDocumentLocator(Locator locator) {
+        this.locator = locator;
     }
 
     private XmlNode getCurrentNode() {
@@ -111,6 +115,7 @@ public class XmlParser extends DefaultHandler {
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
         XmlNode currNode = getCurrentNode();
         XmlNode newNode = new XmlNode(qName, currNode);
+        newNode.setLocation( this.locator.getLineNumber(), this.locator.getColumnNumber() );
         elementStack.push(newNode);
 
         if (currNode == null) {

@@ -58,14 +58,14 @@ public class TryProcessor extends BaseProcessor {
     public IVariable execute(Scraper scraper, ScraperContext context) {
         try {
             BaseElementDef tryBodyDef = tryDef.getTryBodyDef();
-            IVariable result = getBodyListContent(tryBodyDef, scraper, context);
+            IVariable result = new BodyProcessor(tryBodyDef).run(scraper, context);
             debug(tryBodyDef, scraper, result);
 
             return result;
         } catch(BaseException e) {
-        	log.info("Exception caught with try processor: " + e.getMessage());
+        	scraper.getLogger().info("Exception caught with try processor: " + e.getMessage());
             BaseElementDef catchValueDef = tryDef.getCatchValueDef();
-            IVariable result = getBodyListContent(catchValueDef, scraper, context);
+            IVariable result = new BodyProcessor(catchValueDef).run(scraper, context);
             debug(catchValueDef, scraper, result);
 
             return result;

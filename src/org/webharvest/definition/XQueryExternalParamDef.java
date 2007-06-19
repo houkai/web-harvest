@@ -59,4 +59,8 @@ public class XQueryExternalParamDef extends BaseElementDef {
         return this.type;
     }
 
+    public String getShortElementName() {
+        return "xq-param";
+    }
+
 }

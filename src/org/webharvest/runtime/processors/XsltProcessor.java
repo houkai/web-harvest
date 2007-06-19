@@ -64,11 +64,11 @@ public class XsltProcessor extends BaseProcessor {
 
     public IVariable execute(Scraper scraper, ScraperContext context) {
         BaseElementDef xsltElementDef = xsltDef.getXmlDef();
-        IVariable xmlStr = getBodyTextContent(xsltElementDef, scraper, context);
+        IVariable xmlStr = getBodyTextContent(xsltElementDef, scraper, context, true);
         debug(xsltElementDef, scraper, xmlStr);
 
         BaseElementDef stylesheetElementDef = xsltDef.getStylesheetDef();
-        IVariable stylesheetStr = getBodyTextContent(stylesheetElementDef, scraper, context);
+        IVariable stylesheetStr = getBodyTextContent(stylesheetElementDef, scraper, context, true);
         debug(stylesheetElementDef, scraper, stylesheetStr);
     	
         try {

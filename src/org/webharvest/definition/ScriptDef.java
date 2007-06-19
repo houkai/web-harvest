@@ -44,5 +44,9 @@ public class ScriptDef extends BaseElementDef {
     public ScriptDef(XmlNode xmlNode) {
         super(xmlNode);
     }
-    
+
+    public String getShortElementName() {
+        return "script";
+    }
+
 }

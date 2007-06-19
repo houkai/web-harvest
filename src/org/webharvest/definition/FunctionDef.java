@@ -53,4 +53,8 @@ public class FunctionDef extends BaseElementDef {
         return name;
     }
 
+    public String getShortElementName() {
+        return "function";
+    }
+
 }

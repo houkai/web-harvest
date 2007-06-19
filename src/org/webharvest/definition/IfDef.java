@@ -52,5 +52,9 @@ public class IfDef extends BaseElementDef {
     public String getCondition() {
 		return condition;
 	}
+
+    public String getShortElementName() {
+        return "if";
+    }
     
 }

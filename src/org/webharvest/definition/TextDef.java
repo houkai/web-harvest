@@ -45,4 +45,8 @@ public class TextDef extends BaseElementDef {
         super(xmlNode);
     }
 
+    public String getShortElementName() {
+        return "text";
+    }
+
 }

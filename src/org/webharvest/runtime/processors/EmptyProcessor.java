@@ -55,7 +55,7 @@ public class EmptyProcessor extends BaseProcessor {
     }
 
     public IVariable execute(Scraper scraper, ScraperContext context) {
-    	executeBody(emptyDef, scraper, context);
+    	new BodyProcessor(emptyDef).execute(scraper, context);
 
 		return new EmptyVariable();
     }

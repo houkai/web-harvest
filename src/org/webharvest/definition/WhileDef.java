@@ -64,5 +64,9 @@ public class WhileDef extends BaseElementDef {
 	public String getMaxLoops() {
 		return maxLoops;
 	}
-    
+
+    public String getShortElementName() {
+        return "while";
+    }
+
 }

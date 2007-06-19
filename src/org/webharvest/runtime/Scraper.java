@@ -52,14 +52,22 @@ import org.webharvest.utils.Stack;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.LinkedList;
+import java.util.Map;
 
 /**
  * Basic runtime class.
  */
 public class Scraper {
 
-    protected static Logger log = Logger.getLogger(Scraper.class);
+    public static final int STATUS_READY = 0;
+    public static final int STATUS_RUNNING = 1;
+    public static final int STATUS_PAUSED = 2;
+    public static final int STATUS_FINISHED = 3;
+    public static final int STATUS_STOPPED = 4;
+    public static final int STATUS_ERROR = 5;
 
+    private Logger logger = Logger.getLogger("" + System.currentTimeMillis());
     private ScraperConfiguration configuration;
     private String workingDir;
     private ScraperContext context;
@@ -79,6 +87,13 @@ public class Scraper {
 
     // default script engine used throughout the configuration execution
     ScriptEngine scriptEngine = null;
+
+    //currently running processor
+    private BaseProcessor runningProcessor;
+
+    private List scraperRuntimeListeners = new LinkedList();
+
+    private int status = STATUS_READY; 
 
     /**
      * Constructor.
@@ -107,6 +122,15 @@ public class Scraper {
     }
 
     public IVariable execute(List ops) {
+        this.setStatus(STATUS_RUNNING);
+
+        // inform al listeners that execution is just about to start
+        Iterator listenersIterator = this.scraperRuntimeListeners.iterator();
+        while (listenersIterator.hasNext()) {
+            ScraperRuntimeListener listener = (ScraperRuntimeListener) listenersIterator.next();
+            listener.onExecutionStart(this);
+        }
+
         Iterator it = ops.iterator();
         while (it.hasNext()) {
             IElementDef elementDef = (IElementDef) it.next();
@@ -122,8 +146,25 @@ public class Scraper {
 
     public void execute() {
     	long startTime = System.currentTimeMillis();
+
         execute( configuration.getOperations() );
-        log.info("Configuration executed in " + (System.currentTimeMillis() - startTime) + "ms.");
+
+        if ( this.status == STATUS_RUNNING ) {
+            this.setStatus(STATUS_FINISHED);
+        }
+
+        // inform al listeners that execution is finished
+        Iterator listenersIterator = this.scraperRuntimeListeners.iterator();
+        while (listenersIterator.hasNext()) {
+            ScraperRuntimeListener listener = (ScraperRuntimeListener) listenersIterator.next();
+            listener.onExecutionEnd(this);
+        }
+
+        if (this.status == STATUS_FINISHED) {
+            logger.info("Configuration executed in " + (System.currentTimeMillis() - startTime) + "ms.");
+        } else if (this.status == STATUS_STOPPED) {
+            logger.info("Configuration aborted by user!");
+        }
     }
     
     public ScraperContext getContext() {
@@ -191,6 +232,91 @@ public class Scraper {
 
     public ScriptEngine getScriptEngine() {
         return runningFunctions.size() > 0 ? getRunningFunction().getScriptEngine() : this.scriptEngine;
+    }
+
+    public Logger getLogger() {
+        return logger;
+    }
+
+    public BaseProcessor getRunningProcessor() {
+        return runningProcessor;
+    }
+
+    public void setExecutingProcessor(BaseProcessor processor) {
+        this.runningProcessor = processor;
+        Iterator iterator = this.scraperRuntimeListeners.iterator();
+        while (iterator.hasNext()) {
+            ScraperRuntimeListener listener = (ScraperRuntimeListener) iterator.next();
+            listener.onNewProcessorExecution(this, processor);
+        }
+    }
+
+    public void processorFinishedExecution(BaseProcessor processor, Map properties) {
+        Iterator iterator = this.scraperRuntimeListeners.iterator();
+        while (iterator.hasNext()) {
+            ScraperRuntimeListener listener = (ScraperRuntimeListener) iterator.next();
+            listener.onProcessorExecutionFinished(this, processor, properties);
+        }
+    }
+
+    public void addRuntimeListener(ScraperRuntimeListener listener) {
+        this.scraperRuntimeListeners.add(listener);
+    }
+
+    public void removeRuntimeListener(ScraperRuntimeListener listener) {
+        this.scraperRuntimeListeners.remove(listener);
+    }
+
+    public synchronized int getStatus() {
+        return status;
+    }
+
+    private synchronized void setStatus(int status) {
+        this.status = status;
+    }
+
+    public void stopExecution() {
+        setStatus(STATUS_STOPPED);
+    }
+
+    public void pauseExecution() {
+        if (this.status == STATUS_RUNNING) {
+            setStatus(STATUS_PAUSED);
+
+            // inform al listeners that execution is paused
+            Iterator listenersIterator = this.scraperRuntimeListeners.iterator();
+            while (listenersIterator.hasNext()) {
+                ScraperRuntimeListener listener = (ScraperRuntimeListener) listenersIterator.next();
+                listener.onExecutionPaused(this);
+            }
+        }
+    }
+
+    public void continueExecution() {
+        if (this.status == STATUS_PAUSED) {
+            setStatus(STATUS_RUNNING);
+
+            // inform al listeners that execution is continued
+            Iterator listenersIterator = this.scraperRuntimeListeners.iterator();
+            while (listenersIterator.hasNext()) {
+                ScraperRuntimeListener listener = (ScraperRuntimeListener) listenersIterator.next();
+                listener.onExecutionContinued(this);
+            }
+        }
+    }
+
+    /**
+     * Inform all scraper listeners that an error has occured during scraper execution.
+     */
+    public void informListenersAboutError(Exception e) {
+        setStatus(STATUS_ERROR);
+
+        // inform al listeners that execution is continued
+        Iterator listenersIterator = this.scraperRuntimeListeners.iterator();
+        while (listenersIterator.hasNext()) {
+            ScraperRuntimeListener listener = (ScraperRuntimeListener) listenersIterator.next();
+            listener.onExecutionError(this, e);
+        }
     }
 
 }

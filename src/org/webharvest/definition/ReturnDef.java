@@ -45,4 +45,8 @@ public class ReturnDef extends BaseElementDef {
         super(xmlNode);
     }
 
+    public String getShortElementName() {
+        return "return";
+    }
+
 }

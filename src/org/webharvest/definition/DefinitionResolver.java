@@ -40,155 +40,167 @@ import org.webharvest.exception.ConfigurationException;
 import org.webharvest.exception.ErrMsg;
 
 import java.util.*;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
+/**
+ * Class contains information and logic to validate and crate definition classes for
+ * parsed xml nodes from Web-Harvest configurations.
+ * 
+ * @author Vladimir Nikic
+ */
 public class DefinitionResolver {
-	
+
+    private static Map elementInfos = new TreeMap();
+
+    // defines all valid elements of Web-Harvest configuration file
+    static {
+        elementInfos.put( "config", new ElementInfo("config", BaseElementDef.class, null, "charset,id") );
+        elementInfos.put( "empty", new ElementInfo("empty", EmptyDef.class, null, "id") );
+        elementInfos.put( "text", new ElementInfo("text", TextDef.class, null, "id") );
+        elementInfos.put( "file", new ElementInfo("file", FileDef.class, null, "id,!path,action,type,charset") );
+        elementInfos.put( "var-def", new ElementInfo("var-def", VarDefDef.class, null, "id,!name") );
+        elementInfos.put( "var", new ElementInfo("var", VarDef.class, "", "id,!name") );
+        elementInfos.put( "http", new ElementInfo("http", HttpDef.class, null, "id,!url,method,charset,username,password") );
+        elementInfos.put( "http-param", new ElementInfo("http-param", HttpParamDef.class, null, "id,!name") );
+        elementInfos.put( "http-header", new ElementInfo("http-header", HttpHeaderDef.class, null, "id,!name") );
+        elementInfos.put( "html-to-xml", new ElementInfo("html-to-xml", HtmlToXmlDef.class, null, "id") );
+        elementInfos.put( "regexp", new ElementInfo("regexp", RegexpDef.class, "!regexp-pattern,!regexp-source,regexp-result", "id,replace,max") );
+        elementInfos.put( "regexp-pattern", new ElementInfo("regexp-pattern", BaseElementDef.class, null, "id") );
+        elementInfos.put( "regexp-source", new ElementInfo("regexp-source", BaseElementDef.class, null, "id") );
+        elementInfos.put( "regexp-result", new ElementInfo("regexp-result", BaseElementDef.class, null, "id") );
+        elementInfos.put( "xpath", new ElementInfo("xpath", XPathDef.class, null, "id,!expression") );
+        elementInfos.put( "xquery", new ElementInfo("xquery", XQueryDef.class, "xq-param,!xq-expression", "id") );
+        elementInfos.put( "xq-param", new ElementInfo("xq-param", BaseElementDef.class, null, "!name,type,id") );
+        elementInfos.put( "xq-expression", new ElementInfo("xq-expression", BaseElementDef.class, null, "id") );
+        elementInfos.put( "xslt", new ElementInfo("xslt", XsltDef.class, "!xml,!stylesheet", "id") );
+        elementInfos.put( "xml", new ElementInfo("xml", BaseElementDef.class, null, "id") );
+        elementInfos.put( "stylesheet", new ElementInfo("stylesheet", BaseElementDef.class, null, "id") );
+        elementInfos.put( "template", new ElementInfo("template", TemplateDef.class, null, "id") );
+        elementInfos.put( "case", new ElementInfo("case", CaseDef.class, "!if,else", "id") );
+        elementInfos.put( "if", new ElementInfo("if", BaseElementDef.class, null, "!condition,id") );
+        elementInfos.put( "else", new ElementInfo("else", BaseElementDef.class, null, "id") );
+        elementInfos.put( "loop", new ElementInfo("loop", LoopDef.class, "!list,!body", "id,item,index,maxloops,filter") );
+        elementInfos.put( "list", new ElementInfo("list", BaseElementDef.class, null, "id") );
+        elementInfos.put( "body", new ElementInfo("body", BaseElementDef.class, null, "id") );
+        elementInfos.put( "while", new ElementInfo("while", WhileDef.class, null, "id,!condition,index,maxloops") );
+        elementInfos.put( "function", new ElementInfo("function", FunctionDef.class, null, "id,!name") );
+        elementInfos.put( "return", new ElementInfo("return", ReturnDef.class, null, "id") );
+        elementInfos.put( "call", new ElementInfo("call", CallDef.class, null, "id,!name") );
+        elementInfos.put( "call-param", new ElementInfo("call-param", CallParamDef.class, null, "id,!name") );
+        elementInfos.put( "include", new ElementInfo("include", IncludeDef.class, "", "id,!path") );
+        elementInfos.put( "try", new ElementInfo("try", TryDef.class, "!body,!catch", "id") );
+        elementInfos.put( "catch", new ElementInfo("catch", BaseElementDef.class, null, "id") );
+        elementInfos.put( "script", new ElementInfo("script", ScriptDef.class, null, "id") );
+    }
+
+    /**
+     * @return Map of all allowed element infos.
+     */
+    public static Map getElementInfos() {
+        return elementInfos;
+    }
+
+    /**
+     * @param name
+     * @return Instance of ElementInfo class for the specified element name,
+     *         or null if no element is defined. 
+     */
+    public static ElementInfo getElementInfo(String name) {
+        return (ElementInfo) elementInfos.get(name);
+    }
+
+    /**
+     * Creates proper element definition instance based on given xml node
+     * from input configuration.
+     * @param node
+     * @return Instance of IElementDef, or exception is thrown if cannot find
+     *         appropriate element definition.
+     */
     public static IElementDef createElementDefinition(XmlNode node) {
-        IElementDef result;
-    	
     	String nodeName = node.getName();
-        
-        if (nodeName.equalsIgnoreCase("empty")) {
-        	validate(node, null, "id");
-            result = new EmptyDef(node);
-        } else if (nodeName.equalsIgnoreCase("text")) {
-        	validate(node, null, "id");
-        	result = new TextDef(node);
-        } else if (nodeName.equalsIgnoreCase("file")) {
-        	validate(node, null, "id,!path,action,type,charset");
-            result = new FileDef(node);
-        } else if (nodeName.equalsIgnoreCase("var-def")) {
-        	validate(node, null, "id,!name");
-        	result = new VarDefDef(node);
-        } else if (nodeName.equalsIgnoreCase("var")) {
-        	validate(node, "", "id,!name");
-        	result = new VarDef(node);
-        } else if (nodeName.equalsIgnoreCase("http")) {
-        	validate(node, null, "id,!url,method,charset,username,password");
-            result = new HttpDef(node);
-        } else if (nodeName.equalsIgnoreCase("http-param")) {
-        	validate(node, null, "id,!name");
-        	result = new HttpParamDef(node);
-        } else if (nodeName.equalsIgnoreCase("http-header")) {
-        	validate(node, null, "id,!name");
-        	result = new HttpHeaderDef(node);
-        } else if (nodeName.equalsIgnoreCase("html-to-xml")) {
-        	validate(node, null, "id");
-            result = new HtmlToXmlDef(node);
-        } else if (nodeName.equalsIgnoreCase("regexp")) {
-        	validate(node, "!regexp-pattern,!regexp-source,regexp-result", "id,replace,max");
-            result = new RegexpDef(node);
-        } else if (nodeName.equalsIgnoreCase("xpath")) {
-        	validate(node, null, "id,!expression");
-            result = new XPathDef(node);
-        } else if (nodeName.equalsIgnoreCase("xquery")) {
-        	validate(node, "xq-param,!xq-expression", "id");
-            result = new XQueryDef(node);
-        } else if (nodeName.equalsIgnoreCase("xslt")) {
-        	validate(node, "!xml,!stylesheet", "id");
-            result = new XsltDef(node);
-        } else if (nodeName.equalsIgnoreCase("template")) {
-        	validate(node, null, "id");
-            result = new TemplateDef(node);
-        } else if (nodeName.equalsIgnoreCase("case")) {
-        	validate(node, "!if,else", "id");
-            result = new CaseDef(node);
-        } else if (nodeName.equalsIgnoreCase("loop")) {
-        	validate(node, "!list,!body", "id,item,index,maxloops,filter");
-            result = new LoopDef(node);
-        } else if (nodeName.equalsIgnoreCase("while")) {
-        	validate(node, null, "id,!condition,index,maxloops");
-        	result = new WhileDef(node);
-        } else if (nodeName.equalsIgnoreCase("function")) {
-        	validate(node, null, "id,!name");
-        	result = new FunctionDef(node);
-        } else if (nodeName.equalsIgnoreCase("return")) {
-        	validate(node, null, "id");
-        	result = new ReturnDef(node);
-        } else if (nodeName.equalsIgnoreCase("call")) {
-        	validate(node, null, "id,!name");
-        	result = new CallDef(node);
-        } else if (nodeName.equalsIgnoreCase("call-param")) {
-        	validate(node, null, "id,!name");
-        	result = new CallParamDef(node);
-        } else if (nodeName.equalsIgnoreCase("include")) {
-        	validate(node, "", "id,!path");
-        	result = new IncludeDef(node);
-        } else if (nodeName.equalsIgnoreCase("try")) {
-        	validate(node, "!body,!catch", "id");
-        	result = new TryDef(node);
-        } else if (nodeName.equalsIgnoreCase("script")) {
-        	validate(node, null, "id");
-        	result = new ScriptDef(node);
-        } else {
-        	throw new ConfigurationException("Unexpected configuration element: " + nodeName + "!");
+
+        ElementInfo elementInfo = getElementInfo(nodeName);
+        if (elementInfo == null || elementInfo.getDefinitionClass() == null || elementInfo.getDefinitionClass() == BaseElementDef.class) {
+            throw new ConfigurationException("Unexpected configuration element: " + nodeName + "!");
         }
 
-        return result;
+        validate(node);
+
+        Class elementClass = elementInfo.getDefinitionClass();
+        try {
+            Constructor constructor = elementClass.getConstructor( new Class[] {XmlNode.class} );
+            return (IElementDef) constructor.newInstance( new Object[] {node} );
+        } catch (Exception e) {
+            if (e instanceof ConfigurationException) {
+                throw (ConfigurationException) e;
+            } else if (e.getCause() instanceof ConfigurationException) {
+                throw (ConfigurationException) e.getCause();
+            }
+            throw new ConfigurationException("Cannot create class instance: " + elementClass + "!");
+        }
     }
-    
-    public static void validate(XmlNode node, String validTags, String validAtts) {
+
+    /**
+     * Validates specified xml node with appropriate element info instance.
+     * If validation fails, an runtime exception is thrown.
+     * @param node
+     */
+    public static void validate(XmlNode node) {
         if (node == null) {
             return;
         }
 
-        // check element validity
-    	if (validTags != null) {
-    		Set validTagsSet = new HashSet();
-    		
-    		// collects valid elements from given validTags comma-separated list
-    		StringTokenizer tokenizer = new StringTokenizer(validTags, ",");
-    		while (tokenizer.hasMoreTokens()) {
-    			String token = tokenizer.nextToken().toLowerCase();
-    			if (token.startsWith("!")) {
-    				String tagName = token.substring(1);
-    				if ( node.getElement(tagName) == null ) {
-    					throw new ConfigurationException( ErrMsg.missingTag(node.getName(), tagName) );
-    				}
-    				validTagsSet.add(tagName);
-    			} else {
-    				validTagsSet.add(token);
-    			}
-    		}
-    		
-    		// iterates through all tags and check if they are valid
-    		Iterator it = node.keySet().iterator();
-    		while (it.hasNext()) {
-    			String tagName = ((String) it.next()).toLowerCase();
-    			if (!validTagsSet.contains(tagName)) {
-    				throw new ConfigurationException( ErrMsg.invalidTag(node.getName(), tagName) );
-    			}
-    		}
-    	}
-    	
-    	// check attributes validity
-    	if (validAtts != null) {
-    		Set validAttsSet = new HashSet();
-    		
-    		// collects valid attributes from given validAtts comma-separated list
-    		StringTokenizer tokenizer = new StringTokenizer(validAtts, ",");
-    		while (tokenizer.hasMoreTokens()) {
-    			String token = tokenizer.nextToken().toLowerCase();
-    			if (token.startsWith("!")) {
-    				String attName = token.substring(1);
-    				if ( node.getAttribute(attName) == null ) {
-    					throw new ConfigurationException( ErrMsg.missingAttribute(node.getName(), attName) );
-    				}
-    				validAttsSet.add(attName);
-    			} else {
-    				validAttsSet.add(token);
-    			}
-    		}
-    		
-    		// iterates through all attributes and check if they are valid
-            Map attributes = node.getAttributes();
-            if (attributes != null) {
-                Iterator it = attributes.keySet().iterator();
-                while (it.hasNext()) {
-                    String attName = ((String) it.next()).toLowerCase();
-                    if (!validAttsSet.contains(attName)) {
-                        throw new ConfigurationException( ErrMsg.invalidAttribute(node.getName(), attName) );
-                    }
+        String nodeName = node.getName().toLowerCase();
+        ElementInfo elementInfo = getElementInfo(nodeName);
+
+        if (elementInfo == null) {
+            return;
+        }
+        
+        Set tags = elementInfo.getTagsSet();
+        Set requiredTags = elementInfo.getRequiredTagsSet();
+        boolean areAllTagsAllowed = elementInfo.areAllTagsAllowed();
+        Set allTagNameSet = elementInfos.keySet();
+
+        // checks if tag contains all required subelements
+        Iterator requiredTagsIterator = requiredTags.iterator();
+        while (requiredTagsIterator.hasNext()) {
+            String tag = (String) requiredTagsIterator.next();
+            if ( node.getElement(tag) == null ) {
+                throw new ConfigurationException( ErrMsg.missingTag(node.getName(), tag) );
+            }
+        }
+
+        // check if element contains only allowed subelements
+        Iterator subtagsIterator = node.keySet().iterator();
+        while (subtagsIterator.hasNext()) {
+            String tagName = ((String) subtagsIterator.next()).toLowerCase();
+            if ( (!areAllTagsAllowed && !tags.contains(tagName)) || (areAllTagsAllowed && !allTagNameSet.contains(tagName)) ) {
+                throw new ConfigurationException( ErrMsg.invalidTag(node.getName(), tagName) );
+            }
+        }
+
+        Set atts = elementInfo.getAttsSet();
+        Set requiredAtts = elementInfo.getRequiredAttsSet();
+
+        // checks if tag contains all required subelements
+        Iterator requiredAttsIterator = requiredAtts.iterator();
+        while (requiredAttsIterator.hasNext()) {
+            String att = (String) requiredAttsIterator.next();
+            if ( node.getAttribute(att) == null ) {
+                throw new ConfigurationException( ErrMsg.missingAttribute(node.getName(), att) );
+            }
+        }
+
+        // check if element contains only allowed attributes
+        Map attributes = node.getAttributes();
+        if (attributes != null) {
+            Iterator it = attributes.keySet().iterator();
+            while (it.hasNext()) {
+                String attName = ((String) it.next()).toLowerCase();
+                if ( !atts.contains(attName) ) {
+                    throw new ConfigurationException( ErrMsg.invalidAttribute(node.getName(), attName) );
                 }
             }
         }

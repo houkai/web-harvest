@@ -51,6 +51,13 @@ public class BaseElementDef implements IElementDef {
     // element ID
     String id;
 
+    // descriptive name
+    private String descName = "*";
+
+    // location of this element in source XML
+    private int lineNumber;
+    private int columnNumber;
+
     protected BaseElementDef() {
     }
     
@@ -58,8 +65,16 @@ public class BaseElementDef implements IElementDef {
     	this(node, true);
     }
 
+    protected BaseElementDef(XmlNode node, String descName) {
+    	this(node);
+        this.descName = descName;
+    }
+
     protected BaseElementDef(XmlNode node, boolean createBodyDefs) {
         if (node != null) {
+            this.lineNumber = node.getLineNumber();
+            this.columnNumber = node.getColumnNumber();
+
             this.id = (String) node.get("id");
 
             List elementList = node.getElementList();
@@ -109,4 +124,16 @@ public class BaseElementDef implements IElementDef {
         return id;
     }
 
+    public String getShortElementName() {
+        return descName;
+    }
+
+    public int getLineNumber() {
+        return lineNumber;
+    }
+
+    public int getColumnNumber() {
+        return columnNumber;
+    }
+    
 }

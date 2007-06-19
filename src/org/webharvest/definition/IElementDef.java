@@ -42,5 +42,6 @@ package org.webharvest.definition;
 public interface IElementDef {
 	
 	public IElementDef[] getOperationDefs();
-	
+	public String getShortElementName();
+
 }

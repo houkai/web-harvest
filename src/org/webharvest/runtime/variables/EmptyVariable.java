@@ -44,6 +44,8 @@ import java.util.List;
  */
 public class EmptyVariable implements IVariable {
 
+    public static final EmptyVariable INSTANCE = new EmptyVariable();
+
     public static final String EMPTY_VALUE_OBJECT = "";
 
     public EmptyVariable() {

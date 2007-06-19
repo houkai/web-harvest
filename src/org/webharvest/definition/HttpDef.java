@@ -82,4 +82,8 @@ public class HttpDef extends BaseElementDef {
 		return username;
 	}
 
+    public String getShortElementName() {
+        return "http";
+    }
+    
 }

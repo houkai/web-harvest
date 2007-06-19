@@ -52,12 +52,12 @@ public class LoopDef extends BaseElementDef {
         super(xmlNode, false);
 
         XmlNode loopValueDefNode = (XmlNode) xmlNode.get("list[0]");
-        DefinitionResolver.validate(loopValueDefNode, null, "id");
-        this.loopValueDef = loopValueDefNode == null ? null : new BaseElementDef( loopValueDefNode );
+        DefinitionResolver.validate(loopValueDefNode);
+        this.loopValueDef = loopValueDefNode == null ? null : new BaseElementDef(loopValueDefNode, "list");
 
         XmlNode loopBodyDefNode = (XmlNode) xmlNode.get("body[0]");
-        DefinitionResolver.validate(loopBodyDefNode, null, "id");
-        this.loopBodyDef = loopBodyDefNode == null ? null : new BaseElementDef( loopBodyDefNode );
+        DefinitionResolver.validate(loopBodyDefNode);
+        this.loopBodyDef = loopBodyDefNode == null ? null : new BaseElementDef(loopBodyDefNode, "body");
 
         this.maxloops = (String) xmlNode.get("maxloops");
         this.item = (String) xmlNode.get("item");
@@ -87,6 +87,14 @@ public class LoopDef extends BaseElementDef {
 
     public BaseElementDef getLoopBodyDef() {
         return loopBodyDef;
+    }
+
+    public IElementDef[] getOperationDefs() {
+        return new IElementDef[] {this.loopValueDef, this.loopBodyDef};
+    }
+
+    public String getShortElementName() {
+        return "loop";
     }
 
 }

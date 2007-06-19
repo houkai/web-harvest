@@ -45,4 +45,8 @@ public class HtmlToXmlDef extends BaseElementDef {
         super(xmlNode);
     }
 
+    public String getShortElementName() {
+        return "html-to-xml";
+    }
+
 }

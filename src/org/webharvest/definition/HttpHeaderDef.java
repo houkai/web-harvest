@@ -53,4 +53,8 @@ public class HttpHeaderDef extends BaseElementDef {
     	return name;
     }
 
+    public String getShortElementName() {
+        return "http-header";
+    }
+
 }

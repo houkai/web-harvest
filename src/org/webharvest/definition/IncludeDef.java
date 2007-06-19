@@ -53,4 +53,8 @@ public class IncludeDef extends BaseElementDef {
         return path;
     }
 
+    public String getShortElementName() {
+        return "include";
+    }
+
 }

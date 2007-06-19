@@ -37,6 +37,7 @@
 package org.webharvest.definition;
 
 import org.apache.log4j.Logger;
+import org.xml.sax.InputSource;
 
 import java.io.InputStream;
 import java.util.*;
@@ -63,13 +64,17 @@ public class XmlNode extends HashMap {
 	// text value
 	private String text;
 
-	/**
-	 * Static method that creates node for specified input stream which
+    // location of element in the XML
+    private int lineNumbwe;
+    private int columnNumber;
+
+    /**
+	 * Static method that creates node for specified input source which
 	 * contains XML data
 	 * @param in
 	 * @return XmlNode instance
 	 */
-	public static XmlNode getInstance(InputStream in) {
+	public static XmlNode getInstance(InputSource in) {
         return XmlParser.parse(in);
 	}
 
@@ -287,4 +292,17 @@ public class XmlNode extends HashMap {
 		}
 	}
 
+    public void setLocation(int lineNumber, int columnNumber) {
+        this.lineNumbwe = lineNumber;
+        this.columnNumber = columnNumber;
+    }
+
+    public int getLineNumber() {
+        return lineNumbwe;
+    }
+
+    public int getColumnNumber() {
+        return columnNumber;
+    }
+    
 }

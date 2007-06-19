@@ -52,4 +52,9 @@ public class XPathDef extends BaseElementDef {
     public String getExpression() {
         return expression;
     }
+
+    public String getShortElementName() {
+        return "xpath";
+    }
+
 }

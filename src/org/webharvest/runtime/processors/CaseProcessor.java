@@ -65,7 +65,7 @@ public class CaseProcessor extends BaseProcessor {
         	for (int i = 0; i < ifDefs.length; i++) {
         		String condition = BaseTemplater.execute( ifDefs[i].getCondition(), scraper.getScriptEngine() );
         		if ( CommonUtil.isBooleanTrue(condition) ) {
-        			IVariable ifResult = getBodyListContent(ifDefs[i], scraper, context);
+        			IVariable ifResult = new BodyProcessor(ifDefs[i]).run(scraper, context);
                     debug(ifDefs[i], scraper, ifResult);
                     return ifResult;
                 }
@@ -74,7 +74,7 @@ public class CaseProcessor extends BaseProcessor {
 
         BaseElementDef elseDef = caseDef.getElseDef();
         if (elseDef != null) {
-        	IVariable elseResult = getBodyListContent(elseDef, scraper, context);
+        	IVariable elseResult = new BodyProcessor(elseDef).run(scraper, context);
             debug(elseDef, scraper, elseResult);
             return elseResult;
         }

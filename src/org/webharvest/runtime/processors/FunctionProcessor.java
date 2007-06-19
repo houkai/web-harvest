@@ -56,7 +56,9 @@ public class FunctionProcessor extends BaseProcessor {
 
     public IVariable execute(Scraper scraper, ScraperContext context) {
         scraper.getConfiguration().addFunctionDef( functionDef );
-        
+
+        this.setProperty("Name", functionDef.getName());
+
         return new EmptyVariable();
     }
 

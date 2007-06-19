@@ -53,4 +53,8 @@ public class HttpParamDef extends BaseElementDef {
     	return name;
     }
 
+    public String getShortElementName() {
+        return "http-param";
+    }
+
 }

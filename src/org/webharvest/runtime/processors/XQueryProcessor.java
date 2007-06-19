@@ -93,7 +93,7 @@ public class XQueryProcessor extends BaseProcessor {
 
     public IVariable execute(Scraper scraper, ScraperContext context) {
         BaseElementDef xqueryElementDef = xqueryDef.getXqDef();
-        IVariable xq = getBodyTextContent(xqueryElementDef, scraper, context);
+        IVariable xq = getBodyTextContent(xqueryElementDef, scraper, context, true);
         debug(xqueryElementDef, scraper, xq);
 
         String xqExpression = xq.toString().trim();
@@ -120,7 +120,7 @@ public class XQueryProcessor extends BaseProcessor {
                 }
 
                 if ( externalParamType.endsWith("*") ) {
-                    ListVariable listVar = (ListVariable) getBodyListContent(externalParamDef, scraper, context);
+                    ListVariable listVar = (ListVariable) new BodyProcessor(externalParamDef).run(scraper, context);
                     debug(externalParamDef, scraper, listVar);
                     
                     Iterator it = listVar.toList().iterator();
@@ -132,7 +132,7 @@ public class XQueryProcessor extends BaseProcessor {
 
                     dynamicContext.setParameter(externalParamDef.getName(), paramList);
                 } else {
-                    IVariable var = getBodyTextContent(externalParamDef, scraper, context);
+                    IVariable var = getBodyTextContent(externalParamDef, scraper, context, true);
 
                     debug(externalParamDef, scraper, var);
                     

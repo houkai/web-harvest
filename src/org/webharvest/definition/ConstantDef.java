@@ -53,4 +53,8 @@ public class ConstantDef extends BaseElementDef {
         return text;
     }
 
+    public String getShortElementName() {
+        return "";
+    }
+
 }

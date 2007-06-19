@@ -48,11 +48,11 @@ public class XsltDef extends BaseElementDef {
         super(xmlNode, false);
         
         XmlNode xmlDefNode = (XmlNode) xmlNode.get("xml[0]");
-        DefinitionResolver.validate(xmlDefNode, null, "id");
+        DefinitionResolver.validate(xmlDefNode);
         xmlDef = xmlDefNode == null ? null : new BaseElementDef( xmlDefNode );
 
         XmlNode stylesheetDefNode = (XmlNode) xmlNode.get("stylesheet[0]");
-        DefinitionResolver.validate(stylesheetDefNode, null, "id");
+        DefinitionResolver.validate(stylesheetDefNode);
         stylesheetDef = stylesheetDefNode == null ? null : new BaseElementDef(stylesheetDefNode);
     }
 
@@ -63,5 +63,9 @@ public class XsltDef extends BaseElementDef {
 	public BaseElementDef getXmlDef() {
 		return xmlDef;
 	}
-    
+
+    public String getShortElementName() {
+        return "xslt";
+    }
+
 }

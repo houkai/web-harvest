@@ -73,4 +73,8 @@ public class FileDef extends BaseElementDef {
         return charset;
     }
 
+    public String getShortElementName() {
+        return "file";
+    }
+
 }

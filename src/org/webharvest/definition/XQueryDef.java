@@ -52,8 +52,8 @@ public class XQueryDef extends BaseElementDef {
         super(xmlNode, false);
 
         XmlNode xqDefNode = (XmlNode) xmlNode.get("xq-expression[0]");
-        DefinitionResolver.validate(xqDefNode, null, "id");
-        xqDef = xqDefNode == null ? null : new BaseElementDef(xqDefNode);
+        DefinitionResolver.validate(xqDefNode);
+        xqDef = xqDefNode == null ? null : new BaseElementDef(xqDefNode, "xq-expression");
 
         List listOfExternalParamNodes = (List) xmlNode.get("xq-param");
 
@@ -65,7 +65,7 @@ public class XQueryDef extends BaseElementDef {
             int index = 0;
             while (it.hasNext()) {
                 XmlNode currParamNode =  (XmlNode) it.next();
-                DefinitionResolver.validate(currParamNode, null, "id,!name,type");
+                DefinitionResolver.validate(currParamNode);
                 externalParamDefs[index++] = new XQueryExternalParamDef(currParamNode);
             }
         }
@@ -77,6 +77,21 @@ public class XQueryDef extends BaseElementDef {
 
     public XQueryExternalParamDef[] getExternalParamDefs() {
         return externalParamDefs;
+    }
+
+    public IElementDef[] getOperationDefs() {
+        int size = externalParamDefs == null ? 1 : externalParamDefs.length + 1;
+        IElementDef[] result = new IElementDef[size];
+        for (int i = 0; i < externalParamDefs.length; i++) {
+            result[i] = externalParamDefs[i];
+        }
+        result[result.length - 1] = this.xqDef;
+
+        return result;
+    }
+
+    public String getShortElementName() {
+        return "xquery";
     }
 
 }

@@ -71,13 +71,13 @@ public class WhileProcessor extends BaseProcessor {
         if (maxLoopsString != null && !"".equals(maxLoopsString.trim())) {
             maxLoops = Double.parseDouble(maxLoopsString);
         }
-        
+
         List resultList = new ArrayList();
 
         IVariable indexBeforeLoop = (IVariable) context.get(index);
 
         int i = 1;
-        
+
         // define first value of index variable
         if ( index != null && !"".equals(index) ) {
             context.put( index, new NodeVariable(String.valueOf(i)) );
@@ -85,9 +85,13 @@ public class WhileProcessor extends BaseProcessor {
 
         String condition = BaseTemplater.execute( whileDef.getCondition(), scriptEngine);
 
+        this.setProperty("Condition", condition);
+        this.setProperty("Index", index);
+        this.setProperty("Max Loops", maxLoopsString);
+
         // iterates while testing variable represents boolean true or loop limit is exceeded
         while ( CommonUtil.isBooleanTrue(condition) && (i <= maxLoops) ) {
-            IVariable loopResult = getBodyListContent(whileDef, scraper, context);
+            IVariable loopResult = new BodyProcessor(whileDef).execute(scraper, context);
             resultList.addAll( loopResult.toList() );
 
             i++;

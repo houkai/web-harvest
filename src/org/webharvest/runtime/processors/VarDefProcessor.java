@@ -55,9 +55,10 @@ public class VarDefProcessor extends BaseProcessor {
     }
 
     public IVariable execute(Scraper scraper, ScraperContext context) {
-        IVariable var = getBodyListContent(varDef, scraper, context);
+        IVariable var = new BodyProcessor(varDef).execute(scraper, context);
         
         String name = BaseTemplater.execute( varDef.getName(), scraper.getScriptEngine() );
+        this.setProperty("Name", name);
 
         context.put(name, var);
 

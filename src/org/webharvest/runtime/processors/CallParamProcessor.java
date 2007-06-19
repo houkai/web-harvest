@@ -58,7 +58,7 @@ public class CallParamProcessor extends BaseProcessor {
 
     public IVariable execute(Scraper scraper, ScraperContext context) {
         String name = BaseTemplater.execute( callParamDef.getName(), scraper.getScriptEngine() );
-    	IVariable variable = getBodyListContent(callParamDef, scraper, context);
+    	IVariable variable =  new BodyProcessor(callParamDef).execute(scraper, context);
 
         CallProcessor callProcessor = scraper.getRunningFunction();
     	if (callProcessor != null) {

@@ -55,7 +55,7 @@ public class TextProcessor extends BaseProcessor {
     }
 
     public IVariable execute(Scraper scraper, ScraperContext context) {
-        IVariable body = getBodyListContent(textDef, scraper, context);
+        IVariable body = new BodyProcessor(textDef).execute(scraper, context);
         return new NodeVariable(body.toText());
     }
 

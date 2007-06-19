@@ -37,6 +37,7 @@
 package org.webharvest.definition;
 
 import org.webharvest.utils.Catalog;
+import org.xml.sax.InputSource;
 
 import java.io.*;
 import java.net.URL;
@@ -68,9 +69,14 @@ public class ScraperConfiguration {
      * 
      * @param in
      */
-    public ScraperConfiguration(InputStream in) {
+    public ScraperConfiguration(InputSource in) {
+        createFromInputStream(in);
+
+    }
+
+    private void createFromInputStream(InputSource in) {
         // loads configuration from input stream to the internal structure
-        XmlNode node = XmlNode.getInstance( new BufferedInputStream(in) );
+        XmlNode node = XmlNode.getInstance(in);
 
         String charsetString = node.getString("charset");
         this.charset = charsetString != null ? charsetString : DEFAULT_CHARSET;
@@ -96,8 +102,8 @@ public class ScraperConfiguration {
      * @throws FileNotFoundException
      */
     public ScraperConfiguration(File sourceFile) throws FileNotFoundException {
-        this( new FileInputStream(sourceFile) );
         this.sourceFile = sourceFile;
+        createFromInputStream( new InputSource(new FileReader(sourceFile)) );
     }
 
     /**
@@ -116,8 +122,8 @@ public class ScraperConfiguration {
      * @throws IOException
      */
     public ScraperConfiguration(URL sourceUrl) throws IOException {
-        this( sourceUrl.openStream() );
         this.url = sourceUrl.toString();
+        createFromInputStream( new InputSource(new InputStreamReader(sourceUrl.openStream())) );
     }
 
     public List getOperations() {
@@ -140,8 +146,16 @@ public class ScraperConfiguration {
         return this.sourceFile;
     }
 
+    public void setSourceFile(File sourceFile) {
+        this.sourceFile = sourceFile;
+    }
+
     public String getUrl() {
         return this.url;
     }
 
+    public void setUrl(String url) {
+        this.url = url;
+    }
+    
 }

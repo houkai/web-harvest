@@ -68,6 +68,9 @@ public class IncludeProcessor extends BaseProcessor {
         boolean isUrl = false;
         
         String path = BaseTemplater.execute( includeDef.getPath(), scraper.getScriptEngine() );
+
+        this.setProperty("Path", path);
+        
         path = CommonUtil.adaptFilename(path);
         String fullPath = path;
 

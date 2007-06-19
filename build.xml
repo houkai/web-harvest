@@ -2,7 +2,7 @@
 
 	<description>Web-Harvest - web data extraction tool</description>
 	
-	<property name="version" value="05"/>
+	<property name="version" value="1_alpha_b1"/>
 	<property name="dir.src" value="src"/>
 	<property name="dir.tmp" value="tmp"/>
 	<property name="dir.lib" value="lib"/>
@@ -29,7 +29,10 @@
 		<javac srcdir="${dir.src}" destdir="${dir.dist}" listfiles="on" source="1.4" target="1.4" excludes="Test.java">
 			<classpath refid="classpath.compile"/>
 		</javac>
-	</target>
+        <copy todir="${dir.dist}/org/webharvest/gui/resources">
+            <fileset dir="${dir.src}/org/webharvest/gui/resources"/>
+        </copy>
+    </target>
 
 	<!--  creates jar library -->
 	<target name="jar" depends="build" description="creates jar library">

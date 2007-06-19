@@ -42,9 +42,7 @@ import org.webharvest.runtime.Scraper;
 import org.webharvest.runtime.ScraperContext;
 import org.webharvest.runtime.scripting.ScriptEngine;
 import org.webharvest.runtime.templaters.BaseTemplater;
-import org.webharvest.runtime.variables.IVariable;
-import org.webharvest.runtime.variables.NodeVariable;
-import org.webharvest.runtime.variables.Types;
+import org.webharvest.runtime.variables.*;
 import org.webharvest.utils.CommonUtil;
 
 import java.io.File;
@@ -75,6 +73,11 @@ public class FileProcessor extends BaseProcessor {
             charset = scraper.getConfiguration().getCharset();
         }
 
+        this.setProperty("Action", action);
+        this.setProperty("File Path", filePath);
+        this.setProperty("Type", type);
+        this.setProperty("Charset", charset);
+
         String fullPath = CommonUtil.getAbsoluteFilename(workingDir, filePath);
 
         // depending on file acton calls appropriate method
@@ -83,7 +86,7 @@ public class FileProcessor extends BaseProcessor {
         } else if ( "append".equalsIgnoreCase(action) ) {
             return executeFileWrite(true, scraper, context, fullPath, type, charset);
         } else {
-            return executeFileRead(fullPath, type, charset);
+            return executeFileRead(fullPath, type, charset, scraper);
         }
     }
 
@@ -102,9 +105,9 @@ public class FileProcessor extends BaseProcessor {
             byte[] data;
 
             if ( Types.TYPE_BINARY.equalsIgnoreCase(type) ) {
-                IVariable body = getBodyBinaryContent(fileDef, scraper, context);
-                data = body.toBinary();
-                result = new NodeVariable(data);
+                IVariable bodyListVar = new BodyProcessor(fileDef).execute(scraper, context);
+                result = Appender.appendBinary(bodyListVar);
+                data = result.toBinary();
             } else {
                 IVariable body = getBodyTextContent(fileDef, scraper, context);
                 String content = body.toString();
@@ -125,11 +128,11 @@ public class FileProcessor extends BaseProcessor {
     /**
      * Reading the specified file.
      */
-    private IVariable executeFileRead(String fullPath, String type, String charset) {
+    private IVariable executeFileRead(String fullPath, String type, String charset, Scraper scraper) {
         if ( Types.TYPE_BINARY.equalsIgnoreCase(type) ) {
             try {
                 byte[] data = CommonUtil.readBytesFromFile(new File(fullPath));
-                log.info("Binary file read processor: " + data.length + " bytes read.");
+                scraper.getLogger().info("Binary file read processor: " + data.length + " bytes read.");
                 return new NodeVariable(data);
             } catch (IOException e) {
                 throw new FileException("Error reading file: " + fullPath, e);
@@ -137,7 +140,7 @@ public class FileProcessor extends BaseProcessor {
         } else {
             try {
                 String content = CommonUtil.readStringFromFile(new File(fullPath), charset);
-                log.info( "Text file read processor: " + (content == null ? 0 : content.length()) + " characters read." );
+                scraper.getLogger().info( "Text file read processor: " + (content == null ? 0 : content.length()) + " characters read." );
                 return new NodeVariable(content);
             } catch (IOException e) {
                 throw new FileException("Error reading the file: " + fullPath, e);

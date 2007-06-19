@@ -57,6 +57,7 @@ public class VarProcessor extends BaseProcessor {
 
     public IVariable execute(Scraper scraper, ScraperContext context) {
         String name = BaseTemplater.execute( varDef.getName(), scraper.getScriptEngine() );
+        this.setProperty("Name", name);
 
         IVariable var = context.getVar(name);
 

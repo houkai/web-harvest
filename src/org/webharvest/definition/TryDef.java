@@ -48,11 +48,11 @@ public class TryDef extends BaseElementDef {
     	super(xmlNode, false);
 
         XmlNode tryBodyDefNode = (XmlNode) xmlNode.get("body[0]");
-        DefinitionResolver.validate(tryBodyDefNode, null, "id");
+        DefinitionResolver.validate(tryBodyDefNode);
         this.tryBodyDef = tryBodyDefNode == null ? null : new BaseElementDef(tryBodyDefNode);
 
         XmlNode catchValueDefNode = (XmlNode) xmlNode.get("catch[0]");
-        DefinitionResolver.validate(catchValueDefNode, null, "id");
+        DefinitionResolver.validate(catchValueDefNode);
         this.catchValueDef = catchValueDefNode == null ? null : new BaseElementDef(catchValueDefNode);
     }
 
@@ -62,6 +62,10 @@ public class TryDef extends BaseElementDef {
 
     public BaseElementDef getCatchValueDef() {
         return catchValueDef;
+    }
+
+    public String getShortElementName() {
+        return "try";
     }
 
 }

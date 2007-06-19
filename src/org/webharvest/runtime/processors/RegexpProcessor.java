@@ -70,11 +70,11 @@ public class RegexpProcessor extends BaseProcessor {
         ScriptEngine scriptEngine = scraper.getScriptEngine();
 
         BaseElementDef patternDef = regexpDef.getRegexpPatternDef();
-        IVariable patternVar = getBodyTextContent(patternDef, scraper, context);
+        IVariable patternVar = getBodyTextContent(patternDef, scraper, context, true);
         debug(patternDef, scraper, patternVar);
 
         BaseElementDef sourceDef = regexpDef.getRegexpSourceDef();
-        IVariable source = getBodyListContent(sourceDef, scraper, context);
+        IVariable source = new BodyProcessor(sourceDef).run(scraper, context);
         debug(sourceDef, scraper, source);
         
         String replace = BaseTemplater.execute( regexpDef.getReplace(), scriptEngine);
@@ -115,7 +115,7 @@ public class RegexpProcessor extends BaseProcessor {
             	}
 
                 BaseElementDef resultDef = regexpDef.getRegexpResultDef();
-                IVariable result = getBodyTextContent(resultDef, scraper, context);
+                IVariable result = getBodyTextContent(resultDef, scraper, context, true);
                 debug(resultDef, scraper, result);
                 
                 String currResult = (result == null) ? matcher.group(0) : result.toString();

@@ -55,15 +55,15 @@ public class RegexpDef extends BaseElementDef {
         this.replace = (String) xmlNode.get("replace");
         
         XmlNode regexpPatternDefNode = (XmlNode) xmlNode.get("regexp-pattern[0]");
-        DefinitionResolver.validate(regexpPatternDefNode, null, "id");
+        DefinitionResolver.validate(regexpPatternDefNode);
         regexpPatternDef = regexpPatternDefNode == null ? null : new BaseElementDef( regexpPatternDefNode );
         
         XmlNode regexpSourceDefNode = (XmlNode) xmlNode.get("regexp-source[0]");
-        DefinitionResolver.validate(regexpSourceDefNode, null, "id");
+        DefinitionResolver.validate(regexpSourceDefNode);
         regexpSourceDef = regexpSourceDefNode == null ? null : new BaseElementDef( regexpSourceDefNode );
         
         XmlNode regexpResultDefNode = (XmlNode) xmlNode.get("regexp-result[0]");
-        DefinitionResolver.validate(regexpResultDefNode, null, "id");
+        DefinitionResolver.validate(regexpResultDefNode);
         regexpResultDef = regexpResultDefNode == null ? null : new BaseElementDef( regexpResultDefNode );
     }
 
@@ -86,5 +86,9 @@ public class RegexpDef extends BaseElementDef {
 	public BaseElementDef getRegexpSourceDef() {
 		return regexpSourceDef;
 	}
-    
+
+    public String getShortElementName() {
+        return "regexp";
+    }
+
 }

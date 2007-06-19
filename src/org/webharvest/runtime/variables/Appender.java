@@ -36,29 +36,46 @@
 */
 package org.webharvest.runtime.variables;
 
+import java.util.List;
+import java.util.Iterator;
+
 
 public class Appender {
 
-    public static NodeVariable appendText(IVariable[] vars) {
-        String result = "";
-        for (int i = 0; i < vars.length; i++) {
-            result += vars[i] == null ? "" : vars[i].toString();
+    public static NodeVariable appendText(IVariable body) {
+        if (body == null) {
+            return new NodeVariable("");
         }
 
-        return new NodeVariable(result);
+        String text = "";
+
+        Iterator iterator = body.toList().iterator();
+        while (iterator.hasNext()) {
+            IVariable curr =  (IVariable) iterator.next();
+            text += curr == null ? "" : curr.toString();
+        }
+
+        return new NodeVariable(text);
     }
 
-    public static NodeVariable appendBinary(IVariable[] vars) {
+    public static NodeVariable appendBinary(IVariable body) {
+        if (body == null) {
+            return new NodeVariable("");
+        }
+
         byte[] result = null;
-        for (int i = 0; i < vars.length; i++) {
-            byte[] curr = vars[i].toBinary();
-            if (curr != null) {
+
+        Iterator iterator = body.toList().iterator();
+        while (iterator.hasNext()) {
+            IVariable currVariable =  (IVariable) iterator.next();
+            byte bytes[] = currVariable.toBinary();
+            if (bytes != null) {
                 if (result == null) {
-                    result = curr;
+                    result = bytes;
                 } else {
-                    byte[] newResult = new byte[result.length + curr.length];
+                    byte[] newResult = new byte[result.length + bytes.length];
                     System.arraycopy(result, 0, newResult, 0, result.length);
-                    System.arraycopy(curr, 0, newResult, result.length, curr.length);
+                    System.arraycopy(bytes, 0, newResult, result.length, bytes.length);
                     result = newResult;
                 }
             }
@@ -66,6 +83,5 @@ public class Appender {
 
         return new NodeVariable(result);
     }
-
 
 }

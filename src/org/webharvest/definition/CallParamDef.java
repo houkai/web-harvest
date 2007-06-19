@@ -17,4 +17,8 @@ public class CallParamDef extends BaseElementDef {
     	return name;
     }
 
+    public String getShortElementName() {
+        return "call-param";
+    }
+
 }

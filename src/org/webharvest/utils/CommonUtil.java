@@ -159,6 +159,18 @@ public class CommonUtil {
 		return path.substring(0, index);
 	}
 
+	/**
+	 * Extracts a filename from an absolute path.
+	 */
+	public static String getFileFromPath(String path) {
+		int i1 = path.lastIndexOf("/");
+		int i2 = path.lastIndexOf("\\");
+		if (i1 > i2) {
+			return path.substring(i1+1);
+		}
+		return path.substring(i2+1);
+	}
+
     /**
      * Returns class name without packages for the specified object
      */
@@ -357,6 +369,25 @@ public class CommonUtil {
 		}
 		return new String(buf, 0, realSize);
 	}
+
+    /**
+     * Saves specified content to the file with specified charset.
+     * @param file
+     * @param content
+     * @param charset
+     * 
+     * @throws IOException
+     * @throws UnsupportedEncodingException
+     */
+    public static void saveStringToFile(File file, String content, String charset) throws IOException {
+        FileOutputStream out = new FileOutputStream(file);
+        byte[] data = content.getBytes(charset);
+
+        out.write(data);
+
+        out.flush();
+        out.close();
+    }
 
     public static byte[] readBytesFromFile(File file) throws IOException {
 		FileInputStream fileinputstream = new FileInputStream(file);

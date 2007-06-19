@@ -46,4 +46,8 @@ public class EmptyDef extends BaseElementDef {
     	super(xmlNode);
     }
 
+    public String getShortElementName() {
+        return "empty";
+    }
+
 }

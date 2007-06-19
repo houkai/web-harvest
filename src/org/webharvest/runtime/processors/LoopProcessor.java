@@ -72,13 +72,18 @@ public class LoopProcessor extends BaseProcessor {
         String maxLoopsString = BaseTemplater.execute( loopDef.getMaxloops(), scriptEngine);
         String filter = BaseTemplater.execute( loopDef.getFilter(), scriptEngine);
 
+        this.setProperty("Item", item);
+        this.setProperty("Index", index);
+        this.setProperty("Max Loops", maxLoopsString);
+        this.setProperty("Filter", filter);
+
         double maxLoops = Constants.DEFAULT_MAX_LOOPS;
         if (maxLoopsString != null && !"".equals(maxLoopsString.trim())) {
             maxLoops = Double.parseDouble(maxLoopsString);
         }
 
         BaseElementDef loopValueDef = loopDef.getLoopValueDef();
-        IVariable loopValue = getBodyListContent(loopValueDef, scraper, context);
+        IVariable loopValue = new BodyProcessor(loopValueDef).run(scraper, context);
         debug(loopValueDef, scraper, loopValue);
 
         List resultList = new ArrayList();
@@ -106,7 +111,7 @@ public class LoopProcessor extends BaseProcessor {
 
                 // execute the loop body
                 BaseElementDef bodyDef = loopDef.getLoopBodyDef();
-                IVariable loopResult = bodyDef != null ? getBodyListContent(bodyDef, scraper, context) : new EmptyVariable();
+                IVariable loopResult = bodyDef != null ? new BodyProcessor(bodyDef).run(scraper, context) : new EmptyVariable();
                 debug(bodyDef, scraper, loopResult);
                 resultList.addAll( loopResult.toList() );
             }

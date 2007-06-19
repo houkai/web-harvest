@@ -55,5 +55,8 @@ public class VarDefDef extends BaseElementDef {
     	return CommonUtil.adaptFilename(name);
     }
 
+    public String getShortElementName() {
+        return "var-def";
+    }
 
 }

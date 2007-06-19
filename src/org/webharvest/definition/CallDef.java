@@ -53,4 +53,8 @@ public class CallDef extends BaseElementDef {
         return name;
     }
 
+    public String getShortElementName() {
+        return "call";
+    }
+
 }

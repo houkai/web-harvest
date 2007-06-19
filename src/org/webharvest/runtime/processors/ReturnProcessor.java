@@ -58,7 +58,7 @@ public class ReturnProcessor extends BaseProcessor {
         CallProcessor callProcessor = scraper.getRunningFunction();
 
         if (callProcessor != null) {
-            IVariable returnValue = this.getBodyListContent(returnDef, scraper, context);
+            IVariable returnValue = new BodyProcessor(returnDef).execute(scraper, context);
             callProcessor.setFunctionResult( returnValue );
         }
 

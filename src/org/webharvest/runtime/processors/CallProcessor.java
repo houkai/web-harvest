@@ -70,15 +70,17 @@ public class CallProcessor extends BaseProcessor {
         String functionName = BaseTemplater.execute( callDef.getName(), scraper.getScriptEngine() );
         FunctionDef functionDef = scraper.getConfiguration().getFunctionDef(functionName);
 
+        this.setProperty("Name", functionName);
+
         if (functionDef == null) {
             throw new FunctionException("Function \"" + functionName + "\" is undefined!");
         }
         
         // executes body of call processor
-        executeBody(callDef, scraper, context);
+        new BodyProcessor(callDef).execute(scraper, context);
 
         // executes body of function using new context
-        executeBody(functionDef, scraper, functionContext);
+        new BodyProcessor(functionDef).execute(scraper, functionContext);
 
         // remove running function from the stack  
         scraper.removeRunningFunction();

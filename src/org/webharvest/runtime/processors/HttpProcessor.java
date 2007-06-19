@@ -49,10 +49,7 @@ import org.webharvest.runtime.web.HttpClientManager;
 import org.webharvest.runtime.web.HttpResponseWrapper;
 
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Http processor.
@@ -78,13 +75,13 @@ public class HttpProcessor extends BaseProcessor {
         String charset = BaseTemplater.execute( httpDef.getCharset(), scriptEngine);
         String username = BaseTemplater.execute( httpDef.getUsername(), scriptEngine);
         String password = BaseTemplater.execute( httpDef.getPassword(), scriptEngine);
-        
+
         if (charset == null) {
             charset = scraper.getConfiguration().getCharset();
         }
         
         // executes body of HTTP processor
-        executeBody(httpDef, scraper, context);
+        new BodyProcessor(httpDef).execute(scraper, context);
 
         HttpClientManager manager = scraper.getHttpClientManager();
 
@@ -94,7 +91,8 @@ public class HttpProcessor extends BaseProcessor {
 
         String mimeType = res.getMimeType();
 
-        log.info("Downloaded: " + url + ", mime type = " + mimeType + ", length = " + res.getBody().length + "B.");
+        int contentLength = res.getBody().length;
+        scraper.getLogger().info("Downloaded: " + url + ", mime type = " + mimeType + ", length = " + contentLength + "B.");
 
         IVariable result;
         
@@ -110,7 +108,21 @@ public class HttpProcessor extends BaseProcessor {
         } else {
             result = new NodeVariable( res.getBody() );
         }
-        
+
+        this.setProperty("URL", url);
+        this.setProperty("Method", method);
+        this.setProperty("Charset", charset);
+        this.setProperty("Content size", contentLength + "B");
+
+        Map responseHeaders = res.getHeaders();
+        if (responseHeaders != null) {
+            Iterator iterator = responseHeaders.entrySet().iterator();
+            while (iterator.hasNext()) {
+                Map.Entry entry = (Map.Entry) iterator.next();
+                this.setProperty("HTTP header: " + entry.getKey(), entry.getValue());
+            }
+        }
+
         return result;
     }
     
