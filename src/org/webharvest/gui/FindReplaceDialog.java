@@ -261,8 +261,8 @@ public class FindReplaceDialog extends JDialog {
     }
 
     public void open(XmlTextPane xmlPane, boolean isReplace) {
+        setPane(xmlPane);
         this.operation = isReplace ? OPERATION_REPLACE : OPERATION_FIND;
-        this.pane = xmlPane;
         this.replaceLabel.setVisible(isReplace);
         this.replaceField.setVisible(isReplace);
         this.setTitle(isReplace ? "Replace Text" : "Find Text");
@@ -304,28 +304,30 @@ public class FindReplaceDialog extends JDialog {
                 if (index >= 0) {
                     pane.select(index, index + searchText.length());
                 } else {
-                    ToolTipManager.sharedInstance().registerComponent(this.pane);
-                    Action action = this.pane.getActionMap().get("postTip");
-                    if (action != null) {
-                        this.pane.setToolTipText("Next occurrence of \"" + searchText + "\" not found.");
-
-                        int previousInitialDelay = ToolTipManager.sharedInstance().getInitialDelay();
-                        int previousReshowDelay = ToolTipManager.sharedInstance().getReshowDelay();
-                        ToolTipManager.sharedInstance().setInitialDelay(0);
-                        ToolTipManager.sharedInstance().setReshowDelay(0);
-
-                        Point caretPosition = this.pane.getCaret().getMagicCaretPosition();
-                        ToolTipManager.sharedInstance().mouseMoved( new MouseEvent(this.pane, 0, 0, 0, (int)caretPosition.getX(), (int)caretPosition.getY(), 0, false) );
-
-                        ToolTipManager.sharedInstance().setInitialDelay(previousInitialDelay);
-                        ToolTipManager.sharedInstance().setReshowDelay(previousReshowDelay);
-                        this.pane.setToolTipText("");
-                    }
-
-//                    DialogHelper.showInfoMessage( "Next occurrence of \"" + searchText + "\" not found." );
+                    showTooltipMessage("Next occurrence of \"" + searchText + "\" not found.");
                 }
             }
         }
+    }
+
+    /**
+     * Displays specified message in the tooltip at the caret position.
+     * @param text
+     */
+    private void showTooltipMessage(String text) {
+        ToolTipManager toolTipManager = ToolTipManager.sharedInstance();
+        this.pane.setToolTipText(text);
+
+        int previousInitialDelay = toolTipManager.getInitialDelay();
+        toolTipManager.setInitialDelay(0);
+
+        Point caretPosition = this.pane.getCaret().getMagicCaretPosition();
+        toolTipManager.registerComponent(this.pane);
+        toolTipManager.mouseMoved( new MouseEvent(this.pane, 0, 0, 0, (int)caretPosition.getX(), (int)caretPosition.getY(), 0, false) );
+
+        toolTipManager.setInitialDelay(previousInitialDelay);
+
+        toolTipManager.unregisterComponent(this.pane);
     }
 
     public void replace(boolean backward) {
@@ -336,8 +338,12 @@ public class FindReplaceDialog extends JDialog {
         return this.searchField.getText();
     }
 
+    public void setPane(XmlTextPane pane) {
+        this.pane = pane;
+    }
+
     public void findNext(XmlTextPane xmlPane) {
-        this.pane = xmlPane;
+        setPane(xmlPane);
         find(false);
     }
 

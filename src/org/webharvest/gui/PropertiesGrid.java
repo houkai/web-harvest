@@ -54,10 +54,6 @@ public class PropertiesGrid extends JTable {
             setOpaque(true);
         }
 
-        public Dimension getPreferredSize() {
-            return new Dimension(14, 0);
-        }
-
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
             if (isSelected) {
                 setForeground(table.getSelectionForeground());
@@ -80,11 +76,7 @@ public class PropertiesGrid extends JTable {
 
         public ButtonEditor(JCheckBox checkBox) {
             super(checkBox);
-            button = new JButton() {
-                public Dimension getPreferredSize() {
-                    return new Dimension(14, 0);
-                }
-            };
+            button = new JButton();
             button.setOpaque(true);
             button.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
@@ -138,13 +130,13 @@ public class PropertiesGrid extends JTable {
     public PropertiesGrid() {
         final PropertiesGridModel model = new PropertiesGridModel();
 
+        this.getTableHeader().setReorderingAllowed(false);
+
         this.setModel(model);
         TableColumnModel columnModel = this.getColumnModel();
         columnModel.getColumn(2).setCellRenderer( new ButtonRenderer() );
         columnModel.getColumn(2).setCellEditor( new ButtonEditor(new JCheckBox()) );
-        columnModel.getColumn(0).setPreferredWidth(5000);
-        columnModel.getColumn(1).setPreferredWidth(5000);
-        columnModel.getColumn(2).setPreferredWidth(0);
+        columnModel.getColumn(2).setMaxWidth(14);
     }
 
     public Component prepareRenderer(TableCellRenderer cellRenderer, int i, int j) {

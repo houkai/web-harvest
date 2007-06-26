@@ -72,6 +72,7 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
 
     // size of splitter pane dividers
     private static final int DIVIDER_SIZE = 3;
+    private ScrollableEditorPanel xmlEditorPanel;
 
     private class ViewerActionListener implements ActionListener {
         private int viewType = ViewerFrame.TEXT_VIEW;
@@ -230,7 +231,8 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
             DialogHelper.showErrorMessage( e.getMessage() );
         }
 
-        JScrollPane xmlView = new JScrollPane( new ScrollableEditorPanel(xmlPane) );
+        this.xmlEditorPanel = new ScrollableEditorPanel(this.xmlPane);
+        JScrollPane xmlView = new JScrollPane(this.xmlEditorPanel);
 
         this.propertiesGrid = new PropertiesGrid();
         JScrollPane propertiesView = new JScrollPane(propertiesGrid);
@@ -636,6 +638,10 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
 
     public XmlTextPane getXmlPane() {
         return xmlPane;
+    }
+
+    public ScrollableEditorPanel getXmlEditorPanel() {
+        return xmlEditorPanel;
     }
 
     public void setConfigFile(File file) {

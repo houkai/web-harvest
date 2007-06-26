@@ -73,6 +73,7 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
     private static final String COMMAND_FINDPREV = "findprev";
     private static final String COMMAND_VIEW_HIERARCHY = "viewhierarchy";
     private static final String COMMAND_VIEW_LOG = "viewlog";
+    private static final String COMMAND_VIEW_LINENUMBERS = "viewlinenumbers";
     private static final String COMMAND_RUN = "run";
     private static final String COMMAND_PAUSE = "pause";
     private static final String COMMAND_STOP = "stop";
@@ -515,6 +516,8 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
         menu.addSeparator();
         defineCheckboxMenuItem(menu, "Hierarchy", null, KeyEvent.VK_H, COMMAND_VIEW_HIERARCHY, null, false);
         defineCheckboxMenuItem(menu, "Log", null, KeyEvent.VK_L, COMMAND_VIEW_LOG, null, false);
+        menu.addSeparator();
+        defineCheckboxMenuItem(menu, "Line numbers", null, KeyEvent.VK_N, COMMAND_VIEW_LINENUMBERS, null, false);
         menuBar.add(menu);
 
         // Build the EXECUTION menu.
@@ -580,6 +583,8 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
         setCommandEnabled(COMMAND_VIEW_LOG, configPanel != null);
         setCommandSelected(COMMAND_VIEW_LOG, configPanel != null && configPanel.isLogVisible());
         setCommandEnabled(COMMAND_VIEW_LOG, configPanel != null);
+        setCommandSelected(COMMAND_VIEW_LINENUMBERS, configPanel != null && configPanel.getXmlEditorPanel().isShowLineNumbers());
+        setCommandEnabled(COMMAND_VIEW_LINENUMBERS, configPanel != null);
     }
 
     private ConfigPanel getActiveConfigPanel() {
@@ -717,6 +722,11 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
             ConfigPanel activeConfigPanel = getActiveConfigPanel();
             if (activeConfigPanel != null) {
                 activeConfigPanel.showLog();
+            }
+        } else if ( COMMAND_VIEW_LINENUMBERS.equals(cmd) ) {
+            ConfigPanel activeConfigPanel = getActiveConfigPanel();
+            if (activeConfigPanel != null) {
+                activeConfigPanel.getXmlEditorPanel().toggleShowLineNumbers();
             }
         }
         
