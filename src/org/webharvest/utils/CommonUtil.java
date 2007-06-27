@@ -54,6 +54,7 @@ import java.io.*;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.*;
+import java.lang.reflect.Method;
 
 /**
  * Basic evaluation utilities

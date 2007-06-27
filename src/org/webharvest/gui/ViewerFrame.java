@@ -169,11 +169,13 @@ public class ViewerFrame extends JFrame implements DropDownButtonListener, Actio
 
         // text view
         this.textArea = new JTextArea();
+        this.textArea.setEditable(false);
         this.textArea.setFont( new Font("Courier New", Font.PLAIN, 11) );
         this.cardPanel.add( new JScrollPane(this.textArea), String.valueOf(TEXT_VIEW) );
 
         // XML view
         this.xmlPane = new XmlTextPane();
+        this.xmlPane.setEditable(false);
         this.cardPanel.add( new JScrollPane(new ScrollableEditorPanel(xmlPane)), String.valueOf(XML_VIEW) );
 
         // HTML view

@@ -48,6 +48,7 @@ import org.xml.sax.helpers.LocatorImpl;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
+import java.util.StringTokenizer;
 
 
 public class XmlParser extends DefaultHandler {
@@ -107,7 +108,10 @@ public class XmlParser extends DefaultHandler {
             }
             currNode.setText(text);
             if (!"".equals(value)) {
-                currNode.addElement(value);
+                StringTokenizer tokenizer = new StringTokenizer(value, "\n\r");
+                while (tokenizer.hasMoreTokens()) {
+                    currNode.addElement(tokenizer.nextToken());
+                }
             }
         }
     }

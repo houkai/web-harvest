@@ -175,13 +175,13 @@ public class XQueryProcessor extends BaseProcessor {
             StringReader reader = new StringReader(value.toString() );
             return sqc.buildDocument(new StreamSource(reader));
         } else if ( type.startsWith("integer") ) {
-            return new Integer( value.toString() );
+            return new Integer( value.toString().trim() );
         } else if ( type.startsWith("long") ) {
-            return new Long( value.toString() );
+            return new Long( value.toString().trim() );
         } else if ( type.startsWith("float") ) {
-            return new Float( value.toString() );
+            return new Float( value.toString().trim() );
         } else if ( type.startsWith("double") ) {
-            return new Double( value.toString() );
+            return new Double( value.toString().trim() );
         } else if ( type.startsWith("boolean") ) {
             return CommonUtil.isBooleanTrue(value.toString()) ? Boolean.TRUE : Boolean.FALSE;
         } else {

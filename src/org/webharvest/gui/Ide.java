@@ -52,6 +52,7 @@ import java.io.File;
 import java.net.URL;
 import java.net.MalformedURLException;
 import java.util.*;
+import java.lang.reflect.Method;
 
 public class Ide extends JFrame implements ActionListener, ChangeListener {
 
@@ -80,6 +81,7 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
     private static final String COMMAND_EXIT = "exit";
     private static final String COMMAND_SETTINGS = "settings";
     private static final String COMMAND_ABOUT = "about";
+    private static final String COMMAND_HOMEPAGE = "homepage";
     private static final String COMMAND_UNDERDEVELOPMENT = "underdevelopment";
 
     {
@@ -531,7 +533,9 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
 
         // Build the HELP menu.
         menu = new JMenu("Help");
-        defineMenuItem(menu, "Hrlp", ResourceManager.getHelpIcon(), KeyEvent.VK_H, COMMAND_UNDERDEVELOPMENT, null);
+        defineMenuItem(menu, "Help", ResourceManager.getHelpIcon(), KeyEvent.VK_H, COMMAND_UNDERDEVELOPMENT, null);
+        menu.addSeparator();
+        defineMenuItem(menu, "Program Homepage", ResourceManager.getHomepageIcon(), KeyEvent.VK_H, COMMAND_HOMEPAGE, null);
         menu.addSeparator();
         defineMenuItem(menu, "About Web-Harvest", null, KeyEvent.VK_A, COMMAND_ABOUT, null);
         menuBar.add(menu);
@@ -664,6 +668,8 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
             defineSettings();
         } else if ( COMMAND_ABOUT.equals(cmd) ) {
             JOptionPane.showMessageDialog(this, "Web-Harvest GUI, version 1.0 alpha, build 2", "Status", JOptionPane.INFORMATION_MESSAGE);
+        } else if ( COMMAND_HOMEPAGE.equals(cmd) ) {
+            openURLInBrowser("http://web-harvest.sourceforge.net");
         } else if ( COMMAND_EXIT.equals(cmd) ) {
             exitApplication();
         } else if ( COMMAND_UNDERDEVELOPMENT.equals(cmd) ) {
@@ -754,6 +760,38 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
 
     public JTabbedPane getTabbedPane() {
         return tabbedPane;
+    }
+
+    /**
+     * Opens specified URL in default system's browser.
+     * @param url
+     */
+    private void openURLInBrowser(String url) {
+        String osName = System.getProperty("os.name");
+        try {
+            if (osName.startsWith("Mac OS")) {
+                Class fileMgr = Class.forName("com.apple.eio.FileManager");
+                Method openURL = fileMgr.getDeclaredMethod("openURL", new Class[]{String.class});
+                openURL.invoke(null, new Object[]{url});
+            } else if (osName.startsWith("Windows")) {
+                Runtime.getRuntime().exec("rundll32 url.dll,FileProtocolHandler " + url);
+            } else { //assume Unix or Linux
+                String[] browsers = { "firefox", "opera", "konqueror", "epiphany", "mozilla", "netscape" };
+                String browser = null;
+                for (int count = 0; count < browsers.length && browser == null; count++) {
+                    if ( Runtime.getRuntime().exec(new String[]{"which", browsers[count]}).waitFor() == 0 ) {
+                        browser = browsers[count];
+                    }
+                }
+                if (browser == null) {
+                    throw new Exception("Could not find web browser");
+                } else {
+                    Runtime.getRuntime().exec(new String[]{browser, url});
+                }
+            }
+        } catch (Exception e) {
+            DialogHelper.showErrorMessage( "Error attempting to launch web browser" + ":\n" + e.getLocalizedMessage() );
+        }
     }
 
     /**

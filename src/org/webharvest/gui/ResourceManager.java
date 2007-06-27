@@ -127,6 +127,10 @@ public class ResourceManager {
         return getIcon("resources/icons/help.gif");
     }
 
+    public static Icon getHomepageIcon() {
+        return getIcon("resources/icons/homepage.gif");
+    }
+
     public static Icon getDownloadIcon() {
         return getIcon("resources/icons/download.gif");
     }

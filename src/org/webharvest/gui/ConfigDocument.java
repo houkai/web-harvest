@@ -47,9 +47,6 @@ public class ConfigDocument implements DocumentListener {
 
     private void updateDocumentChanged(boolean changed) {
         this.isChanged = changed;
-        if (isChanged) {
-            configPanel.getXmlEditorPanel().repaintLineNumbers();
-        }
         updateGUI();
     }
 

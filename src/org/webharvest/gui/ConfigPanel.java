@@ -47,6 +47,7 @@ import org.webharvest.runtime.processors.BaseProcessor;
 import org.webharvest.runtime.web.HttpClientManager;
 import org.webharvest.utils.Constants;
 import org.xml.sax.InputSource;
+import org.apache.log4j.Logger;
 
 import javax.swing.*;
 import javax.swing.text.BadLocationException;
@@ -73,6 +74,9 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
     // size of splitter pane dividers
     private static final int DIVIDER_SIZE = 3;
     private ScrollableEditorPanel xmlEditorPanel;
+
+    // loger for this configuration panel
+    private Logger logger;
 
     private class ViewerActionListener implements ActionListener {
         private int viewType = ViewerFrame.TEXT_VIEW;
@@ -257,6 +261,9 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
         logTextArea.setFont( new Font("Courier New", Font.PLAIN, 11) );
         logTextArea.setEditable(false);
 
+        this.logger = Logger.getLogger(this.toString() + System.currentTimeMillis());
+        this.logger.addAppender( new TextAreaAppender(this.logTextArea) );
+
 //        bottomPanel.add(logTextArea , BorderLayout.CENTER );
 
         bottomSplitter = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
@@ -384,8 +391,15 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
             ide.setTabIcon(this, null);
         } catch(Exception e) {
             e.printStackTrace();
+
+            String errorMessage = e.getMessage();
+
+            StringWriter writer = new StringWriter();
+            e.printStackTrace(new PrintWriter(writer));
+            this.logger.error(errorMessage + "\n" + writer.getBuffer().toString());
+            
             ide.setTabIcon(this, ResourceManager.getSmallErrorIcon());
-            JOptionPane.showMessageDialog(this, e.getMessage(), "Parser exception", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, errorMessage, "Parser exception", JOptionPane.ERROR_MESSAGE);
             return false;
         }
 
@@ -491,7 +505,14 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
 
     public void onExecutionError(Scraper scraper, Exception e) {
         markException(e);
-        DialogHelper.showErrorMessage( e.getMessage() );
+        String errorMessage = e.getMessage();
+
+        StringWriter writer = new StringWriter();
+        e.printStackTrace(new PrintWriter(writer));
+        this.scraper.getLogger().error(errorMessage + "\n" + writer.getBuffer().toString());
+
+        DialogHelper.showErrorMessage(errorMessage);
+
         this.ide.setTabIcon(this, ResourceManager.getSmallErrorIcon());
         this.ide.updateGUI();
     }

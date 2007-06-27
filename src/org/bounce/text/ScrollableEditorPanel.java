@@ -37,6 +37,8 @@ import javax.swing.JEditorPane;
 import javax.swing.JPanel;
 import javax.swing.JViewport;
 import javax.swing.Scrollable;
+import javax.swing.event.DocumentListener;
+import javax.swing.event.DocumentEvent;
 import javax.swing.text.View;
 import javax.swing.text.WrappedPlainView;
 import javax.swing.text.BadLocationException;
@@ -50,7 +52,7 @@ import javax.swing.text.BadLocationException;
  * @author Edwin Dankert <edankert@gmail.com>
  * @version $Revision: 1.1 $, $Date: 2005/03/28 13:35:41 $
  */
-public class ScrollableEditorPanel extends JPanel implements Scrollable {
+public class ScrollableEditorPanel extends JPanel implements Scrollable, DocumentListener {
     private static final long serialVersionUID = 3978147659863437620L;
 
     /**
@@ -58,7 +60,7 @@ public class ScrollableEditorPanel extends JPanel implements Scrollable {
      */
     private class LineNumberPanel extends JPanel {
         private final Color BORDER_COLOR = new Color(128, 128, 128);
-        private final Color NUMBER_COLOR = new Color(128, 0, 0);
+        private final Color NUMBER_COLOR = new Color(128, 128, 128);
 
         private final Font font = editor.getFont();
 
@@ -117,7 +119,7 @@ public class ScrollableEditorPanel extends JPanel implements Scrollable {
 
     private ScrollableEditorPanel.LineNumberPanel lineNumberPanel;
 
-    private boolean showLineNumbers = false;
+    private boolean showLineNumbers = true;
 
     /**
      * Constructs the panel, with the editor in the Center
@@ -129,6 +131,7 @@ public class ScrollableEditorPanel extends JPanel implements Scrollable {
         super(new BorderLayout());
 
         this.editor = editor;
+        this.editor.getDocument().addDocumentListener(this);
 
         this.lineNumberPanel = new LineNumberPanel();
         this.lineNumberPanel.setVisible(showLineNumbers);
@@ -206,10 +209,22 @@ public class ScrollableEditorPanel extends JPanel implements Scrollable {
     /**
      * Initiates repaint of line numbers area.
      */
-    public void repaintLineNumbers() {
+    private void repaintLineNumbers() {
         if (showLineNumbers) {
             this.lineNumberPanel.repaint();
         }
+    }
+
+    public void changedUpdate(DocumentEvent e) {
+        repaintLineNumbers();
+    }
+
+    public void insertUpdate(DocumentEvent e) {
+        repaintLineNumbers();
+    }
+
+    public void removeUpdate(DocumentEvent e) {
+        repaintLineNumbers();
     }
     
 }
