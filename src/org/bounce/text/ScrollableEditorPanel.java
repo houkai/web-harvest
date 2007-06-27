@@ -65,7 +65,7 @@ public class ScrollableEditorPanel extends JPanel implements Scrollable {
     private class LineNumberPanel extends JPanel {
         private final Color BORDER_COLOR = new Color(128, 128, 128);
         private final Color NUMBER_COLOR = new Color(128, 128, 128);
-        private final Color DEFAULT_MARKER_COLOR = new Color(90, 90, 90);
+        private final Color DEFAULT_MARKER_COLOR = new Color(128, 128, 128);
         private final Color RUNNING_MARKER_COLOR = new Color(0, 128, 0);
         private final Color ERROR_MARKER_COLOR = new Color(255, 0, 0);
 
