@@ -50,6 +50,9 @@ public class Settings {
     private String proxyUserename;
     private String proxyPassword;
 
+    // specify if processors are located in source while configuration is running
+    private boolean isDynamicConfigLocate = true;
+
     public boolean isProxyAuthEnabled() {
         return isProxyAuthEnabled;
     }
@@ -104,6 +107,14 @@ public class Settings {
 
     public void setWorkingPath(String workingPath) {
         this.workingPath = workingPath;
+    }
+
+    public boolean isDynamicConfigLocate() {
+        return this.isDynamicConfigLocate;
+    }
+
+    public void setDynamicConfigLocate(boolean dynamicConfigLocate) {
+        isDynamicConfigLocate = dynamicConfigLocate;
     }
     
 }

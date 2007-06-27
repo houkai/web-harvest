@@ -168,7 +168,12 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
         JMenuItem menuItem = new JMenuItem("Locate in source");
         menuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                locateInSource();
+                xmlEditorPanel.clearMarkers(ScrollableEditorPanel.DEFAULT_MARKER_TYPE);
+                TreePath path = tree.getSelectionPath();
+                if (path != null) {
+                    int line = locateInSource( (DefaultMutableTreeNode) path.getLastPathComponent(), false );
+                    xmlEditorPanel.addMarker( ScrollableEditorPanel.DEFAULT_MARKER_TYPE, line );
+                }
             }
         });
         treePopupMenu.add(menuItem);
@@ -441,11 +446,20 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
                 nodeInfo.setProcessor(processor);
                 nodeInfo.increaseExecutionCount();
                 setExecutingNode(nodeInfo);
+                if ( ide.getSettings().isDynamicConfigLocate() ) {
+                    int lineNumber = locateInSource( nodeInfo.getNode(), true );
+                    xmlEditorPanel.clearMarkers(ScrollableEditorPanel.RUNNING_MARKER_TYPE);
+                    xmlEditorPanel.addMarker(ScrollableEditorPanel.RUNNING_MARKER_TYPE, lineNumber);
+                }
             }
         }
     }
 
     public void onExecutionStart(Scraper scraper) {
+        if ( ide.getSettings().isDynamicConfigLocate() ) {
+            this.xmlPane.setEditable(false);
+        }
+        this.xmlEditorPanel.clearAllMarkers();
         updateControls();
         this.ide.updateGUI();
     }
@@ -459,6 +473,10 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
     }
 
     public void onExecutionEnd(Scraper scraper) {
+        if ( ide.getSettings().isDynamicConfigLocate() ) {
+            this.xmlPane.setEditable(true);
+        }
+
         int status = scraper.getStatus();
         if (status == Scraper.STATUS_FINISHED) {
             DialogHelper.showInfoMessage("Configuration \"" + configDocument.getName() + "\" finished execution.");
@@ -504,6 +522,10 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
     }
 
     public void onExecutionError(Scraper scraper, Exception e) {
+        if ( ide.getSettings().isDynamicConfigLocate() ) {
+            this.xmlPane.setEditable(true);
+        }
+
         markException(e);
         String errorMessage = e.getMessage();
 
@@ -529,10 +551,15 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
     }
 
     public void markException(Exception e) {
+        xmlEditorPanel.clearMarkers(ScrollableEditorPanel.ERROR_MARKER_TYPE);
+        xmlEditorPanel.clearMarkers(ScrollableEditorPanel.RUNNING_MARKER_TYPE);
+
         this.nodeRenderer.markException(e);
         TreeNodeInfo treeNodeInfo = this.nodeRenderer.getExecutingNodeInfo();
         if (treeNodeInfo != null) {
             this.treeModel.nodeChanged( treeNodeInfo.getNode() );
+            int line = locateInSource( (DefaultMutableTreeNode) treeNodeInfo.getNode(), true );
+            xmlEditorPanel.addMarker( ScrollableEditorPanel.ERROR_MARKER_TYPE, line );
         }
     }
 
@@ -602,47 +629,45 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
         }
     }
 
-    private void locateInSource() {
-        DefaultMutableTreeNode treeNode;
+    private int locateInSource(DefaultMutableTreeNode treeNode, boolean locateAtLineBeginning) {
+        if (treeNode != null) {
+            Object userObject = treeNode.getUserObject();
+            if (userObject instanceof TreeNodeInfo) {
+                TreeNodeInfo treeNodeInfo = (TreeNodeInfo) userObject;
+                BaseElementDef elementDef = (BaseElementDef) treeNodeInfo.getElementDef();
+                int lineNumber = elementDef.getLineNumber();
+                int columnNumber = elementDef.getColumnNumber();
 
-        TreePath path = tree.getSelectionPath();
-        if (path != null) {
-            treeNode = (DefaultMutableTreeNode) path.getLastPathComponent();
-            if (treeNode != null) {
-                Object userObject = treeNode.getUserObject();
-                if (userObject instanceof TreeNodeInfo) {
-                    TreeNodeInfo treeNodeInfo = (TreeNodeInfo) userObject;
-                    BaseElementDef elementDef = (BaseElementDef) treeNodeInfo.getElementDef();
-                    int lineNumber = elementDef.getLineNumber();
-                    int columnNumber = elementDef.getColumnNumber();
-
-                    String content = null;
-                    try {
-                        content = this.xmlPane.getDocument().getText( 0, this.xmlPane.getDocument().getLength() );
-                        String[] lines = content.split("\n");
-                        int offset = 0;
-                        int lineCount = 1;
-                        for (int i = 0; i < lines.length; i++) {
-                            String line = lines[i];
-                            if(lineCount == lineNumber) {
-                                offset += columnNumber;
-                                break;
-                            }
-                            lineCount++;
-                            if(lineCount > 2) {
-                                offset++;
-                            }
-                            offset += line.length();
+                String content = null;
+                try {
+                    content = this.xmlPane.getDocument().getText( 0, this.xmlPane.getDocument().getLength() );
+                    String[] lines = content.split("\n");
+                    int offset = 0;
+                    int lineCount = 1;
+                    for (int i = 0; i < lines.length; i++) {
+                        String line = lines[i];
+                        if(lineCount == lineNumber) {
+                            offset += locateAtLineBeginning ? 1 : columnNumber;
+                            break;
                         }
-
-                        this.xmlPane.grabFocus();
-                        this.xmlPane.setCaretPosition(offset);
-                    } catch (BadLocationException e) {
-                        e.printStackTrace();
+                        lineCount++;
+                        if(lineCount > 2) {
+                            offset++;
+                        }
+                        offset += line.length();
                     }
+
+                    this.xmlPane.grabFocus();
+                    this.xmlPane.setCaretPosition(offset);
+                } catch (BadLocationException e) {
+                    e.printStackTrace();
                 }
+
+                return lineNumber;
             }
         }
+
+        return -1;
     }
 
     public void undo() {

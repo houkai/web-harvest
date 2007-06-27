@@ -32,6 +32,8 @@ package org.bounce.text;
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.awt.font.LineMetrics;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 import javax.swing.JEditorPane;
 import javax.swing.JPanel;
@@ -52,8 +54,10 @@ import javax.swing.text.BadLocationException;
  * @author Edwin Dankert <edankert@gmail.com>
  * @version $Revision: 1.1 $, $Date: 2005/03/28 13:35:41 $
  */
-public class ScrollableEditorPanel extends JPanel implements Scrollable, DocumentListener {
-    private static final long serialVersionUID = 3978147659863437620L;
+public class ScrollableEditorPanel extends JPanel implements Scrollable {
+    public static final int DEFAULT_MARKER_TYPE = 0;
+    public static final int RUNNING_MARKER_TYPE = 1;
+    public static final int ERROR_MARKER_TYPE = 2;
 
     /**
      * Panel used for optionally displying line numbers.
@@ -61,6 +65,9 @@ public class ScrollableEditorPanel extends JPanel implements Scrollable, Documen
     private class LineNumberPanel extends JPanel {
         private final Color BORDER_COLOR = new Color(128, 128, 128);
         private final Color NUMBER_COLOR = new Color(128, 128, 128);
+        private final Color DEFAULT_MARKER_COLOR = new Color(90, 90, 90);
+        private final Color RUNNING_MARKER_COLOR = new Color(0, 128, 0);
+        private final Color ERROR_MARKER_COLOR = new Color(255, 0, 0);
 
         private final Font font = editor.getFont();
 
@@ -101,6 +108,24 @@ public class ScrollableEditorPanel extends JPanel implements Scrollable, Documen
             int right = getWidth() - 1;
             g.setColor(BORDER_COLOR);
             g.drawLine(right, 0, right, getHeight() - 1);
+
+            for (int i = 0; i < markers.size(); i++) {
+                LineMarker lineMarker = (LineMarker) markers.get(i);
+                switch(lineMarker.markerType) {
+                    case DEFAULT_MARKER_TYPE:
+                        g.setColor(DEFAULT_MARKER_COLOR);
+                        g.drawString(String.valueOf((char)0x25BA), this.getWidth() - 12, lineHeight * lineMarker.line);
+                        break;
+                    case RUNNING_MARKER_TYPE:
+                        g.setColor(RUNNING_MARKER_COLOR);
+                        g.drawString(String.valueOf((char)0x25BA), this.getWidth() - 12, lineHeight * lineMarker.line);
+                        break;
+                    case ERROR_MARKER_TYPE:
+                        g.setColor(ERROR_MARKER_COLOR);
+                        g.drawString(String.valueOf((char)0x25BA), this.getWidth() - 12, lineHeight * lineMarker.line);
+                        break;
+                }
+            }
         }
 
         private int calculateTextHeight() {
@@ -115,11 +140,24 @@ public class ScrollableEditorPanel extends JPanel implements Scrollable, Documen
         }
     }
 
+    private class LineMarker {
+        private int markerType = DEFAULT_MARKER_TYPE;
+        private int line = -1;
+
+        public LineMarker(int markerType, int line) {
+            this.markerType = markerType;
+            this.line = line;
+        }
+    }
+
     private JEditorPane editor = null;
 
     private ScrollableEditorPanel.LineNumberPanel lineNumberPanel;
 
     private boolean showLineNumbers = true;
+
+    // list of all markers
+    private java.util.List markers = new ArrayList();
 
     /**
      * Constructs the panel, with the editor in the Center
@@ -131,7 +169,6 @@ public class ScrollableEditorPanel extends JPanel implements Scrollable, Documen
         super(new BorderLayout());
 
         this.editor = editor;
-        this.editor.getDocument().addDocumentListener(this);
 
         this.lineNumberPanel = new LineNumberPanel();
         this.lineNumberPanel.setVisible(showLineNumbers);
@@ -215,16 +252,48 @@ public class ScrollableEditorPanel extends JPanel implements Scrollable, Documen
         }
     }
 
-    public void changedUpdate(DocumentEvent e) {
+    /**
+     * Adds new editor marker specified by type and line number
+     * @param markerType
+     * @param line
+     */
+    public void addMarker(int markerType, int line) {
+        this.markers.add( new LineMarker(markerType, line) );
+        if (showLineNumbers) {
+            this.lineNumberPanel.repaint();
+        }
+    }
+
+    /**
+     * Clears list of all editor markers.
+     */
+    public void clearAllMarkers() {
+        this.markers.clear();
+        if (this.showLineNumbers) {
+            this.lineNumberPanel.repaint();
+        }
+    }
+
+    /**
+     * Deletes all markers of specified type.
+     */
+    public void clearMarkers(int markerType) {
+        Iterator iterator = markers.iterator();
+        while (iterator.hasNext()) {
+            LineMarker lineMarker = (LineMarker) iterator.next();
+            if (lineMarker.markerType == markerType) {
+                iterator.remove();
+            }
+        }
+
+        if (this.showLineNumbers) {
+            this.lineNumberPanel.repaint();
+        }
+    }
+
+    public void onDocChanged() {
+        clearAllMarkers();
         repaintLineNumbers();
     }
 
-    public void insertUpdate(DocumentEvent e) {
-        repaintLineNumbers();
-    }
-
-    public void removeUpdate(DocumentEvent e) {
-        repaintLineNumbers();
-    }
-    
 }
