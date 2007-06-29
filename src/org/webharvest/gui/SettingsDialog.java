@@ -37,17 +37,28 @@
 package org.webharvest.gui;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ChangeEvent;
 import javax.swing.border.EtchedBorder;
-import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.io.File;
+import java.io.IOException;
 
 public class SettingsDialog extends JDialog implements ChangeListener {
+
+    private class MyTextField extends JTextField {
+        public MyTextField(String text) {
+            super(text);
+        }
+
+        public Dimension getPreferredSize() {
+            return new Dimension(250, 20);
+        }
+    }
 
     // Ide instance where this dialog belongs.
     private Ide ide;
@@ -66,103 +77,130 @@ public class SettingsDialog extends JDialog implements ChangeListener {
     private JLabel proxyPortLabel;
     private JLabel proxyServerLabel;
 
+    private JCheckBox showHierarchyByDefaultCheckBox;
+    private JCheckBox showLogByDefaultCheckBox;
+    private JCheckBox showLineNumbersByDefaultCheckBox;
+    private JCheckBox dynamicConfigLocateCheckBox;
+
+    private final JFileChooser pathChooser = new JFileChooser();
+
     public SettingsDialog(Ide ide) throws HeadlessException {
         super(ide, "Settings", true);
         this.ide = ide;
         this.setResizable(false);
 
-        createGui();
+        pathChooser.setFileFilter( new FileFilter() {
+            public boolean accept(File f) {
+                return f.exists() && f.isDirectory();
+            }
+            public String getDescription() {
+                return "All directories";
+            }
+        });
+        pathChooser.setMultiSelectionEnabled(false);
+        pathChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+
+        createGUI();
     }
 
-    private void createGui() {
+    private void createGUI() {
         Settings settings = ide.getSettings();
 
         Container contentPane = this.getContentPane();
 
-        JPanel panel = new JPanel(new GridBagLayout());
-        panel.setBorder( new EtchedBorder() );
+        JPanel generalPanel = new JPanel(new GridBagLayout());
+        generalPanel.setBorder( new EtchedBorder() );
 
         contentPane.setLayout( new BorderLayout() );
+
+        JTabbedPane tabbedPane = new JTabbedPane();
 
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.insets = new Insets(2, 5, 2, 5);
 
-        workingPathField = new JTextField( settings.getWorkingPath() );
+        workingPathField = new MyTextField( settings.getWorkingPath() );
 
-        proxyServerField = new JTextField( settings.getProxyServer() );
-        proxyPortField = new JTextField( settings.getProxyPort() > 0 ? "" + settings.getProxyPort() : "" );
-        proxyUsernameField = new JTextField( settings.getProxyUserename() );
-        proxyPasswordField = new JTextField( settings.getProxyPassword() );
+        proxyServerField = new MyTextField( settings.getProxyServer() );
+        proxyPortField = new MyTextField( settings.getProxyPort() > 0 ? "" + settings.getProxyPort() : "" );
+        proxyUsernameField = new MyTextField( settings.getProxyUserename() );
+        proxyPasswordField = new MyTextField( settings.getProxyPassword() );
 
         proxyEnabledCheckBox = new JCheckBox("Proxy server enabled", settings.isProxyEnabled());
         proxyEnabledCheckBox.addChangeListener(this);
         proxyAuthEnabledCheckBox = new JCheckBox("Proxy authentication enabled", settings.isProxyAuthEnabled());
         proxyAuthEnabledCheckBox.addChangeListener(this);
 
-        constraints.ipadx = 150;
         constraints.gridx = 0;
         constraints.gridy = 0;
-        panel.add( new JLabel("Output path"), constraints );
+        generalPanel.add( new JLabel("Output path"), constraints );
 
-        constraints.ipadx = 150;
         constraints.gridx = 1;
         constraints.gridy = 0;
-        panel.add(workingPathField, constraints );
+        JPanel pathPanel = new JPanel( new FlowLayout(FlowLayout.LEFT, 0, 0) );
+        pathPanel.add(workingPathField);
+        JButton chooseDirButton = new JButton(ResourceManager.getOpenIcon()) {
+            public Dimension getPreferredSize() {
+                return new Dimension(20, 20);
+            }
+        };
+        chooseDirButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                int returnVal = pathChooser.showOpenDialog(SettingsDialog.this);
+                if(returnVal == JFileChooser.APPROVE_OPTION) {
+                    File selectedDir = pathChooser.getSelectedFile();
+                    if (selectedDir != null) {
+                        workingPathField.setText( selectedDir.getAbsolutePath() );
+                    }
+                }
+            }
+        });
+        pathPanel.add(chooseDirButton);
+        generalPanel.add(pathPanel, constraints );
 
         constraints.gridx = 0;
         constraints.gridy = 1;
-        constraints.weightx = 0.0;
-        constraints.gridwidth = 2;
-        panel.add(proxyEnabledCheckBox , constraints );
+        generalPanel.add(proxyEnabledCheckBox , constraints );
 
-        constraints.ipadx = 150;
-        constraints.ipadx = 200;
         constraints.gridx = 0;
         constraints.gridy = 2;
         proxyServerLabel = new JLabel("Proxy server");
-        panel.add(proxyServerLabel, constraints );
+        generalPanel.add(proxyServerLabel, constraints );
 
         constraints.gridx = 1;
         constraints.gridy = 2;
-        panel.add(proxyServerField, constraints );
+        generalPanel.add(proxyServerField, constraints );
 
         constraints.gridx = 0;
         constraints.gridy = 3;
         proxyPortLabel = new JLabel("Proxy port (blank is default)");
-        panel.add(proxyPortLabel, constraints );
+        generalPanel.add(proxyPortLabel, constraints );
 
         constraints.gridx = 1;
         constraints.gridy = 3;
-        panel.add(proxyPortField, constraints );
+        generalPanel.add(proxyPortField, constraints );
 
         constraints.gridx = 0;
         constraints.gridy = 4;
-        constraints.weightx = 0.0;
-        constraints.gridwidth = 2;
-        panel.add(proxyAuthEnabledCheckBox , constraints );
+        generalPanel.add(proxyAuthEnabledCheckBox , constraints );
 
         constraints.gridx = 0;
         constraints.gridy = 5;
         proxyUsernameLabel = new JLabel("Proxy username");
-        panel.add(proxyUsernameLabel, constraints );
+        generalPanel.add(proxyUsernameLabel, constraints );
 
         constraints.gridx = 1;
         constraints.gridy = 5;
-        panel.add(proxyUsernameField, constraints );
+        generalPanel.add(proxyUsernameField, constraints );
 
         constraints.gridx = 0;
         constraints.gridy = 6;
         proxyPasswordLabel = new JLabel("Proxy password");
-        panel.add(proxyPasswordLabel, constraints );
+        generalPanel.add(proxyPasswordLabel, constraints );
 
         constraints.gridx = 1;
         constraints.gridy = 6;
-        panel.add(proxyPasswordField, constraints );
-
-        JPanel mainPanel = new JPanel(new BorderLayout());
-        mainPanel.setBorder(new EmptyBorder(new Insets(4, 4, 4, 4)));
-        mainPanel.add(panel, BorderLayout.CENTER);
+        generalPanel.add(proxyPasswordField, constraints );
 
         JPanel buttonPanel = new JPanel( new FlowLayout(FlowLayout.CENTER) );
 
@@ -182,8 +220,23 @@ public class SettingsDialog extends JDialog implements ChangeListener {
         });
         buttonPanel.add(cancelButton);
 
-        mainPanel.add(buttonPanel, BorderLayout.SOUTH);
-        contentPane.add(mainPanel, BorderLayout.CENTER);
+        JPanel viewPanel = new JPanel();
+        viewPanel.setLayout( new BoxLayout(viewPanel, BoxLayout.PAGE_AXIS) );
+        this.showHierarchyByDefaultCheckBox = new JCheckBox("Show hierarchy panel by default", settings.isShowHierarchyByDefault());
+        this.showLogByDefaultCheckBox = new JCheckBox("Show log panel by default", settings.isShowLogByDefault());
+        this.showLineNumbersByDefaultCheckBox = new JCheckBox("Show line numbers by default", settings.isShowLineNumbersByDefault());
+        this.dynamicConfigLocateCheckBox = new JCheckBox("Dynamically locate processors in runtime", settings.isDynamicConfigLocate());
+
+        viewPanel.add(this.showHierarchyByDefaultCheckBox);
+        viewPanel.add(this.showLogByDefaultCheckBox);
+        viewPanel.add(this.showLineNumbersByDefaultCheckBox);
+        viewPanel.add(this.dynamicConfigLocateCheckBox);
+
+        tabbedPane.addTab("General", null, generalPanel, null);
+        tabbedPane.addTab("View", null, viewPanel, null);
+
+        contentPane.add(tabbedPane, BorderLayout.CENTER);
+        contentPane.add(buttonPanel, BorderLayout.SOUTH);
 
         updateControls();
 
@@ -208,6 +261,18 @@ public class SettingsDialog extends JDialog implements ChangeListener {
 
         settings.setProxyEnabled( this.proxyEnabledCheckBox.isSelected() );
         settings.setProxyAuthEnabled( this.proxyAuthEnabledCheckBox.isSelected() );
+
+        settings.setShowHierarchyByDefault(this.showHierarchyByDefaultCheckBox.isSelected());
+        settings.setShowLogByDefault(this.showLogByDefaultCheckBox.isSelected());
+        settings.setShowLineNumbersByDefault(this.showLineNumbersByDefaultCheckBox.isSelected());
+        settings.setDynamicConfigLocate(this.dynamicConfigLocateCheckBox.isSelected());
+
+        try {
+            settings.writeToFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+            DialogHelper.showErrorMessage("Error saving programs settings: " + e.getMessage());
+        }
 
         updateControls();
 

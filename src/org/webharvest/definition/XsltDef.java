@@ -49,11 +49,11 @@ public class XsltDef extends BaseElementDef {
         
         XmlNode xmlDefNode = (XmlNode) xmlNode.get("xml[0]");
         DefinitionResolver.validate(xmlDefNode);
-        xmlDef = xmlDefNode == null ? null : new BaseElementDef( xmlDefNode );
+        xmlDef = xmlDefNode == null ? null : new BaseElementDef(xmlDefNode, "xml");
 
         XmlNode stylesheetDefNode = (XmlNode) xmlNode.get("stylesheet[0]");
         DefinitionResolver.validate(stylesheetDefNode);
-        stylesheetDef = stylesheetDefNode == null ? null : new BaseElementDef(stylesheetDefNode);
+        stylesheetDef = stylesheetDefNode == null ? null : new BaseElementDef(stylesheetDefNode, "stylesheet");
     }
 
     public BaseElementDef getStylesheetDef() {
@@ -66,6 +66,14 @@ public class XsltDef extends BaseElementDef {
 
     public String getShortElementName() {
         return "xslt";
+    }
+
+    public IElementDef[] getOperationDefs() {
+        IElementDef[] result = new IElementDef[2];
+        result[0] = xmlDef;
+        result[1] = stylesheetDef;
+
+        return result;
     }
 
 }

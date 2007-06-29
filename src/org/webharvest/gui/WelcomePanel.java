@@ -48,11 +48,9 @@ import java.awt.event.MouseEvent;
  */
 public class WelcomePanel extends JPanel {
 
-//    private static final Color LINK_COLOR = new Color(47, 67, 96);
-    private static final Color LINK_COLOR = new Color(38, 79, 45);
+    private static final Color LINK_COLOR = new Color(47, 67, 96);
 
-    //    private static final Color BG_COLOR = new Color(210, 213, 226);
-    private static final Color BG_COLOR = new Color(194, 226, 200);
+    private static final Color BG_COLOR = new Color(210, 213, 226);
 
     private static final Cursor HAND_CURSOR = new Cursor(Cursor.HAND_CURSOR);
 

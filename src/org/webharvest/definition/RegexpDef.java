@@ -56,15 +56,15 @@ public class RegexpDef extends BaseElementDef {
         
         XmlNode regexpPatternDefNode = (XmlNode) xmlNode.get("regexp-pattern[0]");
         DefinitionResolver.validate(regexpPatternDefNode);
-        regexpPatternDef = regexpPatternDefNode == null ? null : new BaseElementDef( regexpPatternDefNode );
+        regexpPatternDef = regexpPatternDefNode == null ? null : new BaseElementDef(regexpPatternDefNode, "regexp-pattern");
         
         XmlNode regexpSourceDefNode = (XmlNode) xmlNode.get("regexp-source[0]");
         DefinitionResolver.validate(regexpSourceDefNode);
-        regexpSourceDef = regexpSourceDefNode == null ? null : new BaseElementDef( regexpSourceDefNode );
+        regexpSourceDef = regexpSourceDefNode == null ? null : new BaseElementDef(regexpSourceDefNode, "regexp-source");
         
         XmlNode regexpResultDefNode = (XmlNode) xmlNode.get("regexp-result[0]");
         DefinitionResolver.validate(regexpResultDefNode);
-        regexpResultDef = regexpResultDefNode == null ? null : new BaseElementDef( regexpResultDefNode );
+        regexpResultDef = regexpResultDefNode == null ? null : new BaseElementDef(regexpResultDefNode, "regexp-result");
     }
 
     public String getMax() {
@@ -89,6 +89,17 @@ public class RegexpDef extends BaseElementDef {
 
     public String getShortElementName() {
         return "regexp";
+    }
+
+    public IElementDef[] getOperationDefs() {
+        IElementDef[] result = new IElementDef[regexpResultDef != null ? 3 : 2];
+        result[0] = regexpPatternDef;
+        result[1] = regexpSourceDef;
+        if (regexpResultDef != null) {
+            result[2] = regexpResultDef;
+        }
+
+        return result;
     }
 
 }

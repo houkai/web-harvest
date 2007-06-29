@@ -73,6 +73,7 @@ public class TreeNodeInfo {
         icons.put(EmptyDef.class, ResourceManager.getIcon("resources/icons/empty.gif"));
         icons.put(IncludeDef.class, ResourceManager.getIcon("resources/icons/include.gif"));
         icons.put(FunctionDef.class, ResourceManager.getIcon("resources/icons/function.gif"));
+        icons.put(CallDef.class, ResourceManager.getIcon("resources/icons/call.gif"));
     }
 
     private DefaultMutableTreeNode node;

@@ -176,7 +176,7 @@ public class ViewerFrame extends JFrame implements DropDownButtonListener, Actio
         // XML view
         this.xmlPane = new XmlTextPane();
         this.xmlPane.setEditable(false);
-        this.cardPanel.add( new JScrollPane(new ScrollableEditorPanel(xmlPane)), String.valueOf(XML_VIEW) );
+        this.cardPanel.add( new JScrollPane(new ScrollableEditorPanel(xmlPane, false)), String.valueOf(XML_VIEW) );
 
         // HTML view
         this.htmlPane = new JEditorPane();

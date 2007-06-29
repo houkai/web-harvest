@@ -165,10 +165,11 @@ public class ScrollableEditorPanel extends JPanel implements Scrollable {
      *
      * @param editor the parent editor.
      */
-    public ScrollableEditorPanel(JEditorPane editor) {
+    public ScrollableEditorPanel(JEditorPane editor, boolean showLineNumbers) {
         super(new BorderLayout());
 
         this.editor = editor;
+        this.showLineNumbers = showLineNumbers;
 
         this.lineNumberPanel = new LineNumberPanel();
         this.lineNumberPanel.setVisible(showLineNumbers);
