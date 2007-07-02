@@ -79,12 +79,16 @@ public class RegexpProcessor extends BaseProcessor {
         
         String replace = BaseTemplater.execute( regexpDef.getReplace(), scriptEngine);
         boolean isReplace = CommonUtil.isBooleanTrue(replace);
+
+        this.setProperty("Is replacing", String.valueOf(isReplace));
         
         String maxLoopsString = BaseTemplater.execute( regexpDef.getMax(), scriptEngine);
         double maxLoops = Constants.DEFAULT_MAX_LOOPS;
         if (maxLoopsString != null && !"".equals(maxLoopsString.trim())) {
             maxLoops = Double.parseDouble(maxLoopsString);
         }
+
+        this.setProperty("Max loops", String.valueOf(maxLoops));
         
         Pattern pattern = Pattern.compile(patternVar.toString(), Pattern.DOTALL|Pattern.UNICODE_CASE);
         

@@ -133,7 +133,7 @@ public class ListVariable implements IVariable {
         if (variable instanceof ListVariable) {
             list.addAll( ((ListVariable)variable).getList() );
         } else {
-            list.add(variable);
+            list.add(variable == null ? EmptyVariable.INSTANCE : variable);
         }
     }
 

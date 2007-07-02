@@ -45,6 +45,7 @@ import org.webharvest.runtime.templaters.BaseTemplater;
 import org.webharvest.runtime.variables.*;
 import org.webharvest.utils.CommonUtil;
 import org.webharvest.utils.Constants;
+import org.webharvest.utils.KeyValuePair;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -168,16 +169,26 @@ abstract public class BaseProcessor {
         }
     }
 
-    protected IVariable getBodyTextContent(BaseElementDef elementDef, Scraper scraper, ScraperContext context, boolean registerExecution) {
+    protected IVariable getBodyTextContent(BaseElementDef elementDef, Scraper scraper, ScraperContext context,
+                                           boolean registerExecution, KeyValuePair properties[]) {
         if (elementDef == null) {
             return null;
         } else if (elementDef.hasOperations()) {
             BodyProcessor bodyProcessor = new BodyProcessor(elementDef);
+            if (properties != null) {
+                for (int i = 0; i < properties.length; i++) {
+                    bodyProcessor.setProperty(properties[i].getKey(), properties[i].getValue());
+                }
+            }
             IVariable body = registerExecution ?  bodyProcessor.run(scraper, context) :  bodyProcessor.execute(scraper, context);
             return Appender.appendText(body);
         } else {
             return new NodeVariable(elementDef.getBodyText());
         }
+    }
+
+    protected IVariable getBodyTextContent(BaseElementDef elementDef, Scraper scraper, ScraperContext context, boolean registerExecution) {
+        return getBodyTextContent(elementDef, scraper, context, registerExecution, null);
     }
 
     protected IVariable getBodyTextContent(BaseElementDef elementDef, Scraper scraper, ScraperContext context) {

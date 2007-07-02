@@ -64,7 +64,8 @@ public class HttpHeaderProcessor extends BaseProcessor {
     	HttpProcessor httpProcessor = scraper.getRunningHttpProcessor();
     	if (httpProcessor != null) {
     		httpProcessor.addHttpHeader(name, value.toString());
-    	} else {
+            this.setProperty("Name", name);
+        } else {
     		throw new HttpException("Usage of http-header processor is not allowed outside of http processor!");
     	}
         

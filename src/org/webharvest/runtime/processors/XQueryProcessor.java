@@ -49,10 +49,12 @@ import org.webharvest.definition.XQueryExternalParamDef;
 import org.webharvest.exception.ScraperXQueryException;
 import org.webharvest.runtime.Scraper;
 import org.webharvest.runtime.ScraperContext;
+import org.webharvest.runtime.templaters.BaseTemplater;
 import org.webharvest.runtime.variables.IVariable;
 import org.webharvest.runtime.variables.ListVariable;
 import org.webharvest.runtime.variables.NodeVariable;
 import org.webharvest.utils.CommonUtil;
+import org.webharvest.utils.KeyValuePair;
 
 import javax.xml.transform.stream.StreamSource;
 import java.io.StringReader;
@@ -109,7 +111,8 @@ public class XQueryProcessor extends BaseProcessor {
             // define external parameters
             for (int i = 0; i < externalParamDefs.length; i++) {
                 XQueryExternalParamDef externalParamDef = externalParamDefs[i];
-                String externalParamType = externalParamDefs[i].getType();
+                String externalParamName = BaseTemplater.execute( externalParamDef.getName(), scraper.getScriptEngine() );
+                String externalParamType = BaseTemplater.execute( externalParamDefs[i].getType(), scraper.getScriptEngine() );
                 if (externalParamType == null) {
                     externalParamType = DEFAULT_PARAM_TYPE;
                 }
@@ -120,7 +123,10 @@ public class XQueryProcessor extends BaseProcessor {
                 }
 
                 if ( externalParamType.endsWith("*") ) {
-                    ListVariable listVar = (ListVariable) new BodyProcessor(externalParamDef).run(scraper, context);
+                    BodyProcessor bodyProcessor = new BodyProcessor(externalParamDef);
+                    bodyProcessor.setProperty("Name", externalParamName);
+                    bodyProcessor.setProperty("Type", externalParamType);
+                    ListVariable listVar = (ListVariable) bodyProcessor.run(scraper, context);
                     debug(externalParamDef, scraper, listVar);
                     
                     Iterator it = listVar.toList().iterator();
@@ -130,14 +136,15 @@ public class XQueryProcessor extends BaseProcessor {
                         paramList.add( castSimpleValue(externalParamType, currVar, sqc) );
                     }
 
-                    dynamicContext.setParameter(externalParamDef.getName(), paramList);
+                    dynamicContext.setParameter(externalParamName, paramList);
                 } else {
-                    IVariable var = getBodyTextContent(externalParamDef, scraper, context, true);
+                    KeyValuePair props[] = {new KeyValuePair("Name", externalParamName), new KeyValuePair("Type", externalParamType)}; 
+                    IVariable var = getBodyTextContent(externalParamDef, scraper, context, true, props);
 
                     debug(externalParamDef, scraper, var);
                     
                     Object value = castSimpleValue(externalParamType, var, sqc);
-                    dynamicContext.setParameter(externalParamDef.getName(), value);
+                    dynamicContext.setParameter(externalParamName, value);
                 }
             }
 

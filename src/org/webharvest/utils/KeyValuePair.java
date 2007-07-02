@@ -34,61 +34,28 @@
     nikic_vladimir@yahoo.com. Please include the word "Web-Harvest" in the
     subject line.
 */
-package org.webharvest.runtime.variables;
-
-import java.util.ArrayList;
-import java.util.List;
+package org.webharvest.utils;
 
 /**
- * Node variable - Single node wrapper.
+ * @author: Vladimir Nikic
+ * Date: Jul 2, 2007
  */
-public class NodeVariable implements IVariable {
+public class KeyValuePair {
 
-    private Object data;
+    private String key;
+    private Object value;
 
-    public NodeVariable(Object data) {
-        this.data = data;
+    public KeyValuePair(String key, Object value) {
+        this.key = key;
+        this.value = value;
     }
 
-    public String toString() {
-        if (data == null) {
-            return "";
-        } else if (data instanceof byte[]) {
-            return new String((byte[]) data);
-        } else {
-            return data.toString();
-        }
+    public String getKey() {
+        return key;
     }
 
-    public byte[] toBinary() {
-        if (data == null) {
-            return new byte[] {};
-        } else if (data instanceof byte[]) {
-            return (byte[]) data;
-        } else {
-            return data.toString().getBytes();
-        }
-    }
-
-    public List toList() {
-        List list = new ArrayList();
-        if (!isEmpty()) {
-        	list.add(this);
-        }
-
-        return list;
+    public Object getValue() {
+        return value;
     }
     
-    public String toText() {
-    	return toString();
-    }
-
-    public boolean isEmpty() {
-        return (data == null) || ( "".equals(toString()) );
-    }
-
-    public Object getWrappedObject() {
-        return this.data;
-    }
-
 }

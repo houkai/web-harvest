@@ -63,7 +63,8 @@ public class CallParamProcessor extends BaseProcessor {
         CallProcessor callProcessor = scraper.getRunningFunction();
     	if (callProcessor != null) {
     		callProcessor.addContextVariable(name, variable);
-    	} else {
+            this.setProperty("Name", name);
+        } else {
     		throw new HttpException("Usage of call-param processor is not allowed outside of call processor!");
     	}
         

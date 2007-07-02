@@ -66,7 +66,7 @@ public class CaseDef extends BaseElementDef {
 
         XmlNode elseDefNode = (XmlNode) xmlNode.get("else[0]");
         DefinitionResolver.validate(elseDefNode);
-        elseDef = elseDefNode == null ? null : new BaseElementDef( elseDefNode );
+        elseDef = elseDefNode == null ? null : new BaseElementDef(elseDefNode, "else");
     }
 
     public IfDef[] getIfDefs() {
@@ -79,6 +79,23 @@ public class CaseDef extends BaseElementDef {
 
     public String getShortElementName() {
         return "case";
+    }
+
+    public IElementDef[] getOperationDefs() {
+        int size = (ifDefs == null ? 0 : ifDefs.length) + (elseDef == null ? 0 : 1);
+        IElementDef[] result = new IElementDef[size];
+        int index = 0;
+        if (ifDefs != null) {
+            for (; index < ifDefs.length; index++) {
+                result[index] = ifDefs[index];
+            }
+        }
+
+        if (elseDef != null) {
+            result[index] = elseDef;
+        }
+
+        return result;
     }
     
 }

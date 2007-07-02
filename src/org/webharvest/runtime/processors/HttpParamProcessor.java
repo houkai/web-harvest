@@ -62,7 +62,8 @@ public class HttpParamProcessor extends BaseProcessor {
     	HttpProcessor httpProcessor = scraper.getRunningHttpProcessor();
     	if (httpProcessor != null) {
     		httpProcessor.addHttpParam(name, value.toString());
-    	} else {
+            this.setProperty("Name", name);
+        } else {
     		throw new HttpException("Usage of http-param processor is not allowed outside of http processor!");
     	}
         
