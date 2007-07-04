@@ -40,10 +40,10 @@ public class Constants {
 
     public static final int DEFAULT_MAX_LOOPS = 1000000000;
 
-
     public static final String VALUE_PROPERTY_NAME = "[Value]";
     public static final String EXECUTION_TIME_PROPERTY_NAME = "[Execution Time]";
 
-
+    // size of splitter pane dividers
+    public static final int SPLITTER_WIDTH = 3;
 
 }

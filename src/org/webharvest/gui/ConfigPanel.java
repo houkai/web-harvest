@@ -46,6 +46,7 @@ import org.webharvest.runtime.ScraperRuntimeListener;
 import org.webharvest.runtime.processors.BaseProcessor;
 import org.webharvest.runtime.web.HttpClientManager;
 import org.webharvest.utils.Constants;
+import org.webharvest.gui.component.ProportionalSplitPane;
 import org.xml.sax.InputSource;
 import org.apache.log4j.Logger;
 
@@ -71,8 +72,6 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
     // basic skeletion for new opened configuration
     private static final String BASIC_CONFIG_SKELETION = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\n<config>\n\t\n</config>";
 
-    // size of splitter pane dividers
-    private static final int DIVIDER_SIZE = 3;
     private ScrollableEditorPanel xmlEditorPanel;
 
     // loger for this configuration panel
@@ -246,18 +245,19 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
         this.propertiesGrid = new PropertiesGrid();
         JScrollPane propertiesView = new JScrollPane(propertiesGrid);
         this.leftView = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+        this.leftView.setResizeWeight(1.0d);
         this.leftView.setTopComponent(treeView);
         this.leftView.setBottomComponent(propertiesView);
         this.leftView.setBorder(null);
         this.leftView.setDividerLocation(320);
-        this.leftView.setDividerSize(DIVIDER_SIZE);
+        this.leftView.setDividerSize(Constants.SPLITTER_WIDTH);
 
         //Add the scroll panes to a split pane.
         leftSplitter = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
         leftSplitter.setBorder(null);
         leftSplitter.setLeftComponent(leftView);
         leftSplitter.setRightComponent(xmlView);
-        leftSplitter.setDividerSize(DIVIDER_SIZE);
+        leftSplitter.setDividerSize(Constants.SPLITTER_WIDTH);
 
         leftSplitter.setDividerLocation(250);
 
@@ -271,13 +271,14 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
 
 //        bottomPanel.add(logTextArea , BorderLayout.CENTER );
 
-        bottomSplitter = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+        bottomSplitter = new ProportionalSplitPane(JSplitPane.VERTICAL_SPLIT);
+        bottomSplitter.setResizeWeight(1.0d);
         bottomSplitter.setBorder(null);
         bottomSplitter.setTopComponent(leftSplitter);
         this.bottomView = new JScrollPane(logTextArea);
         bottomSplitter.setBottomComponent(this.bottomView);
-        bottomSplitter.setDividerLocation(400);
-        bottomSplitter.setDividerSize(DIVIDER_SIZE);
+        bottomSplitter.setDividerLocation(0.8d);
+        bottomSplitter.setDividerSize(Constants.SPLITTER_WIDTH);
 
         this.add(bottomSplitter, BorderLayout.CENTER);
 
@@ -665,7 +666,6 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
                         offset += line.length();
                     }
 
-                    this.xmlPane.grabFocus();
                     this.xmlPane.setCaretPosition(offset);
                 } catch (BadLocationException e) {
                     e.printStackTrace();

@@ -72,6 +72,8 @@ public class Scraper {
     private String workingDir;
     private ScraperContext context;
 
+    private RuntimeConfig runtimeConfig;
+
     private transient boolean isDebugMode = false;
 
     private HttpClientManager httpClientManager;
@@ -93,7 +95,7 @@ public class Scraper {
 
     private List scraperRuntimeListeners = new LinkedList();
 
-    private int status = STATUS_READY; 
+    private int status = STATUS_READY;
 
     /**
      * Constructor.
@@ -102,6 +104,7 @@ public class Scraper {
      */
     public Scraper(ScraperConfiguration configuration, String workingDir) {
         this.configuration = configuration;
+        this.runtimeConfig = new RuntimeConfig();
         this.workingDir = CommonUtil.adaptFilename(workingDir);
 
         this.httpClientManager = new HttpClientManager();
@@ -240,6 +243,10 @@ public class Scraper {
 
     public BaseProcessor getRunningProcessor() {
         return runningProcessor;
+    }
+
+    public RuntimeConfig getRuntimeConfig() {
+        return runtimeConfig;
     }
 
     public void setExecutingProcessor(BaseProcessor processor) {

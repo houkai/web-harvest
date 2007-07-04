@@ -3,12 +3,25 @@ package org.webharvest.utils;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import org.webharvest.runtime.variables.ListVariable;
+import org.webharvest.runtime.variables.NodeVariable;
+import org.webharvest.runtime.RuntimeConfig;
+import org.webharvest.exception.ScraperXPathException;
 
 import javax.xml.parsers.*;
 import javax.xml.transform.*;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 import javax.xml.transform.dom.DOMSource;
 import java.io.*;
+
+import net.sf.saxon.query.StaticQueryContext;
+import net.sf.saxon.query.XQueryExpression;
+import net.sf.saxon.query.DynamicQueryContext;
+import net.sf.saxon.Configuration;
+import net.sf.saxon.trans.XPathException;
+import net.sf.saxon.om.SequenceIterator;
+import net.sf.saxon.om.Item;
 
 /**
  * XML utils - contains common logic for XML handling
@@ -43,6 +56,39 @@ public class XmlUtil {
 
         writer.close();
         return result;
+    }
+
+    /**
+     * Evaluates specified XPath expression against given XML text and using given runtime configuration.
+     * @param xpath
+     * @param xml
+     * @param runtimeConfig
+     * @return Instance of ListVariable that contains results.
+     * @throws XPathException
+     */
+    public static ListVariable evaluateXPath(String xpath, String xml, RuntimeConfig runtimeConfig) throws XPathException {
+        StaticQueryContext sqc = runtimeConfig.getStaticQueryContext();
+        Configuration config = sqc.getConfiguration();
+
+        XQueryExpression exp = runtimeConfig.getXQueryExpressionPool().getCompiledExpression(xpath);
+        DynamicQueryContext dynamicContext = new DynamicQueryContext(config);
+        StringReader reader = new StringReader(xml);
+
+        dynamicContext.setContextItem(sqc.buildDocument(new StreamSource(reader)));
+        final SequenceIterator iter = exp.iterator(dynamicContext);
+
+        ListVariable listVariable = new ListVariable();
+        while (true) {
+            Item item = iter.next();
+            if (item == null) {
+                break;
+            }
+
+            String value = CommonUtil.serializeItem(item, config);
+            listVariable.addVariable( new NodeVariable(value) );
+        }
+
+        return listVariable;
     }
 
 }

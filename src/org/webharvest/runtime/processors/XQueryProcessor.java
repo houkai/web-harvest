@@ -49,6 +49,7 @@ import org.webharvest.definition.XQueryExternalParamDef;
 import org.webharvest.exception.ScraperXQueryException;
 import org.webharvest.runtime.Scraper;
 import org.webharvest.runtime.ScraperContext;
+import org.webharvest.runtime.RuntimeConfig;
 import org.webharvest.runtime.templaters.BaseTemplater;
 import org.webharvest.runtime.variables.IVariable;
 import org.webharvest.runtime.variables.ListVariable;
@@ -101,11 +102,12 @@ public class XQueryProcessor extends BaseProcessor {
         String xqExpression = xq.toString().trim();
         XQueryExternalParamDef[] externalParamDefs = xqueryDef.getExternalParamDefs();
 
-		final Configuration config = new Configuration();
-	    final StaticQueryContext sqc = new StaticQueryContext(config);
+        RuntimeConfig runtimeConfig = scraper.getRuntimeConfig();
+        final StaticQueryContext sqc = runtimeConfig.getStaticQueryContext();
+        final Configuration config = sqc.getConfiguration();
 
 	    try {
-	        final XQueryExpression exp = sqc.compileQuery(xqExpression);
+	        final XQueryExpression exp = runtimeConfig.getXQueryExpressionPool().getCompiledExpression(xqExpression);
 		    final DynamicQueryContext dynamicContext = new DynamicQueryContext(config);
 
             // define external parameters

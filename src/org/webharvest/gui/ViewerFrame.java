@@ -39,24 +39,26 @@ package org.webharvest.gui;
 import org.bounce.text.ScrollableEditorPanel;
 import org.webharvest.gui.component.DropDownButton;
 import org.webharvest.gui.component.DropDownButtonListener;
+import org.webharvest.gui.component.ProportionalSplitPane;
 import org.webharvest.runtime.variables.IVariable;
+import org.webharvest.runtime.variables.ListVariable;
+import org.webharvest.runtime.RuntimeConfig;
+import org.webharvest.utils.Constants;
 import org.webharvest.utils.XmlUtil;
 import org.webharvest.utils.XmlValidator;
+import org.webharvest.utils.CommonUtil;
 import org.xml.sax.InputSource;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.text.html.HTMLEditorKit;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.io.StringReader;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import net.sf.saxon.trans.XPathException;
 
 /**
  * @author: Vladimir Nikic
@@ -96,6 +98,10 @@ public class ViewerFrame extends JFrame implements DropDownButtonListener, Actio
     private JCheckBox keepSyncCheckBox;
     private JButton xmlValidateButton;
     private JButton xmlPrettyPrintButton;
+
+    // runtime configuration is required for XPath evaluation
+    private RuntimeConfig runtimeConfig = new RuntimeConfig();
+    private JEditorPane xpathResultPane;
 
     /**
      * Constructor.
@@ -176,7 +182,52 @@ public class ViewerFrame extends JFrame implements DropDownButtonListener, Actio
         // XML view
         this.xmlPane = new XmlTextPane();
         this.xmlPane.setEditable(false);
-        this.cardPanel.add( new JScrollPane(new ScrollableEditorPanel(xmlPane, false)), String.valueOf(XML_VIEW) );
+
+        JPanel xpathPanel = new JPanel(new BorderLayout());
+        JToolBar xpathToolbar = new JToolBar() {
+            public Dimension getPreferredSize() {
+                return new Dimension(0, 26);
+            }
+        };
+        final JCheckBox xpathEvalWhileTypingCheckBox = new JCheckBox("Evaluate while typing", false);
+        final JTextField xpathExpressionField = new JTextField();
+        xpathExpressionField.addKeyListener(new KeyAdapter() {
+            public void keyPressed(KeyEvent e) {
+                if ( e.getKeyCode() == KeyEvent.VK_ENTER || xpathEvalWhileTypingCheckBox.isSelected() ) {
+                    evaluateXPath(xpathExpressionField.getText());
+                }
+            }
+        });
+        final JButton xpathEvalButton = new JButton("Evaluate");
+
+        xpathEvalButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                evaluateXPath( xpathExpressionField.getText() );
+            }
+        });
+        xpathToolbar.setFloatable(false);
+        xpathToolbar.add( new JLabel("XPath expression: ") );
+        xpathToolbar.add(xpathExpressionField);
+        xpathToolbar.add(xpathEvalButton);
+        xpathToolbar.add(xpathEvalWhileTypingCheckBox);
+
+        this.xpathResultPane = new JEditorPane();
+        this.xpathResultPane.setEditable(false);
+        this.xpathResultPane.setContentType("text/html");
+        this.xpathResultPane.setEditorKit( new HTMLEditorKit() );
+
+        xpathPanel.add(xpathToolbar, BorderLayout.NORTH);
+        xpathPanel.add(new JScrollPane(this.xpathResultPane), BorderLayout.CENTER);
+
+        JSplitPane splitPane = new ProportionalSplitPane(JSplitPane.VERTICAL_SPLIT);
+        splitPane.setResizeWeight(1.0d);
+        splitPane.setBorder(null);
+        splitPane.setTopComponent( new JScrollPane(new ScrollableEditorPanel(xmlPane, false)) );
+        splitPane.setBottomComponent(xpathPanel);
+        splitPane.setDividerLocation(0.75d);
+        splitPane.setDividerSize(Constants.SPLITTER_WIDTH);
+
+        this.cardPanel.add(splitPane , String.valueOf(XML_VIEW) );
 
         // HTML view
         this.htmlPane = new JEditorPane();
@@ -203,6 +254,37 @@ public class ViewerFrame extends JFrame implements DropDownButtonListener, Actio
         contentPane.add(cardPanel, BorderLayout.CENTER);
 
         this.pack();
+    }
+
+    /**
+     * Evaluates XPath expression against XML panel's text
+     * @param text
+     */
+    private void evaluateXPath(String text) {
+        final String htmlHeader = "<html><head></head><body style='font-family:Tahoma,Verdana;font-size:11pt;'>";
+        final String htmlFooter = "</body></html>";
+        try {
+            ListVariable result = XmlUtil.evaluateXPath(text, xmlPane.getText(), runtimeConfig);
+            java.util.List resultList = result.toList();
+            if (resultList.size() == 0) {
+                this.xpathResultPane.setText(htmlHeader + "No results" + htmlFooter);
+            } else {
+                String tableHtml = "<table width='100%' cellspacing='0' cellpadding='2'>";
+                Iterator iterator = resultList.iterator();
+                int index = 0;
+                while (iterator.hasNext()) {
+                    index++;
+                    Object curr = iterator.next();
+                    tableHtml += "<tr style='background:" + (index % 2 == 0 ? "#E1E1E1" : "#EEEEEE") + "'><td align='left' width='30'>" + index + ".&nbsp;</td><td align='left' nowrap>" + CommonUtil.escapeXml(curr.toString()) + "</td></tr>";
+                }
+                tableHtml += "</table>";
+                this.xpathResultPane.setText(htmlHeader + tableHtml + htmlFooter);
+                this.xpathResultPane.setCaretPosition(0);
+            }
+        } catch (XPathException e) {
+            String html = htmlHeader + "<div style='color:#800000'>" + e.getMessage() + "</div>" + htmlFooter;
+            this.xpathResultPane.setText(html);
+        }
     }
 
     private void prettyPrintXml() {

@@ -51,6 +51,10 @@ import java.io.IOException;
 public class SettingsDialog extends JDialog implements ChangeListener {
 
     private class MyTextField extends JTextField {
+        public MyTextField() {
+            super();
+        }
+
         public MyTextField(String text) {
             super(text);
         }
@@ -104,8 +108,6 @@ public class SettingsDialog extends JDialog implements ChangeListener {
     }
 
     private void createGUI() {
-        Settings settings = ide.getSettings();
-
         Container contentPane = this.getContentPane();
 
         JPanel generalPanel = new JPanel(new GridBagLayout());
@@ -119,16 +121,16 @@ public class SettingsDialog extends JDialog implements ChangeListener {
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.insets = new Insets(2, 5, 2, 5);
 
-        workingPathField = new MyTextField( settings.getWorkingPath() );
+        workingPathField = new MyTextField();
 
-        proxyServerField = new MyTextField( settings.getProxyServer() );
-        proxyPortField = new MyTextField( settings.getProxyPort() > 0 ? "" + settings.getProxyPort() : "" );
-        proxyUsernameField = new MyTextField( settings.getProxyUserename() );
-        proxyPasswordField = new MyTextField( settings.getProxyPassword() );
+        proxyServerField = new MyTextField();
+        proxyPortField = new MyTextField();
+        proxyUsernameField = new MyTextField();
+        proxyPasswordField = new MyTextField();
 
-        proxyEnabledCheckBox = new JCheckBox("Proxy server enabled", settings.isProxyEnabled());
+        proxyEnabledCheckBox = new JCheckBox("Proxy server enabled");
         proxyEnabledCheckBox.addChangeListener(this);
-        proxyAuthEnabledCheckBox = new JCheckBox("Proxy authentication enabled", settings.isProxyAuthEnabled());
+        proxyAuthEnabledCheckBox = new JCheckBox("Proxy authentication enabled");
         proxyAuthEnabledCheckBox.addChangeListener(this);
 
         constraints.gridx = 0;
@@ -222,10 +224,10 @@ public class SettingsDialog extends JDialog implements ChangeListener {
 
         JPanel viewPanel = new JPanel();
         viewPanel.setLayout( new BoxLayout(viewPanel, BoxLayout.PAGE_AXIS) );
-        this.showHierarchyByDefaultCheckBox = new JCheckBox("Show hierarchy panel by default", settings.isShowHierarchyByDefault());
-        this.showLogByDefaultCheckBox = new JCheckBox("Show log panel by default", settings.isShowLogByDefault());
-        this.showLineNumbersByDefaultCheckBox = new JCheckBox("Show line numbers by default", settings.isShowLineNumbersByDefault());
-        this.dynamicConfigLocateCheckBox = new JCheckBox("Dynamically locate processors in runtime", settings.isDynamicConfigLocate());
+        this.showHierarchyByDefaultCheckBox = new JCheckBox("Show hierarchy panel by default");
+        this.showLogByDefaultCheckBox = new JCheckBox("Show log panel by default");
+        this.showLineNumbersByDefaultCheckBox = new JCheckBox("Show line numbers by default");
+        this.dynamicConfigLocateCheckBox = new JCheckBox("Dynamically locate processors in runtime");
 
         viewPanel.add(this.showHierarchyByDefaultCheckBox);
         viewPanel.add(this.showLogByDefaultCheckBox);
@@ -241,6 +243,30 @@ public class SettingsDialog extends JDialog implements ChangeListener {
         updateControls();
 
         this.pack();
+    }
+
+    private void fillValues() {
+        Settings settings = ide.getSettings();
+
+        workingPathField.setText( settings.getWorkingPath() );
+        proxyServerField.setText( settings.getProxyServer() );
+        proxyPortField.setText( settings.getProxyPort() > 0 ? "" + settings.getProxyPort() : "" );
+        proxyUsernameField.setText( settings.getProxyUserename() );
+        proxyPasswordField.setText( settings.getProxyPassword() );
+        proxyEnabledCheckBox.setSelected( settings.isProxyEnabled() );
+        proxyAuthEnabledCheckBox.setSelected( settings.isProxyAuthEnabled() );
+
+        showHierarchyByDefaultCheckBox.setSelected( settings.isShowHierarchyByDefault() );
+        showLogByDefaultCheckBox.setSelected( settings.isShowLogByDefault() );
+        showLineNumbersByDefaultCheckBox.setSelected( settings.isShowLineNumbersByDefault() );
+        dynamicConfigLocateCheckBox.setSelected( settings.isDynamicConfigLocate() );
+    }
+
+    public void setVisible(boolean b) {
+        if (b) {
+            fillValues();
+        }
+        super.setVisible(b);
     }
 
     private void define() {

@@ -71,14 +71,16 @@ public class DialogHelper {
         final int maxLength = 80;
         StringBuffer result = new StringBuffer("");
         int lineLength = 0;
-        for (int i = 0; i < msg.length(); i++) {
-            char ch = msg.charAt(i);
-            if ( (ch == '\n') || (ch == ' ' && lineLength > maxLength) ) {
-                result.append('\n');
-                lineLength = 0;
-            } else {
-                result.append(ch);
-                lineLength++;
+        if (msg != null) {
+            for (int i = 0; i < msg.length(); i++) {
+                char ch = msg.charAt(i);
+                if ( (ch == '\n') || (ch == ' ' && lineLength > maxLength) ) {
+                    result.append('\n');
+                    lineLength = 0;
+                } else {
+                    result.append(ch);
+                    lineLength++;
+                }
             }
         }
 
