@@ -37,6 +37,7 @@
 package org.webharvest.gui;
 
 import javax.swing.*;
+import javax.swing.text.JTextComponent;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.*;
@@ -49,13 +50,13 @@ public class FindReplaceDialog extends JDialog {
     private int operation = OPERATION_FIND;
 
     // Ide instance where this dialog belongs.
-    private Ide ide;
+    private Frame parentFrame;
 
     // settiongs fields
     private JTextField searchField;
     private JLabel replaceLabel;
     private JTextField replaceField;
-    private XmlTextPane pane;
+    private JTextComponent textComponent;
 
     private JCheckBox caseSensitiveCheckBox;
     private JCheckBox regularExpressionsCheckBox;
@@ -66,9 +67,9 @@ public class FindReplaceDialog extends JDialog {
     private JRadioButton fromCursorRadioButton;
     private JRadioButton entireScopeRadioButton;
 
-    public FindReplaceDialog(Ide ide) throws HeadlessException {
-        super(ide, "Find Text", true);
-        this.ide = ide;
+    public FindReplaceDialog(Frame parentFrame) throws HeadlessException {
+        super(parentFrame, "Find Text", true);
+        this.parentFrame = parentFrame;
         this.setResizable(false);
 
         addWindowListener( new WindowAdapter() {
@@ -260,15 +261,15 @@ public class FindReplaceDialog extends JDialog {
         return rootPane;
     }
 
-    public void open(XmlTextPane xmlPane, boolean isReplace) {
-        setPane(xmlPane);
+    public void open(JTextComponent textComponent, boolean isReplace) {
+        setTextComponent(textComponent);
         this.operation = isReplace ? OPERATION_REPLACE : OPERATION_FIND;
         this.replaceLabel.setVisible(isReplace);
         this.replaceField.setVisible(isReplace);
         this.setTitle(isReplace ? "Replace Text" : "Find Text");
         this.pack();
 
-        setLocationRelativeTo(ide);
+        setLocationRelativeTo(parentFrame);
         setVisible(true);
     }
 
@@ -280,13 +281,13 @@ public class FindReplaceDialog extends JDialog {
         }
         
         this.setVisible(false);
-        if (this.pane != null) {
-            String content = this.pane.getText();
+        if (this.textComponent != null) {
+            String content = this.textComponent.getText();
             String searchText = this.searchField.getText();
             if ( !"".equals(searchText) ) {
                 int startPosition = 0;
                 if ( this.fromCursorRadioButton.isSelected() ) {
-                    startPosition = pane.getCaretPosition();
+                    startPosition = textComponent.getCaretPosition();
                 } else if (backward) {
                     startPosition = content.length() - 1;
                 } else {
@@ -302,7 +303,8 @@ public class FindReplaceDialog extends JDialog {
                 }
                 
                 if (index >= 0) {
-                    pane.select(index, index + searchText.length());
+                    textComponent.grabFocus();
+                    textComponent.select(index, index + searchText.length());
                 } else {
                     showTooltipMessage("Next occurrence of \"" + searchText + "\" not found.");
                 }
@@ -316,18 +318,18 @@ public class FindReplaceDialog extends JDialog {
      */
     private void showTooltipMessage(String text) {
         ToolTipManager toolTipManager = ToolTipManager.sharedInstance();
-        this.pane.setToolTipText(text);
+        this.textComponent.setToolTipText(text);
 
         int previousInitialDelay = toolTipManager.getInitialDelay();
         toolTipManager.setInitialDelay(0);
 
-        Point caretPosition = this.pane.getCaret().getMagicCaretPosition();
-        toolTipManager.registerComponent(this.pane);
-        toolTipManager.mouseMoved( new MouseEvent(this.pane, 0, 0, 0, (int)caretPosition.getX(), (int)caretPosition.getY(), 0, false) );
+        Point caretPosition = this.textComponent.getCaret().getMagicCaretPosition();
+        toolTipManager.registerComponent(this.textComponent);
+        toolTipManager.mouseMoved( new MouseEvent(this.textComponent, 0, 0, 0, (int)caretPosition.getX(), (int)caretPosition.getY(), 0, false) );
 
         toolTipManager.setInitialDelay(previousInitialDelay);
 
-        toolTipManager.unregisterComponent(this.pane);
+        toolTipManager.unregisterComponent(this.textComponent);
     }
 
     public void replace(boolean backward) {
@@ -338,17 +340,17 @@ public class FindReplaceDialog extends JDialog {
         return this.searchField.getText();
     }
 
-    public void setPane(XmlTextPane pane) {
-        this.pane = pane;
+    public void setTextComponent(JTextComponent textComponent) {
+        this.textComponent = textComponent;
     }
 
-    public void findNext(XmlTextPane xmlPane) {
-        setPane(xmlPane);
+    public void findNext(JTextComponent textComponent) {
+        setTextComponent(textComponent);
         find(false);
     }
 
-    public void findPrev(XmlTextPane xmlPane) {
-        this.pane = xmlPane;
+    public void findPrev(JTextComponent textComponent) {
+        this.textComponent = textComponent;
         find(true);
     }
 }

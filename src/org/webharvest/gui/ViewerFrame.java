@@ -51,6 +51,7 @@ import org.xml.sax.InputSource;
 
 import javax.swing.*;
 import javax.swing.text.html.HTMLEditorKit;
+import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.StringReader;
@@ -66,11 +67,26 @@ import net.sf.saxon.trans.XPathException;
  */
 public class ViewerFrame extends JFrame implements DropDownButtonListener, ActionListener {
 
+    private static final int FIND_OPEN = 0;
+    private static final int FIND_NEXT = 1;
+    private static final int FIND_PREVIOUS = 2;
+
     public static final int TEXT_VIEW = 0;
     public static final int XML_VIEW = 1;
     public static final int HTML_VIEW = 2;
     public static final int IMAGE_VIEW = 3;
     public static final int LIST_VIEW = 4;
+
+    private abstract class MyAction extends AbstractAction {
+        public MyAction(String text, Icon icon, String desc, KeyStroke keyStroke) {
+            super(text, icon);
+            putValue(SHORT_DESCRIPTION, desc);
+            putValue(ACCELERATOR_KEY, keyStroke);
+        }
+    }
+
+    // find dialog
+    private FindReplaceDialog findDialog;
 
     // array of flags indicating if specific view is refreshed with new value
     private boolean refreshed[] = new boolean[5]; 
@@ -96,6 +112,7 @@ public class ViewerFrame extends JFrame implements DropDownButtonListener, Actio
     private JLabel imageLabel;
     private JEditorPane listPane;
     private JCheckBox keepSyncCheckBox;
+    private JButton findButton;
     private JButton xmlValidateButton;
     private JButton xmlPrettyPrintButton;
 
@@ -131,7 +148,11 @@ public class ViewerFrame extends JFrame implements DropDownButtonListener, Actio
         Container contentPane = getContentPane();
         contentPane.setLayout( new BorderLayout() );
         
-        JToolBar toolBar = new JToolBar();
+        JToolBar toolBar = new JToolBar() {
+            public Dimension getPreferredSize() {
+                return new Dimension(0, 28);
+            }
+        };
         toolBar.setFloatable(false);
 
         this.keepSyncCheckBox = new JCheckBox("Keep synchronized");
@@ -151,6 +172,29 @@ public class ViewerFrame extends JFrame implements DropDownButtonListener, Actio
         toolBar.add( new JLabel(" View as: ") );
         toolBar.add(viewTypeButton);
 
+        final MyAction findTextAction = new MyAction("Find", ResourceManager.getFindIcon(), "Find text", KeyStroke.getKeyStroke( KeyEvent.VK_F, ActionEvent.CTRL_MASK)) {
+            public void actionPerformed(ActionEvent e) {
+                findText(FIND_OPEN);
+            }
+        };
+
+        final MyAction findNextAction = new MyAction("Find Next", null, "Find next occurence", KeyStroke.getKeyStroke( KeyEvent.VK_F3, 0)) {
+            public void actionPerformed(ActionEvent e) {
+                findText(FIND_NEXT);
+            }
+        };
+
+        final MyAction findPrevAction = new MyAction("Find Previous", null, "Find previous occurence", KeyStroke.getKeyStroke( KeyEvent.VK_F3, KeyEvent.SHIFT_DOWN_MASK)) {
+            public void actionPerformed(ActionEvent e) {
+                findText(FIND_PREVIOUS);
+            }
+        };
+
+        this.findButton = new JButton(findTextAction);
+        this.findButton.registerKeyboardAction(findTextAction, KeyStroke.getKeyStroke( KeyEvent.VK_F, ActionEvent.CTRL_MASK), JComponent.WHEN_IN_FOCUSED_WINDOW);
+        this.findButton.registerKeyboardAction(findNextAction, KeyStroke.getKeyStroke( KeyEvent.VK_F3, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);
+        this.findButton.registerKeyboardAction(findPrevAction, KeyStroke.getKeyStroke( KeyEvent.VK_F3, ActionEvent.SHIFT_MASK), JComponent.WHEN_IN_FOCUSED_WINDOW);
+
         this.xmlValidateButton = new JButton("Check well-formedness", ResourceManager.getValidateIcon());
         this.xmlValidateButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -166,6 +210,7 @@ public class ViewerFrame extends JFrame implements DropDownButtonListener, Actio
         });
 
         toolBar.addSeparator(new Dimension(10, 0));
+        toolBar.add(this.findButton);
         toolBar.add(this.xmlValidateButton);
         toolBar.add(this.xmlPrettyPrintButton);
 
@@ -186,14 +231,13 @@ public class ViewerFrame extends JFrame implements DropDownButtonListener, Actio
         JPanel xpathPanel = new JPanel(new BorderLayout());
         JToolBar xpathToolbar = new JToolBar() {
             public Dimension getPreferredSize() {
-                return new Dimension(0, 26);
+                return new Dimension(0, 28);
             }
         };
-        final JCheckBox xpathEvalWhileTypingCheckBox = new JCheckBox("Evaluate while typing", false);
         final JTextField xpathExpressionField = new JTextField();
         xpathExpressionField.addKeyListener(new KeyAdapter() {
             public void keyPressed(KeyEvent e) {
-                if ( e.getKeyCode() == KeyEvent.VK_ENTER || xpathEvalWhileTypingCheckBox.isSelected() ) {
+                if ( e.getKeyCode() == KeyEvent.VK_ENTER ) {
                     evaluateXPath(xpathExpressionField.getText());
                 }
             }
@@ -206,10 +250,9 @@ public class ViewerFrame extends JFrame implements DropDownButtonListener, Actio
             }
         });
         xpathToolbar.setFloatable(false);
-        xpathToolbar.add( new JLabel("XPath expression: ") );
+        xpathToolbar.add( new JLabel(" XPath expression: ") );
         xpathToolbar.add(xpathExpressionField);
         xpathToolbar.add(xpathEvalButton);
-        xpathToolbar.add(xpathEvalWhileTypingCheckBox);
 
         this.xpathResultPane = new JEditorPane();
         this.xpathResultPane.setEditable(false);
@@ -256,9 +299,32 @@ public class ViewerFrame extends JFrame implements DropDownButtonListener, Actio
         this.pack();
     }
 
+    private void findText(int type) {
+        if ( this.currentView == TEXT_VIEW  || this.currentView == XML_VIEW ) {
+            if (this.findDialog == null) {
+                this.findDialog = new FindReplaceDialog(this);
+            }
+
+            JTextComponent textComponent;
+            if (this.currentView == TEXT_VIEW) {
+                textComponent = textArea;
+            } else {
+                textComponent = xmlPane;
+            }
+
+            if (type == FIND_NEXT) {
+                this.findDialog.findNext(textComponent);
+            } else if (type == FIND_PREVIOUS) {
+                this.findDialog.findPrev(textComponent);
+            } else {
+                this.findDialog.open(textComponent, false);
+            }
+        }
+    }
+
     /**
      * Evaluates XPath expression against XML panel's text
-     * @param text
+     * @param text XML text to be searched
      */
     private void evaluateXPath(String text) {
         final String htmlHeader = "<html><head></head><body style='font-family:Tahoma,Verdana;font-size:11pt;'>";
@@ -391,6 +457,7 @@ public class ViewerFrame extends JFrame implements DropDownButtonListener, Actio
     }
 
     private void updateControls() {
+        this.findButton.setVisible( this.currentView == TEXT_VIEW  || this.currentView == XML_VIEW );
         this.xmlValidateButton.setVisible( this.currentView == XML_VIEW );
         this.xmlPrettyPrintButton.setVisible( this.currentView == XML_VIEW );
     }
