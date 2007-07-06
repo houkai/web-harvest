@@ -361,24 +361,13 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
         tabbedPane.setSelectedIndex( tabbedPane.getTabCount() - 1 );
     }
 
-    public void addTab(final File file) {
+    public void addTab(final Object source) {
         final ConfigPanel configPanel = new ConfigPanel(this, "");
         tabbedPane.addTab("Loading...", configPanel);
         tabbedPane.setSelectedIndex( tabbedPane.getTabCount() - 1 );
         new Thread(new Runnable() {
             public void run() {
-                configPanel.loadConfig(file);
-            }
-        }).start();
-    }
-
-    public void addTab(final URL url) {
-        final ConfigPanel configPanel = new ConfigPanel(this, "");
-        tabbedPane.addTab( "Loading...", configPanel );
-        tabbedPane.setSelectedIndex( tabbedPane.getTabCount() - 1 );
-        new Thread(new Runnable() {
-            public void run() {
-                configPanel.loadConfig(url);
+                configPanel.loadConfig(source);
             }
         }).start();
     }
@@ -396,7 +385,7 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
 
     public void openConfigFromUrl(String url) {
         try {
-            addTab( new URL(url) );
+            addTab(new URL(url));
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }

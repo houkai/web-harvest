@@ -346,42 +346,25 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
     }
 
     /**
-     * Loads configuration from the file.
-     * @param file
+     * Loads configuration from the specified source.
+     * @param source CAn be instance of File, URL or String
      */
-    public void loadConfig(File file) {
+    public void loadConfig(Object source) {
         try {
-            this.configDocument.load(file);
-        } catch (IOException e) {
-            DialogHelper.showErrorMessage(e.getMessage());
-        }
-
-        ScraperConfiguration scraperConfiguration = null;
-        try {
-            scraperConfiguration = new ScraperConfiguration(file);
-            setScraperConfiguration(scraperConfiguration);
-        } catch (Exception e) {
-            DialogHelper.showErrorMessage(e.getMessage());
-        }
-    }
-
-    /**
-     * Loads configuration from the file.
-     * @param url
-     */
-    public void loadConfig(URL url) {
-        try {
-            this.configDocument.load(url);
-        } catch (IOException e) {
-            DialogHelper.showErrorMessage(e.getMessage());
-        }
-
-        ScraperConfiguration scraperConfiguration = null;
-        try {
-            scraperConfiguration = new ScraperConfiguration(url);
+            if (source instanceof URL) {
+                this.configDocument.load((URL)source);
+            } else if (source instanceof File) {
+                this.configDocument.load((File)source);
+            } else {
+                this.configDocument.load(source == null ? "" : source.toString());
+            }
+            
+            refreshTree();
+            InputSource in = new InputSource(new StringReader(xmlPane.getText()));
+            ScraperConfiguration scraperConfiguration = new ScraperConfiguration(in);
             setScraperConfiguration(scraperConfiguration);
         } catch (IOException e) {
-            DialogHelper.showErrorMessage(e.getMessage());
+            DialogHelper.showErrorMessage( e.getMessage() );
         }
     }
 

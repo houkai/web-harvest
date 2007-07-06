@@ -47,6 +47,8 @@ import org.bounce.text.xml.XMLStyleConstants;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.io.*;
 import java.net.URL;
 
@@ -59,7 +61,118 @@ import javax.swing.text.*;
 
 public class XmlTextPane extends JEditorPane {
 
+    /**
+     * Action which occures on TAB key pressed inside the editor. It implements clever
+     * block indenting - when selection contains more than one line of text, the whole
+     * block is indented one tab place to the right. 
+     */
+    private class TabAction extends TextAction {
+        public TabAction() {
+            super(DefaultEditorKit.insertTabAction);
+        }
+
+        public void actionPerformed(ActionEvent e) {
+            JTextComponent textComponent = getTextComponent(e);
+            if ( !textComponent.isEditable() || !textComponent.isEnabled() ) {
+                return;
+            }
+            
+            String selectedText = textComponent.getSelectedText();
+            int newLineIndex = selectedText != null ? selectedText.indexOf('\n') : -1;
+
+            if (newLineIndex < 0) {     // default behaviour
+                textComponent.replaceSelection("\t");
+            } else {                    // indentation
+                int lastNewLine = -1;
+                int selectionStart = textComponent.getSelectionStart();
+
+                try {
+                    String textBeforeSelection = textComponent.getText(0, selectionStart);
+                    lastNewLine = textBeforeSelection.lastIndexOf('\n');
+                } catch (BadLocationException e1) {
+                    e1.printStackTrace();
+                }
+
+                String newSelection = null;
+                if ( selectedText.endsWith("\n") ) {
+                    newSelection = selectedText.substring(0, selectedText.length()-1).replaceAll("\n", "\n\t") + "\n";
+                } else {
+                    newSelection = selectedText.replaceAll("\n", "\n\t");
+                }
+                textComponent.replaceSelection(newSelection);
+
+                if (lastNewLine > 0) {
+                    try {
+                        textComponent.getDocument().insertString(lastNewLine+1, "\t", null);
+                    } catch (BadLocationException e1) {
+                        e1.printStackTrace();
+                    }
+                    selectionStart++;
+                }
+
+                textComponent.select( selectionStart, selectionStart + newSelection.length() );
+            }
+        }
+    }
+
+    /**
+     * Action which occures on SHIFT-TAB key pressed inside the editor. It implements clever
+     * block outdenting - when selection contains more than one line of text, the whole
+     * block is outdented one tab place to the left. 
+     */
+    private class ShiftTabAction extends TextAction {
+        public ShiftTabAction() {
+            super("shift-tab-action");
+        }
+
+        public void actionPerformed(ActionEvent e) {
+            JTextComponent textComponent = getTextComponent(e);
+            if ( !textComponent.isEditable() || !textComponent.isEnabled() ) {
+                return;
+            }
+
+            String selectedText = textComponent.getSelectedText();
+            int newLineIndex = selectedText != null ? selectedText.indexOf('\n') : -1;
+
+            if (newLineIndex >= 0) {
+                int lastNewLine = -1;
+                int selectionStart = textComponent.getSelectionStart();
+
+                try {
+                    String textBeforeSelection = textComponent.getText(0, selectionStart);
+                    lastNewLine = textBeforeSelection.lastIndexOf('\n');
+                } catch (BadLocationException e1) {
+                    e1.printStackTrace();
+                }
+
+                String newSelection = null;
+                if ( selectedText.endsWith("\n") ) {
+                    newSelection = selectedText.substring(0, selectedText.length()-1).replaceAll("\n\t", "\n") + "\n";
+                } else {
+                    newSelection = selectedText.replaceAll("\n\t", "\n");
+                }
+                textComponent.replaceSelection(newSelection);
+
+                if (lastNewLine > 0) {
+                    try {
+                        if ( textComponent.getText(lastNewLine + 1, 1).equals("\t") ) {
+                            textComponent.getDocument().remove(lastNewLine+1, 1);
+                            selectionStart--;
+                        }
+                    } catch (BadLocationException e1) {
+                        e1.printStackTrace();
+                    }
+                }
+
+                textComponent.select( selectionStart, selectionStart + newSelection.length() );
+            }
+        }
+    }
+
     private UndoManager undoManager = new UndoManager();
+
+    private TabAction tabAction = new TabAction();
+    private ShiftTabAction shiftTabAction = new ShiftTabAction();
 
     public XmlTextPane() {
         XMLEditorKit kit = new XMLEditorKit(true);
@@ -86,11 +199,15 @@ public class XmlTextPane extends JEditorPane {
         this.setEditorKit(kit);
 
         this.setFont( new Font( "Courier", Font.PLAIN, 12));
+
+        this.registerKeyboardAction(shiftTabAction, KeyStroke.getKeyStroke( KeyEvent.VK_TAB, ActionEvent.SHIFT_MASK), JComponent.WHEN_FOCUSED);
+        this.getActionMap().put(tabAction.getValue(Action.NAME), tabAction);
+
     }
 
     public boolean getScrollableTracksViewportWidth() {
         //should not allow text to be wrapped
-        return false;
+      return false;
     }
 
     public void undo() {
