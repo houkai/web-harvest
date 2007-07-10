@@ -244,12 +244,12 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
 
         this.propertiesGrid = new PropertiesGrid();
         JScrollPane propertiesView = new JScrollPane(propertiesGrid);
-        this.leftView = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-        this.leftView.setResizeWeight(1.0d);
+        this.leftView = new ProportionalSplitPane(JSplitPane.VERTICAL_SPLIT);
+        this.leftView.setResizeWeight(0.8d);
+        this.leftView.setBorder(null);
         this.leftView.setTopComponent(treeView);
         this.leftView.setBottomComponent(propertiesView);
-        this.leftView.setBorder(null);
-        this.leftView.setDividerLocation(320);
+        this.leftView.setDividerLocation(0.8d);
         this.leftView.setDividerSize(Constants.SPLITTER_WIDTH);
 
         //Add the scroll panes to a split pane.

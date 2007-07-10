@@ -51,6 +51,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.io.*;
 import java.net.URL;
+import java.util.StringTokenizer;
 
 import javax.swing.*;
 import javax.swing.event.DocumentListener;
@@ -71,46 +72,59 @@ public class XmlTextPane extends JEditorPane {
             super(DefaultEditorKit.insertTabAction);
         }
 
+        private void indentText(JTextComponent textComponent) throws BadLocationException {
+            String selectedText = textComponent.getSelectedText();
+            int newLineIndex = selectedText != null ? selectedText.indexOf('\n') : -1;
+
+
+            if (newLineIndex >= 0) {
+                int originalSelectionStart = textComponent.getSelectionStart();
+                int selectionStart = originalSelectionStart;
+                int selectionEnd = textComponent.getSelectionEnd();
+
+                int lastNewLineBeforeSelection = textComponent.getText(0, selectionStart).lastIndexOf('\n');
+                int begin = lastNewLineBeforeSelection >= 0 ? lastNewLineBeforeSelection : 0;
+                int end = selectionEnd;
+
+                String text = textComponent.getText(begin, end - begin);
+                int len = text.length();
+                StringBuffer out = new StringBuffer(len);
+                if (lastNewLineBeforeSelection < 0) {
+                    out.insert(0, '\t');
+                    selectionStart++;
+                    selectionEnd++;
+                }
+                for (int i = 0; i < len; i++) {
+                    char ch = text.charAt(i);
+                    out.append(ch);
+                    if (ch == '\n' && i < len - 1) {
+                        out.append("\t");
+                        selectionEnd++;
+                        if (begin + i < originalSelectionStart) {
+                            selectionStart++;
+                        }
+                    }
+                }
+
+                textComponent.select(begin, end);
+                textComponent.replaceSelection(out.toString());
+
+                textComponent.select(selectionStart, selectionEnd);
+            } else {
+                textComponent.replaceSelection("\t");
+            }
+        }
+
         public void actionPerformed(ActionEvent e) {
             JTextComponent textComponent = getTextComponent(e);
             if ( !textComponent.isEditable() || !textComponent.isEnabled() ) {
                 return;
             }
-            
-            String selectedText = textComponent.getSelectedText();
-            int newLineIndex = selectedText != null ? selectedText.indexOf('\n') : -1;
 
-            if (newLineIndex < 0) {     // default behaviour
-                textComponent.replaceSelection("\t");
-            } else {                    // indentation
-                int lastNewLine = -1;
-                int selectionStart = textComponent.getSelectionStart();
-
-                try {
-                    String textBeforeSelection = textComponent.getText(0, selectionStart);
-                    lastNewLine = textBeforeSelection.lastIndexOf('\n');
-                } catch (BadLocationException e1) {
-                    e1.printStackTrace();
-                }
-
-                String newSelection = null;
-                if ( selectedText.endsWith("\n") ) {
-                    newSelection = selectedText.substring(0, selectedText.length()-1).replaceAll("\n", "\n\t") + "\n";
-                } else {
-                    newSelection = selectedText.replaceAll("\n", "\n\t");
-                }
-                textComponent.replaceSelection(newSelection);
-
-                if (lastNewLine > 0) {
-                    try {
-                        textComponent.getDocument().insertString(lastNewLine+1, "\t", null);
-                    } catch (BadLocationException e1) {
-                        e1.printStackTrace();
-                    }
-                    selectionStart++;
-                }
-
-                textComponent.select( selectionStart, selectionStart + newSelection.length() );
+            try {
+                indentText(textComponent);
+            } catch (BadLocationException e1) {
+                e1.printStackTrace();
             }
         }
     }
@@ -125,46 +139,69 @@ public class XmlTextPane extends JEditorPane {
             super("shift-tab-action");
         }
 
-        public void actionPerformed(ActionEvent e) {
-            JTextComponent textComponent = getTextComponent(e);
-            if ( !textComponent.isEditable() || !textComponent.isEnabled() ) {
-                return;
-            }
+        private void outdentText(JTextComponent textComponent) throws BadLocationException {
+            int tabSize = ((Integer)textComponent.getDocument().getProperty(PlainDocument.tabSizeAttribute)).intValue();
 
             String selectedText = textComponent.getSelectedText();
             int newLineIndex = selectedText != null ? selectedText.indexOf('\n') : -1;
 
             if (newLineIndex >= 0) {
-                int lastNewLine = -1;
-                int selectionStart = textComponent.getSelectionStart();
+                int originalSelectionStart = textComponent.getSelectionStart();
+                int selectionStart = originalSelectionStart;
+                int selectionEnd = textComponent.getSelectionEnd();
 
-                try {
-                    String textBeforeSelection = textComponent.getText(0, selectionStart);
-                    lastNewLine = textBeforeSelection.lastIndexOf('\n');
-                } catch (BadLocationException e1) {
-                    e1.printStackTrace();
+                int lastNewLineBeforeSelection = textComponent.getText(0, selectionStart).lastIndexOf('\n');
+                int begin = lastNewLineBeforeSelection >= 0 ? lastNewLineBeforeSelection : 0;
+                int end = selectionEnd;
+
+                String text = textComponent.getText(begin, end - begin);
+                if (lastNewLineBeforeSelection < 0) {
+                    text = "\n" + text;
                 }
-
-                String newSelection = null;
-                if ( selectedText.endsWith("\n") ) {
-                    newSelection = selectedText.substring(0, selectedText.length()-1).replaceAll("\n\t", "\n") + "\n";
-                } else {
-                    newSelection = selectedText.replaceAll("\n\t", "\n");
-                }
-                textComponent.replaceSelection(newSelection);
-
-                if (lastNewLine > 0) {
-                    try {
-                        if ( textComponent.getText(lastNewLine + 1, 1).equals("\t") ) {
-                            textComponent.getDocument().remove(lastNewLine+1, 1);
-                            selectionStart--;
+                int len = text.length();
+                StringBuffer out = new StringBuffer(len);
+                for (int i = 0; i < len; i++) {
+                    char ch = text.charAt(i);
+                    out.append(ch);
+                    if (ch == '\n' && i < len - 1) {
+                        char next = text.charAt(i + 1);
+                        int stripCount = 0;
+                        if (next == '\t') {
+                            stripCount = 1;
+                        } else {
+                            for ( ; stripCount < tabSize && i + 1 + stripCount < len; stripCount++ ) {
+                                next = text.charAt(i + 1 + stripCount);
+                                if ( next != ' ' && next != '\t' ) {
+                                    break;
+                                }
+                            }
                         }
-                    } catch (BadLocationException e1) {
-                        e1.printStackTrace();
+
+                        selectionEnd -= stripCount;
+                        if (i + begin < originalSelectionStart - 1) {
+                            selectionStart -= stripCount;
+                        }
+                        i += stripCount;
                     }
                 }
 
-                textComponent.select( selectionStart, selectionStart + newSelection.length() );
+                textComponent.select(begin, end);
+                textComponent.replaceSelection(lastNewLineBeforeSelection < 0 ? out.toString().substring(1) : out.toString());
+
+                textComponent.select(selectionStart, selectionEnd);
+            }
+        }
+
+        public void actionPerformed(ActionEvent e){
+            JTextComponent textComponent = getTextComponent(e);
+            if ( !textComponent.isEditable() || !textComponent.isEnabled() ) {
+                return;
+            }
+
+            try {
+                outdentText(textComponent);
+            } catch (BadLocationException e1) {
+                e1.printStackTrace();
             }
         }
     }
