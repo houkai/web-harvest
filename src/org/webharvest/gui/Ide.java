@@ -109,6 +109,9 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
     // working settings
     Settings settings = new Settings();
 
+    // popup menu for XML editor panes
+    private JPopupMenu editorPopupMenu;
+
     /**
      * Constructor.
      */
@@ -501,6 +504,21 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
         defineMenuItem(menu, "Paste", ResourceManager.getPasteIcon(), KeyEvent.VK_P, COMMAND_PASTE, KeyStroke.getKeyStroke( KeyEvent.VK_V, ActionEvent.CTRL_MASK));
         menuBar.add(menu);
 
+        // Build the editor popup menu.
+        editorPopupMenu = new JPopupMenu();
+        definePopupMenuItem(editorPopupMenu, "Undo", ResourceManager.getUndoIcon(), KeyEvent.VK_U, COMMAND_UNDO, KeyStroke.getKeyStroke( KeyEvent.VK_Z, ActionEvent.CTRL_MASK));
+        definePopupMenuItem(editorPopupMenu, "Redo", ResourceManager.getRedoIcon(), KeyEvent.VK_R, COMMAND_REDO, KeyStroke.getKeyStroke( KeyEvent.VK_Y, ActionEvent.CTRL_MASK));
+        editorPopupMenu.addSeparator();
+        definePopupMenuItem(editorPopupMenu, "Find", ResourceManager.getFindIcon(), KeyEvent.VK_F, COMMAND_FIND, KeyStroke.getKeyStroke( KeyEvent.VK_F, ActionEvent.CTRL_MASK));
+        definePopupMenuItem(editorPopupMenu, "Replace", null, KeyEvent.VK_L, COMMAND_REPLACE, KeyStroke.getKeyStroke( KeyEvent.VK_R, ActionEvent.CTRL_MASK));
+        definePopupMenuItem(editorPopupMenu, "Find Next", null, KeyEvent.VK_N, COMMAND_FINDNEXT, KeyStroke.getKeyStroke( KeyEvent.VK_F3, 0));
+        definePopupMenuItem(editorPopupMenu, "Find Previous", null, KeyEvent.VK_V, COMMAND_FINDPREV, KeyStroke.getKeyStroke( KeyEvent.VK_F3, ActionEvent.SHIFT_MASK));
+        editorPopupMenu.addSeparator();
+        definePopupMenuItem(editorPopupMenu, "Cut", ResourceManager.getCutIcon(), KeyEvent.VK_U, COMMAND_CUT, KeyStroke.getKeyStroke( KeyEvent.VK_X, ActionEvent.CTRL_MASK));
+        definePopupMenuItem(editorPopupMenu, "Copy", ResourceManager.getCopyIcon(), KeyEvent.VK_C, COMMAND_COPY, KeyStroke.getKeyStroke( KeyEvent.VK_C, ActionEvent.CTRL_MASK));
+        definePopupMenuItem(editorPopupMenu, "Paste", ResourceManager.getPasteIcon(), KeyEvent.VK_P, COMMAND_PASTE, KeyStroke.getKeyStroke( KeyEvent.VK_V, ActionEvent.CTRL_MASK));
+        menuBar.add(editorPopupMenu);
+
         // Build the VIEW menu.
         menu = new JMenu("View");
         defineMenuItem(menu, "Synchronize tree", ResourceManager.getRefreshIcon(), KeyEvent.VK_R, COMMAND_REFRESH, KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0));
@@ -583,6 +601,10 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
     private ConfigPanel getActiveConfigPanel() {
         Component component = this.tabbedPane.getSelectedComponent();
         return component instanceof ConfigPanel ? (ConfigPanel)component : null;
+    }
+
+    public JPopupMenu getEditorPopupMenu() {
+        return editorPopupMenu;
     }
 
     private ConfigDocument getActiveConfigDocument() {

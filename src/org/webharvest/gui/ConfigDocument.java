@@ -151,7 +151,7 @@ public class ConfigDocument implements DocumentListener {
             int result = DialogHelper.showYesNoCancelConfirmWarning("Save file \"" + this.name + "\"?");
             if (result == JOptionPane.YES_OPTION) {
                 saveConfigToFile(false);
-            } else if (result == JOptionPane.CANCEL_OPTION) {
+            } else if (result == JOptionPane.CANCEL_OPTION || result == JOptionPane.DEFAULT_OPTION) {
                 return false;
             }
         }

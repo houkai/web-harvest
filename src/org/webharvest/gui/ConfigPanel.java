@@ -141,12 +141,16 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
     private JMenuItem imageViewMenuItem;
     private JMenuItem listViewMenuItem;
 
+    // Log area popup menu items
+    private JMenuItem logSelectAllMenuItem;
+    private JMenuItem logClearAllMenuItem;
+
     /**
      * Constructor of the panel - initializes parent Ide instance and name of the document.
      * @param ide
      * @param name
      */
-    public ConfigPanel(Ide ide, String name) {
+    public ConfigPanel(final Ide ide, String name) {
         super(new BorderLayout());
 
         this.ide = ide;
@@ -229,6 +233,14 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
             }
         });
 
+        xmlPane.addMouseListener(new MouseAdapter() {
+            public void mouseReleased(MouseEvent e) {
+                if ( e.isPopupTrigger()) {
+                    ide.getEditorPopupMenu().show( (JComponent)e.getSource(), e.getX(), e.getY() );
+                }
+            }
+        });
+
         // creates document for this configuration panel
         this.configDocument = new ConfigDocument(this, name);
 
@@ -265,6 +277,36 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
         logTextArea = new JTextArea();
         logTextArea.setFont( new Font("Courier New", Font.PLAIN, 11) );
         logTextArea.setEditable(false);
+
+        // defines pop menu for the log area
+        final JPopupMenu logPopupMenu = new JPopupMenu();
+
+        logSelectAllMenuItem = new JMenuItem("Select All");
+        logSelectAllMenuItem.addActionListener( new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                logTextArea.selectAll();
+            }
+        });
+        logPopupMenu.add(logSelectAllMenuItem);
+
+        logClearAllMenuItem = new JMenuItem("Clear All");
+        logClearAllMenuItem.addActionListener( new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                logTextArea.setText("");
+            }
+        });
+        logPopupMenu.add(logClearAllMenuItem);
+
+        logTextArea.addMouseListener(new MouseAdapter() {
+            public void mouseReleased(MouseEvent e) {
+                if ( e.isPopupTrigger()) {
+                    String text = logTextArea.getText();
+                    logClearAllMenuItem.setEnabled( text != null && !"".equals(text) );
+                    logSelectAllMenuItem.setEnabled( text != null && !"".equals(text) );
+                    logPopupMenu.show( (JComponent)e.getSource(), e.getX(), e.getY() );
+                }
+            }
+        });
 
         this.logger = Logger.getLogger(this.toString() + System.currentTimeMillis());
         this.logger.addAppender( new TextAreaAppender(this.logTextArea) );
