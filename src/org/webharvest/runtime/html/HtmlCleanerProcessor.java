@@ -52,7 +52,9 @@ public class HtmlCleanerProcessor implements IXHtmlProcessor {
 	    	HtmlCleaner cleaner = new HtmlCleaner(content);
 	    	cleaner.setOmitXmlnsAttributes(true);
             cleaner.setUseCdataForScriptAndStyle(true);
-	    	cleaner.clean();
+            cleaner.setNamespacesAware(false);
+            
+            cleaner.clean();
 
 	    	return cleaner.getCompactXmlAsString();
         } catch (IOException e) {

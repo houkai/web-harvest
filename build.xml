@@ -72,8 +72,8 @@
 
 		<zip destfile="${dir.zip}/webharvest${version}-src.zip">
 			<zipfileset dir="src" prefix="src"/>
-			<zipfileset dir="examples" prefix="examples"/>
-			<zipfileset file="config/config.xsd" prefix="config"/>
+            <zipfileset dir="config" prefix="config"/>
+            <zipfileset dir="examples" prefix="examples"/>
 			<zipfileset file="build.xml"/>
 		</zip>
 
@@ -82,8 +82,8 @@
 			<zipfileset file="${jarfile}"/>
 			<zipfileset dir="lib" prefix="lib"/>
 			<zipfileset dir="src" prefix="src"/>
+			<zipfileset dir="config" prefix="config"/>
 			<zipfileset dir="examples" prefix="examples"/>
-			<zipfileset file="config/config.xsd" prefix="config"/>
 			<zipfileset file="build.xml"/>
 		</zip>
 
