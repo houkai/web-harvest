@@ -68,6 +68,8 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
     private static final String COMMAND_CUT = "cut";
     private static final String COMMAND_COPY = "copy";
     private static final String COMMAND_PASTE = "paste";
+    private static final String COMMAND_NEXTTAB = "nexttab";
+    private static final String COMMAND_PREVTAB = "prevtab";
     private static final String COMMAND_FIND = "find";
     private static final String COMMAND_REPLACE = "replace";
     private static final String COMMAND_FINDNEXT = "findnext";
@@ -502,6 +504,9 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
         defineMenuItem(menu, "Cut", ResourceManager.getCutIcon(), KeyEvent.VK_U, COMMAND_CUT, KeyStroke.getKeyStroke( KeyEvent.VK_X, ActionEvent.CTRL_MASK));
         defineMenuItem(menu, "Copy", ResourceManager.getCopyIcon(), KeyEvent.VK_C, COMMAND_COPY, KeyStroke.getKeyStroke( KeyEvent.VK_C, ActionEvent.CTRL_MASK));
         defineMenuItem(menu, "Paste", ResourceManager.getPasteIcon(), KeyEvent.VK_P, COMMAND_PASTE, KeyStroke.getKeyStroke( KeyEvent.VK_V, ActionEvent.CTRL_MASK));
+        menu.addSeparator();
+        defineMenuItem(menu, "Next Tab", null, KeyEvent.VK_E, COMMAND_NEXTTAB, KeyStroke.getKeyStroke( KeyEvent.VK_RIGHT, ActionEvent.ALT_MASK | ActionEvent.CTRL_MASK));
+        defineMenuItem(menu, "Previous Tab", null, KeyEvent.VK_P, COMMAND_PREVTAB, KeyStroke.getKeyStroke( KeyEvent.VK_LEFT, ActionEvent.ALT_MASK | ActionEvent.CTRL_MASK));
         menuBar.add(menu);
 
         // Build the editor popup menu.
@@ -581,7 +586,11 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
 
         setCommandEnabled(COMMAND_CUT, configPanel != null);
         setCommandEnabled(COMMAND_COPY, configPanel != null);
-        setCommandEnabled(COMMAND_PASTE, configPanel != null); 
+        setCommandEnabled(COMMAND_PASTE, configPanel != null);
+
+        int tabCount = tabbedPane.getTabCount();
+        setCommandEnabled(COMMAND_NEXTTAB, tabCount > 1);
+        setCommandEnabled(COMMAND_PREVTAB, tabbedPane.getTabCount() > 1); 
 
         String textToFind = findReplaceDialog.getSearchText();
         setCommandEnabled(COMMAND_FIND, configPanel != null);
@@ -730,6 +739,14 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
             if (activeConfigPanel != null) {
                 activeConfigPanel.getXmlPane().paste();
             }
+        } else if ( COMMAND_NEXTTAB.equals(cmd) ) {
+            int tabCount = tabbedPane.getTabCount();
+            int selectedTab = tabbedPane.getSelectedIndex();
+            tabbedPane.setSelectedIndex(selectedTab >= tabCount - 1 ? 0 : selectedTab + 1);
+        } else if ( COMMAND_PREVTAB.equals(cmd) ) {
+            int tabCount = tabbedPane.getTabCount();
+            int selectedTab = tabbedPane.getSelectedIndex();
+            tabbedPane.setSelectedIndex(selectedTab > 0 ? selectedTab - 1 : tabCount - 1);
         } else if ( COMMAND_VIEW_HIERARCHY.equals(cmd) ) {
             ConfigPanel activeConfigPanel = getActiveConfigPanel();
             if (activeConfigPanel != null) {
