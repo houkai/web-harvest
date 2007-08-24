@@ -485,7 +485,7 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
         defineMenuItem(menu, "Save", ResourceManager.getSaveIcon(),  KeyEvent.VK_S, COMMAND_SAVE, KeyStroke.getKeyStroke( KeyEvent.VK_S, ActionEvent.CTRL_MASK));
         defineMenuItem(menu, "Save As", null, KeyEvent.VK_V, COMMAND_SAVEAS, null);
         menu.addSeparator();
-        defineMenuItem(menu, "Close", ResourceManager.getCloseIcon(), KeyEvent.VK_C, COMMAND_CLOSE, null);
+        defineMenuItem(menu, "Close", ResourceManager.getCloseIcon(), KeyEvent.VK_C, COMMAND_CLOSE, KeyStroke.getKeyStroke( KeyEvent.VK_F4, ActionEvent.CTRL_MASK));
         defineMenuItem(menu, "Close All", null, KeyEvent.VK_A, COMMAND_CLOSE_ALL, null);
         menu.addSeparator();
         defineMenuItem(menu, "Exit", null, KeyEvent.VK_X, COMMAND_EXIT, null);
