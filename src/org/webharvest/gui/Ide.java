@@ -648,8 +648,10 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
         String cmd = e.getActionCommand();
         if ( COMMAND_NEW.equals(cmd) ) {
             addTab();
+            grabFocusToActiveEditor();
         } if ( COMMAND_OPEN.equals(cmd) ) {
             openConfigFromFile();
+            grabFocusToActiveEditor();
         } if ( COMMAND_SAVE.equals(cmd) ) {
             ConfigDocument configDocument = getActiveConfigDocument();
             if (configDocument != null) {
@@ -743,10 +745,12 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
             int tabCount = tabbedPane.getTabCount();
             int selectedTab = tabbedPane.getSelectedIndex();
             tabbedPane.setSelectedIndex(selectedTab >= tabCount - 1 ? 0 : selectedTab + 1);
+            grabFocusToActiveEditor();
         } else if ( COMMAND_PREVTAB.equals(cmd) ) {
             int tabCount = tabbedPane.getTabCount();
             int selectedTab = tabbedPane.getSelectedIndex();
             tabbedPane.setSelectedIndex(selectedTab > 0 ? selectedTab - 1 : tabCount - 1);
+            grabFocusToActiveEditor();
         } else if ( COMMAND_VIEW_HIERARCHY.equals(cmd) ) {
             ConfigPanel activeConfigPanel = getActiveConfigPanel();
             if (activeConfigPanel != null) {
@@ -765,6 +769,13 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
         }
         
         this.updateGUI();
+    }
+
+    private void grabFocusToActiveEditor() {
+        ConfigPanel activeConfigPanel = getActiveConfigPanel();
+        if (activeConfigPanel != null) {
+            activeConfigPanel.getXmlPane().grabFocus();
+        }
     }
 
     /**
