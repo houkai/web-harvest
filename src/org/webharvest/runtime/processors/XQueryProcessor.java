@@ -159,7 +159,7 @@ public class XQueryProcessor extends BaseProcessor {
 	                break;
 	            }
 	            
-	            String value = CommonUtil.serializeItem(item, config);
+	            String value = CommonUtil.serializeItem(item);
 	            listVariable.addVariable( new NodeVariable(value) );
 	        }
 

@@ -303,7 +303,7 @@ public class CommonUtil {
     /**
      * Serializes item after XPath or XQuery processor execution using Saxon.
      */
-    public static String serializeItem(Item item, Configuration config) throws XPathException {
+    public static String serializeItem(Item item) throws XPathException {
     	if (item instanceof NodeInfo) {
     		int type = ((NodeInfo)item).getNodeKind();
             if (type == Type.DOCUMENT || type == Type.ELEMENT) {
@@ -312,7 +312,7 @@ public class CommonUtil {
 	            props.setProperty(OutputKeys.INDENT, "yes");
 
                 StringWriter stringWriter = new java.io.StringWriter();
-                QueryResult.serialize((NodeInfo)item, new StreamResult(stringWriter), props, config);
+                QueryResult.serialize((NodeInfo)item, new StreamResult(stringWriter), props);
                 stringWriter.flush();
                 return stringWriter.toString().replaceAll(" xmlns=\"http\\://www.w3.org/1999/xhtml\"", "");
             }
