@@ -81,6 +81,7 @@
 			<xs:element name="html-to-xml">
 				<xs:complexType mixed="true">
 					<xs:group ref="groupProcessors" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:attribute name="outputtype"/>
 					<xs:attribute name="advancedxmlescape"/>
 					<xs:attribute name="usecdata"/>
 					<xs:attribute name="specialentities"/>

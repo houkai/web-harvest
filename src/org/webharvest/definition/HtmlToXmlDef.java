@@ -41,6 +41,7 @@ package org.webharvest.definition;
  */
 public class HtmlToXmlDef extends BaseElementDef {
 
+    private String outputType;
     private String advancedXmlEscape;
     private String useCdataForScriptAndStyle;
     private String translateSpecialEntities;
@@ -58,6 +59,7 @@ public class HtmlToXmlDef extends BaseElementDef {
     public HtmlToXmlDef(XmlNode xmlNode) {
         super(xmlNode);
 
+        this.outputType = (String) xmlNode.get("outputtype");
         this.advancedXmlEscape = (String) xmlNode.get("advancedxmlescape");
         this.useCdataForScriptAndStyle = (String) xmlNode.get("usecdata");
         this.translateSpecialEntities = (String) xmlNode.get("specialentities");
@@ -75,6 +77,10 @@ public class HtmlToXmlDef extends BaseElementDef {
 
     public String getShortElementName() {
         return "html-to-xml";
+    }
+
+    public String getOutputType() {
+        return outputType;
     }
 
     public String getAdvancedXmlEscape() {

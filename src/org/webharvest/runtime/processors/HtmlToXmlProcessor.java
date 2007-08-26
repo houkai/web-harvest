@@ -135,9 +135,21 @@ public class HtmlToXmlProcessor extends BaseProcessor {
             cleaner.setNamespacesAware(false);
         }
 
+        String outputType = BaseTemplater.execute(htmlToXmlDef.getOutputType(), scriptEngine);;
+
         try {
             cleaner.clean();
-            return new NodeVariable( cleaner.getCompactXmlAsString() );
+            String result;
+
+            if ( "simple".equalsIgnoreCase(outputType) ) {
+                result = cleaner.getXmlAsString();
+            } else if ( "pretty".equalsIgnoreCase(outputType) ) {
+                result = cleaner.getPrettyXmlAsString();
+            }  else {
+                result = cleaner.getCompactXmlAsString();
+            }
+
+            return new NodeVariable(result);
         } catch (IOException e) {
             throw new ParserException(e);
         }

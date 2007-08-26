@@ -55,7 +55,7 @@ public class DefinitionResolver {
 
     // defines all valid elements of Web-Harvest configuration file
     static {
-        String htmlToXmlAtts = "id,advancedxmlescape,usecdata,specialentities,unicodechars," +
+        String htmlToXmlAtts = "id,outputtype,advancedxmlescape,usecdata,specialentities,unicodechars," +
                                "omitunknowntags,treatunknowntagsascontent,omitdeprtags,treatdeprtagsascontent," +
                                "omitcomments,omithtmlenvelope,allowmultiwordattributes," +
                                "allowhtmlinsideattributes,namespacesaware";
