@@ -41,12 +41,92 @@ package org.webharvest.definition;
  */
 public class HtmlToXmlDef extends BaseElementDef {
 
+    private String advancedXmlEscape;
+    private String useCdataForScriptAndStyle;
+    private String translateSpecialEntities;
+    private String recognizeUnicodeChars;
+    private String omitUnknownTags;
+    private String treatUnknownTagsAsContent;
+    private String omitDeprecatedTags;
+    private String treatDeprecatedTagsAsContent;
+    private String omitComments;
+    private String omitHtmlEnvelope;
+    private String allowMultiWordAttributes;
+    private String allowHtmlInsideAttributes;
+    private String namespacesAware;
+
     public HtmlToXmlDef(XmlNode xmlNode) {
         super(xmlNode);
+
+        this.advancedXmlEscape = (String) xmlNode.get("advancedxmlescape");
+        this.useCdataForScriptAndStyle = (String) xmlNode.get("usecdata");
+        this.translateSpecialEntities = (String) xmlNode.get("specialentities");
+        this.recognizeUnicodeChars = (String) xmlNode.get("unicodechars");
+        this.omitUnknownTags = (String) xmlNode.get("omitunknowntags");
+        this.treatUnknownTagsAsContent = (String) xmlNode.get("treatunknowntagsascontent");
+        this.omitDeprecatedTags = (String) xmlNode.get("omitdeprtags");
+        this.treatDeprecatedTagsAsContent = (String) xmlNode.get("treatdeprtagsascontent");
+        this.omitComments = (String) xmlNode.get("omitcomments");
+        this.omitHtmlEnvelope = (String) xmlNode.get("omithtmlenvelope");
+        this.allowMultiWordAttributes = (String) xmlNode.get("allowmultiwordattributes");
+        this.allowHtmlInsideAttributes = (String) xmlNode.get("allowhtmlinsideattributes");
+        this.namespacesAware = (String) xmlNode.get("namespacesaware");
     }
 
     public String getShortElementName() {
         return "html-to-xml";
+    }
+
+    public String getAdvancedXmlEscape() {
+        return advancedXmlEscape;
+    }
+
+    public String getUseCdataForScriptAndStyle() {
+        return useCdataForScriptAndStyle;
+    }
+
+    public String getTranslateSpecialEntities() {
+        return translateSpecialEntities;
+    }
+
+    public String getRecognizeUnicodeChars() {
+        return recognizeUnicodeChars;
+    }
+
+    public String getOmitUnknownTags() {
+        return omitUnknownTags;
+    }
+
+    public String getTreatUnknownTagsAsContent() {
+        return treatUnknownTagsAsContent;
+    }
+
+    public String getOmitDeprecatedTags() {
+        return omitDeprecatedTags;
+    }
+
+    public String getTreatDeprecatedTagsAsContent() {
+        return treatDeprecatedTagsAsContent;
+    }
+
+    public String getOmitComments() {
+        return omitComments;
+    }
+
+    public String getOmitHtmlEnvelope() {
+        return omitHtmlEnvelope;
+    }
+
+    public String getAllowMultiWordAttributes() {
+        return allowMultiWordAttributes;
+    }
+
+    public String getAllowHtmlInsideAttributes() {
+        return allowHtmlInsideAttributes;
+    }
+
+    public String getNamespacesAware() {
+        return namespacesAware;
     }
 
 }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- edited with XMLSpy v2007 sp1 (http://www.altova.com) by vlada (vlada) -->
+<!-- edited with XMLSpy v2006 sp2 U (http://www.altova.com) by Vlada (Vlada) -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
 	<xs:element name="config">
 		<xs:annotation>
@@ -81,6 +81,19 @@
 			<xs:element name="html-to-xml">
 				<xs:complexType mixed="true">
 					<xs:group ref="groupProcessors" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:attribute name="advancedxmlescape"/>
+					<xs:attribute name="usecdata"/>
+					<xs:attribute name="specialentities"/>
+					<xs:attribute name="unicodechars"/>
+					<xs:attribute name="omitunknowntags"/>
+					<xs:attribute name="treatunknowntagsascontent"/>
+					<xs:attribute name="omitdeprtags"/>
+					<xs:attribute name="treatdeprtagsascontent"/>
+					<xs:attribute name="omitcomments"/>
+					<xs:attribute name="omithtmlenvelope"/>
+					<xs:attribute name="allowmultiwordattributes"/>
+					<xs:attribute name="allowhtmlinsideattributes"/>
+					<xs:attribute name="namespacesaware"/>
 					<xs:attribute name="id"/>
 				</xs:complexType>
 			</xs:element>

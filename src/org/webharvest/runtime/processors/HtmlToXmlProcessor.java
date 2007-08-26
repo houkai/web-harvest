@@ -36,13 +36,18 @@
 */
 package org.webharvest.runtime.processors;
 
+import org.htmlcleaner.HtmlCleaner;
 import org.webharvest.definition.HtmlToXmlDef;
+import org.webharvest.exception.ParserException;
 import org.webharvest.runtime.Scraper;
 import org.webharvest.runtime.ScraperContext;
-import org.webharvest.runtime.html.HtmlCleanerProcessor;
-import org.webharvest.runtime.html.IXHtmlProcessor;
+import org.webharvest.runtime.scripting.ScriptEngine;
+import org.webharvest.runtime.templaters.BaseTemplater;
 import org.webharvest.runtime.variables.IVariable;
 import org.webharvest.runtime.variables.NodeVariable;
+import org.webharvest.utils.CommonUtil;
+
+import java.io.IOException;
 
 /**
  * HTML to XML processor.
@@ -59,10 +64,83 @@ public class HtmlToXmlProcessor extends BaseProcessor {
     public IVariable execute(Scraper scraper, ScraperContext context) {
         IVariable body = getBodyTextContent(htmlToXmlDef, scraper, context);
 
-        IXHtmlProcessor htmlProcessor = new HtmlCleanerProcessor();
-        String result = htmlProcessor.execute( body.toString() );
+        HtmlCleaner cleaner = new HtmlCleaner( body.toString() );
 
-        return new NodeVariable(result);
+        final ScriptEngine scriptEngine = scraper.getScriptEngine();
+
+        final String advancedXmlEscape = BaseTemplater.execute( htmlToXmlDef.getAdvancedXmlEscape(), scriptEngine);
+        if ( advancedXmlEscape != null) {
+            cleaner.setAdvancedXmlEscape(CommonUtil.isBooleanTrue(advancedXmlEscape) );
+        }
+
+        final String cdataForScriptAndStyle = BaseTemplater.execute( htmlToXmlDef.getUseCdataForScriptAndStyle(), scriptEngine);
+        if ( cdataForScriptAndStyle != null) {
+            cleaner.setUseCdataForScriptAndStyle(CommonUtil.isBooleanTrue(cdataForScriptAndStyle) );
+        }
+
+        final String specialEntities = BaseTemplater.execute( htmlToXmlDef.getTranslateSpecialEntities(), scriptEngine);
+        if ( specialEntities != null) {
+            cleaner.setTranslateSpecialEntities(CommonUtil.isBooleanTrue(specialEntities) );
+        }
+
+        final String recognizeUnicodeChars = BaseTemplater.execute(htmlToXmlDef.getRecognizeUnicodeChars(), scriptEngine);
+        if ( recognizeUnicodeChars != null) {
+            cleaner.setRecognizeUnicodeChars( CommonUtil.isBooleanTrue(recognizeUnicodeChars) );
+        }
+
+        final String omitUnknownTags = BaseTemplater.execute(htmlToXmlDef.getOmitUnknownTags(), scriptEngine);
+        if ( omitUnknownTags != null) {
+            cleaner.setOmitUnknownTags( CommonUtil.isBooleanTrue(omitUnknownTags) );
+        }
+
+        final String treatUnknownTagsAsContent = BaseTemplater.execute(htmlToXmlDef.getTreatUnknownTagsAsContent(), scriptEngine);
+        if ( treatUnknownTagsAsContent != null) {
+            cleaner.setTreatUnknownTagsAsContent( CommonUtil.isBooleanTrue(treatUnknownTagsAsContent) );
+        }
+
+        final String omitDeprecatedTags = BaseTemplater.execute(htmlToXmlDef.getOmitDeprecatedTags(), scriptEngine);
+        if ( omitDeprecatedTags != null) {
+            cleaner.setOmitDeprecatedTags( CommonUtil.isBooleanTrue(omitDeprecatedTags) );
+        }
+
+        final String treatDeprTagsAsContent = BaseTemplater.execute(htmlToXmlDef.getTreatDeprecatedTagsAsContent(), scriptEngine);
+        if ( treatDeprTagsAsContent != null) {
+            cleaner.setTreatDeprecatedTagsAsContent( CommonUtil.isBooleanTrue(treatDeprTagsAsContent) );
+        }
+
+        final String omitComments = BaseTemplater.execute(htmlToXmlDef.getOmitComments(), scriptEngine);
+        if ( omitComments != null) {
+            cleaner.setOmitComments( CommonUtil.isBooleanTrue(omitComments) );
+        }
+
+        final String omitHtmlEnvelope = BaseTemplater.execute(htmlToXmlDef.getOmitHtmlEnvelope(), scriptEngine);
+        if ( omitHtmlEnvelope != null) {
+            cleaner.setOmitHtmlEnvelope( CommonUtil.isBooleanTrue(omitHtmlEnvelope) );
+        }
+
+        final String allowMultiWordAttributes = BaseTemplater.execute(htmlToXmlDef.getAllowMultiWordAttributes(), scriptEngine);
+        if ( allowMultiWordAttributes != null) {
+            cleaner.setAllowMultiWordAttributes( CommonUtil.isBooleanTrue(allowMultiWordAttributes) );
+        }
+
+        final String allowHtmlInsideAttributes = BaseTemplater.execute(htmlToXmlDef.getAllowHtmlInsideAttributes(), scriptEngine);
+        if ( allowHtmlInsideAttributes != null) {
+            cleaner.setAllowHtmlInsideAttributes( CommonUtil.isBooleanTrue(allowHtmlInsideAttributes) );
+        }
+
+        final String namespacesAware = BaseTemplater.execute(htmlToXmlDef.getNamespacesAware(), scriptEngine);
+        if ( namespacesAware != null) {
+            cleaner.setNamespacesAware( CommonUtil.isBooleanTrue(namespacesAware) );
+        } else {
+            cleaner.setNamespacesAware(false);
+        }
+
+        try {
+            cleaner.clean();
+            return new NodeVariable( cleaner.getCompactXmlAsString() );
+        } catch (IOException e) {
+            throw new ParserException(e);
+        }
     }
 
 }

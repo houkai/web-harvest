@@ -55,6 +55,10 @@ public class DefinitionResolver {
 
     // defines all valid elements of Web-Harvest configuration file
     static {
+        String htmlToXmlAtts = "id,advancedxmlescape,usecdata,specialentities,unicodechars," +
+                               "omitunknowntags,treatunknowntagsascontent,omitdeprtags,treatdeprtagsascontent," +
+                               "omitcomments,omithtmlenvelope,allowmultiwordattributes," +
+                               "allowhtmlinsideattributes,namespacesaware";
         elementInfos.put( "config", new ElementInfo("config", BaseElementDef.class, null, "charset,id") );
         elementInfos.put( "empty", new ElementInfo("empty", EmptyDef.class, null, "id") );
         elementInfos.put( "text", new ElementInfo("text", TextDef.class, null, "id") );
@@ -64,7 +68,7 @@ public class DefinitionResolver {
         elementInfos.put( "http", new ElementInfo("http", HttpDef.class, null, "id,!url,method,charset,username,password") );
         elementInfos.put( "http-param", new ElementInfo("http-param", HttpParamDef.class, null, "id,!name") );
         elementInfos.put( "http-header", new ElementInfo("http-header", HttpHeaderDef.class, null, "id,!name") );
-        elementInfos.put( "html-to-xml", new ElementInfo("html-to-xml", HtmlToXmlDef.class, null, "id") );
+        elementInfos.put( "html-to-xml", new ElementInfo("html-to-xml", HtmlToXmlDef.class, null, htmlToXmlAtts) );
         elementInfos.put( "regexp", new ElementInfo("regexp", RegexpDef.class, "!regexp-pattern,!regexp-source,regexp-result", "id,replace,max") );
         elementInfos.put( "regexp-pattern", new ElementInfo("regexp-pattern", BaseElementDef.class, null, "id") );
         elementInfos.put( "regexp-source", new ElementInfo("regexp-source", BaseElementDef.class, null, "id") );

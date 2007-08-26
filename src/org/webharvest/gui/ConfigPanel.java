@@ -222,12 +222,12 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
 
         //Create the XML editor pane.
         this.xmlPane = new XmlTextPane();
-        final AutoCompleter xmlPanePopupMenu = new AutoCompleter(this.xmlPane);
+        final AutoCompleter autoCompleter = new AutoCompleter(this.xmlPane);
         this.xmlPane.addKeyListener(new KeyAdapter() {
             public void keyPressed(KeyEvent e) {
                 if ( e.getKeyCode() == KeyEvent.VK_SPACE ) {
                     if ( (e.getModifiers() & KeyEvent.CTRL_MASK) != 0 ) {
-                        xmlPanePopupMenu.autoComplete();
+                        autoCompleter.autoComplete();
                     }
                 }
             }

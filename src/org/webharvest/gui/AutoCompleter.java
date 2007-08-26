@@ -39,6 +39,40 @@ public class AutoCompleter implements ActionListener {
     private static final Color BG_COLOR = new Color(235, 244, 254);
     private static final Font POPUP_FONT = new Font( "Courier", Font.PLAIN, 12);
 
+    /**
+     * Class that provides listener for key events inside completer popup menu.
+     */
+    private class CompleterPopupMenuListener implements MenuKeyListener {
+        public void menuKeyPressed(MenuKeyEvent e) {
+            char ch = e.getKeyChar();
+            int code = e.getKeyCode();
+            if ( (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') || ch == '-' || code == MenuKeyEvent.VK_BACK_SPACE ) {
+                Document document = xmlPane.getDocument();
+                int pos = xmlPane.getCaretPosition();
+                try {
+                    // deleting or inserting new character
+                    if (code == MenuKeyEvent.VK_BACK_SPACE) {
+                        if ( pos > 0 && document.getLength() > 0 ) {
+                            document.remove(pos - 1, 1);
+                        }
+                    } else {
+                        document.insertString(pos, String.valueOf(ch), null);
+                    }
+                } catch (BadLocationException e1) {
+                    e1.printStackTrace();
+                }
+                popupMenu.setVisible(false);
+                autoComplete();
+            }
+        }
+
+        public void menuKeyReleased(MenuKeyEvent e) {
+        }
+
+        public void menuKeyTyped(MenuKeyEvent e) {
+        }
+    }
+
     // instance of popup menu used as auto completion popup window
     private JPopupMenu popupMenu = new JPopupMenu();
 
@@ -54,40 +88,14 @@ public class AutoCompleter implements ActionListener {
     // allowed elements
     private Map elementInfos;
 
+    // instance of completer popup listener
+    private CompleterPopupMenuListener completerPopupMenuListener = new CompleterPopupMenuListener();
+
     /**
      * Constructor.
      * @param xmlPane
      */
     public AutoCompleter(final XmlTextPane xmlPane) {
-        this.popupMenu.addMenuKeyListener( new MenuKeyListener() {
-            public void menuKeyPressed(MenuKeyEvent e) {
-                char ch = e.getKeyChar();
-                int code = e.getKeyCode();
-                if ( (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') || ch == '-' || code == MenuKeyEvent.VK_BACK_SPACE ) {
-                    Document document = xmlPane.getDocument();
-                    int pos = xmlPane.getCaretPosition();
-                    try {
-                        // deleting or inserting new character
-                        if (code == MenuKeyEvent.VK_BACK_SPACE) {
-                            if ( pos > 0 && document.getLength() > 0 ) {
-                                document.remove(pos - 1, 1);
-                            }
-                        } else {
-                            document.insertString(pos, String.valueOf(ch), null);
-                        }
-                    } catch (BadLocationException e1) {
-                        e1.printStackTrace();
-                    }
-                    popupMenu.setVisible(false);
-                    autoComplete();
-                }
-            }
-            public void menuKeyReleased(MenuKeyEvent e) {
-            }
-            public void menuKeyTyped(MenuKeyEvent e) {
-            }
-        });
-
         this.xmlPane = xmlPane;
         this.popupMenu.setBorder( new TitledBorder("") );
         this.elementInfos = DefinitionResolver.getElementInfos();
@@ -99,6 +107,8 @@ public class AutoCompleter implements ActionListener {
         menuItem.setBackground(BG_COLOR);
         menuItem.setFont(POPUP_FONT);
         menuItem.addActionListener(this);
+
+        menuItem.addMenuKeyListener(this.completerPopupMenuListener);
 
         this.popupMenu.add(menuItem);
     }
