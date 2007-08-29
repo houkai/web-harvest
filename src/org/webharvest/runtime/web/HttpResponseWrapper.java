@@ -50,19 +50,20 @@ import java.util.Map;
  */
 public class HttpResponseWrapper {
 	
-	String charset;
-	String mimeType;
-	byte[] body;
-	Map headers = new HashMap();
-	
-	/**
+	private long contentLength;
+	private String charset;
+	private String mimeType;
+	private byte[] body;
+	private Map headers = new HashMap();
+    private int statusCode;
+    private String statusText;
+
+    /**
 	 * Constructor - defines response result based on specified HttpMethodBase instance.
 	 * @param method
 	 */
 	public HttpResponseWrapper(HttpMethodBase method) {
-		this.charset = method.getResponseCharSet();
-		
-		try {
+        try {
 			this.body = method.getResponseBody();
         } catch (IOException e) {
 			// todo: handle exception
@@ -81,9 +82,19 @@ public class HttpResponseWrapper {
         		}
         	}
         }
-	}
-	
-	public String getCharset() {
+
+        this.contentLength = method.getResponseContentLength();
+        this.charset = method.getResponseCharSet();
+        this.statusCode = method.getStatusCode();
+        this.statusText = method.getStatusText();
+
+    }
+
+    public long getContentLength() {
+        return contentLength;
+    }
+
+    public String getCharset() {
 		return this.charset;
 	}
 	
@@ -106,5 +117,13 @@ public class HttpResponseWrapper {
 	public String getHeaderValue(String headerName) {
 		return (String) this.headers.get(headerName);
 	}
-	
+
+    public int getStatusCode() {
+        return statusCode;
+    }
+
+    public String getStatusText() {
+        return statusText;
+    }
+
 }

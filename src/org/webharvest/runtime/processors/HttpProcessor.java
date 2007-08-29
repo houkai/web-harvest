@@ -47,6 +47,7 @@ import org.webharvest.runtime.variables.IVariable;
 import org.webharvest.runtime.variables.NodeVariable;
 import org.webharvest.runtime.web.HttpClientManager;
 import org.webharvest.runtime.web.HttpResponseWrapper;
+import org.webharvest.runtime.web.HttpInfo;
 
 import java.io.UnsupportedEncodingException;
 import java.util.*;
@@ -91,7 +92,7 @@ public class HttpProcessor extends BaseProcessor {
 
         String mimeType = res.getMimeType();
 
-        int contentLength = res.getBody().length;
+        long contentLength = res.getContentLength();
         scraper.getLogger().info("Downloaded: " + url + ", mime type = " + mimeType + ", length = " + contentLength + "B.");
 
         IVariable result;
@@ -112,7 +113,9 @@ public class HttpProcessor extends BaseProcessor {
         this.setProperty("URL", url);
         this.setProperty("Method", method);
         this.setProperty("Charset", charset);
-        this.setProperty("Content size", contentLength + "B");
+        this.setProperty("Content length", contentLength + "B");
+        this.setProperty("Status code", new Integer(res.getStatusCode()));
+        this.setProperty("Status text", res.getStatusText());
 
         Map responseHeaders = res.getHeaders();
         if (responseHeaders != null) {
@@ -122,6 +125,9 @@ public class HttpProcessor extends BaseProcessor {
                 this.setProperty("HTTP header: " + entry.getKey(), entry.getValue());
             }
         }
+
+        // define context variable containing information about HTTP response
+        context.put("http", new HttpInfo(res));
 
         return result;
     }
