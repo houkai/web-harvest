@@ -54,6 +54,10 @@ import java.net.MalformedURLException;
 import java.util.*;
 import java.lang.reflect.Method;
 
+import groovy.util.GroovyScriptEngine;
+import groovy.lang.Binding;
+import groovy.lang.GroovyShell;
+
 public class Ide extends JFrame implements ActionListener, ChangeListener {
 
     private static final String COMMAND_NEW = "new";
@@ -287,7 +291,7 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
         }
     }
 
-    private void createAndShowGUI() {
+    public void createAndShowGUI() {
         this.setJMenuBar( defineMenuBar() );
         this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         this.setIconImage( ((ImageIcon) ResourceManager.getWebHarvestIcon()).getImage() );
@@ -838,11 +842,19 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
      * @param args
      */
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                new Ide().createAndShowGUI();
-            }
-        });
+        Binding binding = new Binding();
+        GroovyShell shell = new GroovyShell(binding);
+        binding.setVariable("foo", new Integer(2));
+
+        Object value = shell.evaluate("println 'Hello World!'; x = 123; return foo * 10");
+        System.out.println("value = " + value);
+
+
+//        SwingUtilities.invokeLater(new Runnable() {
+//            public void run() {
+//                new Ide().createAndShowGUI();
+//            }
+//        });
     }
 
 }

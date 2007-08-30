@@ -34,36 +34,45 @@
     nikic_vladimir@yahoo.com. Please include the word "Web-Harvest" in the
     subject line.
 */
-package org.webharvest.runtime.processors;
+package org.webharvest.runtime.scripting;
 
-import org.webharvest.definition.ScriptDef;
-import org.webharvest.runtime.Scraper;
-import org.webharvest.runtime.ScraperContext;
-import org.webharvest.runtime.scripting.ScriptEngine;
-import org.webharvest.runtime.variables.EmptyVariable;
-import org.webharvest.runtime.variables.IVariable;
+import groovy.lang.Binding;
+import groovy.lang.GroovyShell;
+
+import java.util.Map;
 
 /**
- * Script processor - executes script defined in the body and optionally returns result.
+ * Groovy scripting engine.
  */
-public class ScriptProcessor extends BaseProcessor {
+public class GroovyScriptEngine extends ScriptEngine {
 
-    public static final String CONTEXT_VARIABLE_NAME = "context";
+    private Binding binding = new Binding();
+    private GroovyShell shell = new GroovyShell(binding);
 
-    private ScriptDef scriptDef;
-
-    public ScriptProcessor(ScriptDef scriptDef) {
-        super(scriptDef);
-        this.scriptDef = scriptDef;
+    /**
+     * Constructor - initializes context used in engine.
+     * @param context
+     */
+    public GroovyScriptEngine(Map context) {
+        super(context);
     }
 
-    public IVariable execute(Scraper scraper, ScraperContext context) {
-        IVariable scriptText = getBodyTextContent(scriptDef, scraper, context);
-        String language = scriptDef.getLanguage();
-        ScriptEngine scriptEngine = language == null ? scraper.getScriptEngine() : scraper.getScriptEngine(language);
-        scriptEngine.eval( scriptText.toString() );
+    /**
+     * Sets variable in scripter context.
+     * @param name
+     * @param value
+     */
+    public void setVariable(String name, Object value) {
+        this.binding.setVariable(name, value);
+    }
 
-        return new EmptyVariable();
+    /**
+     * Evaluates specified expression or code block.
+     * @return value of evaluation or null if there is nothing.
+     */
+    public Object eval(String expression) {
+        pushAllVariablesFromContextToScriptEngine();
+        return shell.evaluate(expression);
     }
 
 }

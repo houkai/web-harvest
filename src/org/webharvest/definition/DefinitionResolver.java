@@ -59,7 +59,7 @@ public class DefinitionResolver {
                                "omitunknowntags,treatunknowntagsascontent,omitdeprtags,treatdeprtagsascontent," +
                                "omitcomments,omithtmlenvelope,allowmultiwordattributes," +
                                "allowhtmlinsideattributes,namespacesaware";
-        elementInfos.put( "config", new ElementInfo("config", BaseElementDef.class, null, "charset,id") );
+        elementInfos.put( "config", new ElementInfo("config", BaseElementDef.class, null, "charset,scriptlang,id") );
         elementInfos.put( "empty", new ElementInfo("empty", EmptyDef.class, null, "id") );
         elementInfos.put( "text", new ElementInfo("text", TextDef.class, null, "id") );
         elementInfos.put( "file", new ElementInfo("file", FileDef.class, null, "id,!path,action,type,charset") );
@@ -95,7 +95,7 @@ public class DefinitionResolver {
         elementInfos.put( "include", new ElementInfo("include", IncludeDef.class, "", "id,!path") );
         elementInfos.put( "try", new ElementInfo("try", TryDef.class, "!body,!catch", "id") );
         elementInfos.put( "catch", new ElementInfo("catch", BaseElementDef.class, null, "id") );
-        elementInfos.put( "script", new ElementInfo("script", ScriptDef.class, null, "id") );
+        elementInfos.put( "script", new ElementInfo("script", ScriptDef.class, null, "id,language") );
     }
 
     /**

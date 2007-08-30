@@ -38,10 +38,12 @@ package org.webharvest.runtime.processors;
 
 import org.webharvest.definition.CallDef;
 import org.webharvest.definition.FunctionDef;
+import org.webharvest.definition.ScraperConfiguration;
 import org.webharvest.exception.FunctionException;
 import org.webharvest.runtime.Scraper;
 import org.webharvest.runtime.ScraperContext;
 import org.webharvest.runtime.scripting.ScriptEngine;
+import org.webharvest.runtime.scripting.BeanShellScriptEngine;
 import org.webharvest.runtime.templaters.BaseTemplater;
 import org.webharvest.runtime.variables.IVariable;
 import org.webharvest.runtime.variables.NodeVariable;
@@ -53,13 +55,15 @@ public class CallProcessor extends BaseProcessor {
 
     private CallDef callDef;
     
-    ScraperContext functionContext = new ScraperContext();
-    ScriptEngine scriptEngine = new ScriptEngine(functionContext);
+    ScraperContext functionContext;
+    ScriptEngine scriptEngine;
 
     private IVariable functionResult = new NodeVariable("");
 
-    public CallProcessor(CallDef callDef) {
+    public CallProcessor(CallDef callDef, ScraperConfiguration configuration) {
         super(callDef);
+        this.functionContext = new ScraperContext();
+        this.scriptEngine = configuration.createScriptEngine(functionContext);
         this.callDef = callDef;
     }
 

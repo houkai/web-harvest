@@ -34,36 +34,56 @@
     nikic_vladimir@yahoo.com. Please include the word "Web-Harvest" in the
     subject line.
 */
-package org.webharvest.runtime.processors;
+package org.webharvest.runtime.scripting;
 
-import org.webharvest.definition.ScriptDef;
-import org.webharvest.runtime.Scraper;
-import org.webharvest.runtime.ScraperContext;
-import org.webharvest.runtime.scripting.ScriptEngine;
-import org.webharvest.runtime.variables.EmptyVariable;
-import org.webharvest.runtime.variables.IVariable;
+import org.mozilla.javascript.Context;
+import org.mozilla.javascript.Scriptable;
+import org.mozilla.javascript.ScriptableObject;
+
+import java.util.Map;
 
 /**
- * Script processor - executes script defined in the body and optionally returns result.
+ * javascript scripting engine based on Rhino.
  */
-public class ScriptProcessor extends BaseProcessor {
+public class JavascriptScriptEngine extends ScriptEngine {
 
-    public static final String CONTEXT_VARIABLE_NAME = "context";
+    private Context javascriptContext = null;
+    private Scriptable scope = null;
 
-    private ScriptDef scriptDef;
-
-    public ScriptProcessor(ScriptDef scriptDef) {
-        super(scriptDef);
-        this.scriptDef = scriptDef;
+    /**
+     * Constructor - initializes context used in engine.
+     * @param context
+     */
+    public JavascriptScriptEngine(Map context) {
+        super(context);
     }
 
-    public IVariable execute(Scraper scraper, ScraperContext context) {
-        IVariable scriptText = getBodyTextContent(scriptDef, scraper, context);
-        String language = scriptDef.getLanguage();
-        ScriptEngine scriptEngine = language == null ? scraper.getScriptEngine() : scraper.getScriptEngine(language);
-        scriptEngine.eval( scriptText.toString() );
+    private synchronized void initContextIfNeeded() {
+        if (this.javascriptContext == null) {
+            this.javascriptContext = Context.enter();
+            this.scope = javascriptContext.initStandardObjects();
+        }
+    }
 
-        return new EmptyVariable();
+    /**
+     * Sets variable in scripter context.
+     * @param name
+     * @param value
+     */
+    public void setVariable(String name, Object value) {
+        initContextIfNeeded();
+        Object wrappedOut = Context.javaToJS(value, scope);
+        ScriptableObject.putProperty(this.scope, name, wrappedOut);
+    }
+
+    /**
+     * Evaluates specified expression or code block.
+     * @return value of evaluation or null if there is nothing.
+     */
+    public Object eval(String expression) {
+        initContextIfNeeded();
+        pushAllVariablesFromContextToScriptEngine();
+        return this.javascriptContext.evaluateString(scope, expression, "<cmd>", 1, null);
     }
 
 }

@@ -40,7 +40,7 @@ import org.webharvest.definition.*;
 
 public class ProcessorResolver {
 	
-    public static BaseProcessor createProcessor(IElementDef elementDef) {
+    public static BaseProcessor createProcessor(IElementDef elementDef, ScraperConfiguration configuration) {
         if (elementDef instanceof EmptyDef) {
             return new EmptyProcessor( (EmptyDef)elementDef );
         } else if (elementDef instanceof TextDef) {
@@ -82,7 +82,7 @@ public class ProcessorResolver {
 	    } else if (elementDef instanceof IncludeDef) {
 	    	return new IncludeProcessor( (IncludeDef)elementDef );
 	    } else if (elementDef instanceof CallDef) {
-	    	return new CallProcessor( (CallDef)elementDef );
+	    	return new CallProcessor( (CallDef)elementDef, configuration );
 	    } else if (elementDef instanceof CallParamDef) {
 	    	return new CallParamProcessor( (CallParamDef)elementDef );
 	    } else if (elementDef instanceof ReturnDef) {

@@ -38,7 +38,9 @@
 import org.apache.log4j.PropertyConfigurator;
 import org.webharvest.definition.ScraperConfiguration;
 import org.webharvest.runtime.Scraper;
+import org.webharvest.gui.Ide;
 
+import javax.swing.*;
 import java.io.FileNotFoundException;
 import java.util.Properties;
 
@@ -62,59 +64,67 @@ public class CommandLine {
 	}
 	
     public static void main(String[] args) throws FileNotFoundException {
-        String configFilePath = getArgValue(args, "config");
-        if ("".equals(configFilePath)) {
-        	System.err.println("You must specify configuration file path using config=<path> argument!");
-        	System.exit(1);
-        }
-        
-        String workingDir = getArgValue(args, "workdir");
-        if ("".equals(workingDir)) {
-        	System.err.println("You must specify working directory path using workdir=<path> argument!");
-        	System.exit(1);
-        }
-        
-        String isDebug = getArgValue(args, "debug");
-        
-    	Properties props = new Properties();
-    	props.setProperty("log4j.rootLogger", "INFO, stdout");
-    	props.setProperty("log4j.appender.stdout", "org.apache.log4j.ConsoleAppender");
-    	props.setProperty("log4j.appender.stdout.layout", "org.apache.log4j.PatternLayout");
-    	props.setProperty("log4j.appender.stdout.layout.ConversionPattern", "%-5p (%20F:%-3L) - %m\n");
+        if ( args == null || args.length == 0 || !"-cl".equals(args[0]) ) {
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    new Ide().createAndShowGUI();
+                }
+            });
+        } else {
+            String configFilePath = getArgValue(args, "config");
+            if ("".equals(configFilePath)) {
+                System.err.println("You must specify configuration file path using config=<path> argument!");
+                System.exit(1);
+            }
 
-    	props.setProperty("log4j.appender.file", "org.apache.log4j.DailyRollingFileAppender");
-    	props.setProperty("log4j.appender.file.File", workingDir + "/out.log");
-    	props.setProperty("log4j.appender.file.DatePattern", "yyyy-MM-dd");
-    	props.setProperty("log4j.appender.file.layout", "org.apache.log4j.PatternLayout");
-    	props.setProperty("log4j.appender.file.layout.ConversionPattern", "%-5p (%20F:%-3L) - %m\n");
-      
-        PropertyConfigurator.configure(props);
+            String workingDir = getArgValue(args, "workdir");
+            if ("".equals(workingDir)) {
+                System.err.println("You must specify working directory path using workdir=<path> argument!");
+                System.exit(1);
+            }
 
-        ScraperConfiguration config = new ScraperConfiguration(configFilePath);
-        Scraper scraper = new Scraper(config, workingDir);
-        
-        if ("yes".equalsIgnoreCase(isDebug)) {
-        	scraper.setDebug(true);
-        }
-        
-        String proxyHost = getArgValue(args, "proxyHost");
-        if (!"".equals(proxyHost)) {
-        	String proxyPort = getArgValue(args, "proxyPort");
-        	if (!"".equals(proxyPort)) {
-        		int port = Integer.parseInt(proxyPort);
-        		scraper.getHttpClientManager().setHttpProxy(proxyHost, port);
-        	} else {
-        		scraper.getHttpClientManager().setHttpProxy(proxyHost);
-        	}
-        }
+            String isDebug = getArgValue(args, "debug");
 
-        String proxyUser = getArgValue(args, "proxyUser");
-        if (!"".equals(proxyUser)) {
-            String proxyPassword = getArgValue(args, "proxyPassword");
-            scraper.getHttpClientManager().setHttpProxyCredentials(proxyUser, proxyPassword);
-        }
+            Properties props = new Properties();
+            props.setProperty("log4j.rootLogger", "INFO, stdout");
+            props.setProperty("log4j.appender.stdout", "org.apache.log4j.ConsoleAppender");
+            props.setProperty("log4j.appender.stdout.layout", "org.apache.log4j.PatternLayout");
+            props.setProperty("log4j.appender.stdout.layout.ConversionPattern", "%-5p (%20F:%-3L) - %m\n");
 
-        scraper.execute();
+            props.setProperty("log4j.appender.file", "org.apache.log4j.DailyRollingFileAppender");
+            props.setProperty("log4j.appender.file.File", workingDir + "/out.log");
+            props.setProperty("log4j.appender.file.DatePattern", "yyyy-MM-dd");
+            props.setProperty("log4j.appender.file.layout", "org.apache.log4j.PatternLayout");
+            props.setProperty("log4j.appender.file.layout.ConversionPattern", "%-5p (%20F:%-3L) - %m\n");
+
+            PropertyConfigurator.configure(props);
+
+            ScraperConfiguration config = new ScraperConfiguration(configFilePath);
+            Scraper scraper = new Scraper(config, workingDir);
+
+            if ("yes".equalsIgnoreCase(isDebug)) {
+                scraper.setDebug(true);
+            }
+
+            String proxyHost = getArgValue(args, "proxyHost");
+            if (!"".equals(proxyHost)) {
+                String proxyPort = getArgValue(args, "proxyPort");
+                if (!"".equals(proxyPort)) {
+                    int port = Integer.parseInt(proxyPort);
+                    scraper.getHttpClientManager().setHttpProxy(proxyHost, port);
+                } else {
+                    scraper.getHttpClientManager().setHttpProxy(proxyHost);
+                }
+            }
+
+            String proxyUser = getArgValue(args, "proxyUser");
+            if (!"".equals(proxyUser)) {
+                String proxyPassword = getArgValue(args, "proxyPassword");
+                scraper.getHttpClientManager().setHttpProxyCredentials(proxyUser, proxyPassword);
+            }
+
+            scraper.execute();
+        }
     }
 
 }

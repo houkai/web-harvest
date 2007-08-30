@@ -34,36 +34,61 @@
     nikic_vladimir@yahoo.com. Please include the word "Web-Harvest" in the
     subject line.
 */
-package org.webharvest.runtime.processors;
+package org.webharvest.runtime.scripting;
 
-import org.webharvest.definition.ScriptDef;
-import org.webharvest.runtime.Scraper;
-import org.webharvest.runtime.ScraperContext;
-import org.webharvest.runtime.scripting.ScriptEngine;
-import org.webharvest.runtime.variables.EmptyVariable;
-import org.webharvest.runtime.variables.IVariable;
+import bsh.EvalError;
+import bsh.Interpreter;
+import org.webharvest.exception.ScriptException;
+
+import java.util.Map;
 
 /**
- * Script processor - executes script defined in the body and optionally returns result.
+ * BeanShell scripting engine.
  */
-public class ScriptProcessor extends BaseProcessor {
+public class BeanShellScriptEngine extends ScriptEngine {
 
-    public static final String CONTEXT_VARIABLE_NAME = "context";
+    private Interpreter beanShellInterpreter = new Interpreter();
 
-    private ScriptDef scriptDef;
-
-    public ScriptProcessor(ScriptDef scriptDef) {
-        super(scriptDef);
-        this.scriptDef = scriptDef;
+    /**
+     * Constructor - initializes context used in engine.
+     * @param context
+     */
+    public BeanShellScriptEngine(Map context) {
+        super(context);
+        this.beanShellInterpreter.getNameSpace().importCommands("org.webharvest.runtime.scripting");
+        this.context = context;
+        try {
+            this.beanShellInterpreter.set(CONTEXT_VARIABLE_NAME, this.context);
+        } catch (EvalError e) {
+            throw new ScriptException("Cannot set Web-Harvest context in scripter: " + e.getMessage(), e);
+        }
     }
 
-    public IVariable execute(Scraper scraper, ScraperContext context) {
-        IVariable scriptText = getBodyTextContent(scriptDef, scraper, context);
-        String language = scriptDef.getLanguage();
-        ScriptEngine scriptEngine = language == null ? scraper.getScriptEngine() : scraper.getScriptEngine(language);
-        scriptEngine.eval( scriptText.toString() );
+    /**
+     * Sets variable in scripter context.
+     * @param name
+     * @param value
+     */
+    public void setVariable(String name, Object value) {
+        try {
+            this.beanShellInterpreter.set(name, value);
+        } catch (EvalError e) {
+            throw new ScriptException("Cannot set variable in scripter: " + e.getMessage(), e);
+        }
+    }
 
-        return new EmptyVariable();
+    /**
+     * Evaluates specified expression or code block.
+     * @return value of evaluation or null if there is nothing.
+     */
+    public Object eval(String expression) {
+        pushAllVariablesFromContextToScriptEngine();
+
+        try {
+            return this.beanShellInterpreter.eval(expression);
+        } catch (EvalError e) {
+            throw new ScriptException("Error during script execution: " + e.getMessage(), e);
+        }
     }
 
 }

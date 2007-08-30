@@ -44,16 +44,14 @@ import org.webharvest.runtime.processors.CallProcessor;
 import org.webharvest.runtime.processors.HttpProcessor;
 import org.webharvest.runtime.processors.ProcessorResolver;
 import org.webharvest.runtime.scripting.ScriptEngine;
+import org.webharvest.runtime.scripting.BeanShellScriptEngine;
 import org.webharvest.runtime.variables.IVariable;
 import org.webharvest.runtime.variables.NodeVariable;
 import org.webharvest.runtime.web.HttpClientManager;
 import org.webharvest.utils.CommonUtil;
 import org.webharvest.utils.Stack;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.LinkedList;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Basic runtime class.
@@ -88,7 +86,10 @@ public class Scraper {
     private transient int runningLevel = 1;
 
     // default script engine used throughout the configuration execution
-    ScriptEngine scriptEngine = null;
+    private ScriptEngine scriptEngine = null;
+
+    // all used script engines in this scraper
+    private Map usedScriptEngines = new HashMap();
 
     //currently running processor
     private BaseProcessor runningProcessor;
@@ -110,7 +111,8 @@ public class Scraper {
         this.httpClientManager = new HttpClientManager();
 
         this.context = new ScraperContext();
-        this.scriptEngine = new ScriptEngine(this.context);
+        this.scriptEngine = configuration.createScriptEngine(this.context);
+        this.usedScriptEngines.put(configuration.getDefaultScriptEngine(), this.scriptEngine);
     }
 
     /**
@@ -137,7 +139,7 @@ public class Scraper {
         Iterator it = ops.iterator();
         while (it.hasNext()) {
             IElementDef elementDef = (IElementDef) it.next();
-            BaseProcessor processor = ProcessorResolver.createProcessor(elementDef);
+            BaseProcessor processor = ProcessorResolver.createProcessor(elementDef, this.configuration);
 
             if (processor != null) {
                 processor.run(this, context);
@@ -235,6 +237,16 @@ public class Scraper {
 
     public ScriptEngine getScriptEngine() {
         return runningFunctions.size() > 0 ? getRunningFunction().getScriptEngine() : this.scriptEngine;
+    }
+
+    public synchronized ScriptEngine getScriptEngine(String engineType) {
+        ScriptEngine engine = (ScriptEngine) this.usedScriptEngines.get(engineType);
+        if (engine == null) {
+            engine = configuration.createScriptEngine(this.context, engineType);
+            this.usedScriptEngines.put(engineType, engine);
+        }
+
+        return engine;
     }
 
     public Logger getLogger() {

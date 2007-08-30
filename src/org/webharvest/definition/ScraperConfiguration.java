@@ -37,6 +37,10 @@
 package org.webharvest.definition;
 
 import org.webharvest.utils.Catalog;
+import org.webharvest.runtime.scripting.ScriptEngine;
+import org.webharvest.runtime.scripting.BeanShellScriptEngine;
+import org.webharvest.runtime.scripting.JavascriptScriptEngine;
+import org.webharvest.runtime.scripting.GroovyScriptEngine;
 import org.xml.sax.InputSource;
 
 import java.io.*;
@@ -50,8 +54,12 @@ import java.util.Map;
  * Basic configuration.
  */
 public class ScraperConfiguration {
-	
-	public static final String DEFAULT_CHARSET = "UTF-8";
+
+    public static final String BEANSHELL_SCRIPT_ENGINE = "beanshell";
+    public static final String JAVASCRIPT_SCRIPT_ENGINE = "javascript";
+    public static final String GROOVY_SCRIPT_ENGINE = "groovy";
+
+    public static final String DEFAULT_CHARSET = "UTF-8";
 
     // map of function definitions
     private Map functionDefs = new Catalog();
@@ -60,6 +68,7 @@ public class ScraperConfiguration {
     private List operations = new ArrayList();
     
     private String charset = DEFAULT_CHARSET;
+    private String defaultScriptEngine = BEANSHELL_SCRIPT_ENGINE;
 
     private File sourceFile;
     private String url;
@@ -81,6 +90,14 @@ public class ScraperConfiguration {
         String charsetString = node.getString("charset");
         this.charset = charsetString != null ? charsetString : DEFAULT_CHARSET;
 
+        String scriptEngineDesc = node.getString("scriptlang");
+        if ( "javascript".equalsIgnoreCase(scriptEngineDesc) ) {
+            this.defaultScriptEngine = JAVASCRIPT_SCRIPT_ENGINE;
+        } else if ( "groovy".equalsIgnoreCase(scriptEngineDesc) ) {
+            this.defaultScriptEngine = GROOVY_SCRIPT_ENGINE;
+        } else {
+            this.defaultScriptEngine = BEANSHELL_SCRIPT_ENGINE;
+        }
 
         List elementList = node.getElementList();
         Iterator it = elementList.iterator();
@@ -134,6 +151,10 @@ public class ScraperConfiguration {
 		return charset;
 	}
 
+    public String getDefaultScriptEngine() {
+        return defaultScriptEngine;
+    }
+
     public FunctionDef getFunctionDef(String name) {
         return (FunctionDef) functionDefs.get(name);
     }
@@ -157,5 +178,19 @@ public class ScraperConfiguration {
     public void setUrl(String url) {
         this.url = url;
     }
-    
+
+    public ScriptEngine createScriptEngine(Map context, String engineType) {
+        if ( JAVASCRIPT_SCRIPT_ENGINE.equalsIgnoreCase(engineType) ) {
+            return new JavascriptScriptEngine(context);
+        } else if ( GROOVY_SCRIPT_ENGINE.equalsIgnoreCase(engineType) ) {
+            return new GroovyScriptEngine(context);
+        } else {
+            return new BeanShellScriptEngine(context);
+        }
+    }
+
+    public ScriptEngine createScriptEngine(Map context) {
+        return createScriptEngine(context, this.defaultScriptEngine);
+    }
+
 }

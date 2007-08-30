@@ -14,6 +14,12 @@
 					<xs:documentation>Default charset used wherever not explicitely specified in processors</xs:documentation>
 				</xs:annotation>
 			</xs:attribute>
+			<xs:attribute name="scriptlang">
+				<xs:annotation>
+					<xs:documentation>Scripting langiage used for the configuration. Should be one of: BeanShell (default), Javascript and Groovy</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="id"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:group name="groupProcessors">
@@ -181,6 +187,7 @@
 			<xs:element name="script">
 				<xs:complexType mixed="true">
 					<xs:group ref="groupProcessors" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:attribute name="language"/>
 					<xs:attribute name="id"/>
 				</xs:complexType>
 			</xs:element>

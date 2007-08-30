@@ -36,34 +36,24 @@
 */
 package org.webharvest.runtime.scripting;
 
-import bsh.EvalError;
-import bsh.Interpreter;
-import org.webharvest.exception.ScriptException;
-
-import java.util.Iterator;
 import java.util.Map;
+import java.util.Iterator;
 
 /**
- * Wrapper for scripting engine.
+ * Abstract scripting engine.
  */
-public class ScriptEngine extends Interpreter {
+abstract public class ScriptEngine  {
 
     public static final String CONTEXT_VARIABLE_NAME = "___web_harvest_context___";
 
-    private Map context;
+    protected Map context;
 
     /**
-     * Constructor - initializes context used in engine.
+     * Constructor - initializes context of variables.
      * @param context
      */
-    public ScriptEngine(Map context) {
-        this.getNameSpace().importCommands("org.webharvest.runtime.scripting");
+    protected ScriptEngine(Map context) {
         this.context = context;
-        try {
-            this.set(CONTEXT_VARIABLE_NAME, this.context);
-        } catch (EvalError e) {
-            throw new ScriptException("Cannot set Web-Harvest context in scripter: " + e.getMessage(), e);
-        }
     }
 
     /**
@@ -71,19 +61,19 @@ public class ScriptEngine extends Interpreter {
      * @param name
      * @param value
      */
-    public void setVariable(String name, Object value) {
-        try {
-            super.set(name, value);
-        } catch (EvalError e) {
-            throw new ScriptException("Cannot set variable in scripter: " + e.getMessage(), e);
-        }
-    }
+    public abstract void setVariable(String name, Object value);
 
     /**
      * Evaluates specified expression or code block.
      * @return value of evaluation or null if there is nothing.
      */
-    public Object eval(String expression) {
+    public abstract Object eval(String expression);
+
+
+    /**
+     * Push all the variables from variables context to the script engine.
+     */
+    protected void pushAllVariablesFromContextToScriptEngine() {
         // push all variables from context to the scripter
         if (this.context != null) {
             Iterator it = this.context.entrySet().iterator();
@@ -92,12 +82,6 @@ public class ScriptEngine extends Interpreter {
                 String name = (String) entry.getKey();
                 setVariable( name, entry.getValue() );
             }
-        }
-        
-        try {
-            return super.eval(expression);
-        } catch (EvalError e) {
-            throw new ScriptException("Error during script execution: " + e.getMessage(), e);
         }
     }
 
@@ -111,5 +95,5 @@ public class ScriptEngine extends Interpreter {
             this.context.put(name, value);
         }
     }
-    
+
 }

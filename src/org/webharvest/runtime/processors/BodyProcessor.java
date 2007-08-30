@@ -21,7 +21,7 @@ public class BodyProcessor extends BaseProcessor {
 
         if (defs.length > 0) {
             for (int i = 0; i < defs.length; i++) {
-                BaseProcessor processor = ProcessorResolver.createProcessor( defs[i] );
+                BaseProcessor processor = ProcessorResolver.createProcessor( defs[i], scraper.getConfiguration() );
                 result.addVariable( processor.run(scraper, context) );
             }
         } else {

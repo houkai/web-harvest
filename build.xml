@@ -17,10 +17,13 @@
 		<pathelement location="${dir.lib}/commons-collections-3.1.jar"/>
 		<pathelement location="${dir.lib}/commons-httpclient-3.0.1.jar"/>
 		<pathelement location="${dir.lib}/commons-logging.jar"/>
+		<pathelement location="${dir.lib}/commons-cli-1.1.jar"/>
 		<pathelement location="${dir.lib}/log4j-1.2.13.jar"/>
 		<pathelement location="${dir.lib}/bsh.jar"/>
 		<pathelement location="${dir.lib}/saxon8.jar"/>
 		<pathelement location="${dir.lib}/htmlcleaner.jar"/>
+		<pathelement location="${dir.lib}/groovy-all-1.0.jar"/>
+		<pathelement location="${dir.lib}/js.jar"/>
 	</path>
 		
 	<!--  sources targets -->
@@ -38,6 +41,42 @@
 	<target name="jar" depends="build" description="creates jar library">
 		<jar destfile="${jarfile}" basedir="${dir.dist}" manifest="config/MANIFEST.MF"/>
 	</target>
+
+	<!--  creates jar library -->
+	<target name="jarall" depends="build" description="creates jar library">
+        <unzip dest="${dir.dist}" src="${dir.lib}/commons-codec-1.3.jar"/>
+        <unzip dest="${dir.dist}" src="${dir.lib}/commons-collections-3.1.jar"/>
+        <unzip dest="${dir.dist}" src="${dir.lib}/commons-httpclient-3.0.1.jar"/>
+        <unzip dest="${dir.dist}" src="${dir.lib}/commons-logging.jar"/>
+        <unzip dest="${dir.dist}" src="${dir.lib}/commons-cli-1.1.jar"/>
+        <unzip dest="${dir.dist}" src="${dir.lib}/log4j-1.2.13.jar"/>
+        <unzip dest="${dir.dist}" src="${dir.lib}/bsh.jar"/>
+        <unzip dest="${dir.dist}" src="${dir.lib}/saxon8.jar"/>
+        <unzip dest="${dir.dist}" src="${dir.lib}/htmlcleaner.jar"/>
+        <unzip dest="${dir.dist}" src="${dir.lib}/groovy-all-1.0.jar"/>
+        <unzip dest="${dir.dist}" src="${dir.lib}/js.jar"/>
+
+        <delete dir="${dir.dist}/META-INF"/>
+
+        <jar destfile="${jarfile}" basedir="${dir.dist}" manifest="config/MANIFEST.MF" index="Yes">
+            <indexjars>
+                <pathelement path="${dir.lib}/commons-codec-1.3.jar"/>
+                <pathelement path="${dir.lib}/commons-codec-1.3.jar"/>
+                <pathelement path="${dir.lib}/commons-collections-3.1.jar"/>
+                <pathelement path="${dir.lib}/commons-httpclient-3.0.1.jar"/>
+                <pathelement path="${dir.lib}/commons-logging.jar"/>
+                <pathelement path="${dir.lib}/commons-cli-1.1.jar"/>
+                <pathelement path="${dir.lib}/log4j-1.2.13.jar"/>
+                <pathelement path="${dir.lib}/bsh.jar"/>
+                <pathelement path="${dir.lib}/saxon8.jar"/>
+                <pathelement path="${dir.lib}/htmlcleaner.jar"/>
+                <pathelement path="${dir.lib}/groovy-all-1.0.jar"/>
+                <pathelement path="${dir.lib}/js.jar"/>
+            </indexjars>
+        </jar>
+
+        <delete dir="${dir.dist}"/>
+    </target>
 
 	<!--  delete distribution files -->
 	<target name="clean" description="cleans distribution">
