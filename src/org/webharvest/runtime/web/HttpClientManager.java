@@ -37,6 +37,7 @@
 package org.webharvest.runtime.web;
 
 import org.apache.commons.httpclient.*;
+import org.apache.commons.httpclient.cookie.CookiePolicy;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.contrib.ssl.EasySSLProtocolSocketFactory;
 import org.apache.commons.httpclient.methods.GetMethod;
@@ -75,8 +76,20 @@ public class HttpClientManager {
         
         // registers default handling for https 
         Protocol.registerProtocol("https", new Protocol("https", new EasySSLProtocolSocketFactory(), 443));
-        
-        //client.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
+    }
+
+    public void setCookiePolicy(String cookiePolicy) {
+        if ( "browser".equalsIgnoreCase(cookiePolicy) ) {
+            client.getParams().setCookiePolicy(CookiePolicy.BROWSER_COMPATIBILITY);
+        } else if ( "ignore".equalsIgnoreCase(cookiePolicy) ) {
+            client.getParams().setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
+        } else if ( "netscape".equalsIgnoreCase(cookiePolicy) ) {
+            client.getParams().setCookiePolicy(CookiePolicy.NETSCAPE);
+        } else if ( "rfc_2109".equalsIgnoreCase(cookiePolicy) ) {
+            client.getParams().setCookiePolicy(CookiePolicy.RFC_2109);
+        } else {
+            client.getParams().setCookiePolicy(CookiePolicy.DEFAULT);
+        }
     }
 
     /**
@@ -120,6 +133,8 @@ public class HttpClientManager {
         if ( !url.startsWith("http://") && !url.startsWith("https://") ) {
             url = "http://" + url;
         }
+
+        System.out.println("--->" + client.getParams().getCookiePolicy());
 
         url = CommonUtil.encodeUrl(url, charset);
         

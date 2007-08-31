@@ -76,6 +76,7 @@ public class HttpProcessor extends BaseProcessor {
         String charset = BaseTemplater.execute( httpDef.getCharset(), scriptEngine);
         String username = BaseTemplater.execute( httpDef.getUsername(), scriptEngine);
         String password = BaseTemplater.execute( httpDef.getPassword(), scriptEngine);
+        String cookiePolicy = BaseTemplater.execute( httpDef.getCookiePolicy(), scriptEngine);
 
         if (charset == null) {
             charset = scraper.getConfiguration().getCharset();
@@ -85,6 +86,7 @@ public class HttpProcessor extends BaseProcessor {
         new BodyProcessor(httpDef).execute(scraper, context);
 
         HttpClientManager manager = scraper.getHttpClientManager();
+        manager.setCookiePolicy(cookiePolicy);
 
         HttpResponseWrapper res = manager.execute(method, url, charset, username, password, httpParams, httpHeaderMap);
 

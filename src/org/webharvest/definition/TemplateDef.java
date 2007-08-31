@@ -41,12 +41,19 @@ package org.webharvest.definition;
  */
 public class TemplateDef extends BaseElementDef {
 
+    private String language;
+
     public TemplateDef(XmlNode xmlNode) {
         super(xmlNode);
+        this.language = (String) xmlNode.get("language");
     }
 
     public String getShortElementName() {
         return "template";
+    }
+
+    public String getLanguage() {
+        return language;
     }
 
 }

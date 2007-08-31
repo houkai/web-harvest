@@ -199,7 +199,11 @@ public class CommonUtil {
     }
     
     private static String encodeUrlParam(String value, String charset) throws UnsupportedEncodingException {
-    	try {
+        if (value == null) {
+            return "";
+        }
+
+        try {
     		String decoded = URLDecoder.decode(value, charset);
     		
     		String result = "";
@@ -215,6 +219,10 @@ public class CommonUtil {
     }
 
     public static String encodeUrl(String url, String charset) {
+        if (url == null) {
+            return "";
+        }
+        
         int index = url.indexOf("?");
         if (index >= 0) {
             try {

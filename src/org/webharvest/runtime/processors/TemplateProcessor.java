@@ -39,6 +39,7 @@ package org.webharvest.runtime.processors;
 import org.webharvest.definition.TemplateDef;
 import org.webharvest.runtime.Scraper;
 import org.webharvest.runtime.ScraperContext;
+import org.webharvest.runtime.scripting.ScriptEngine;
 import org.webharvest.runtime.templaters.BaseTemplater;
 import org.webharvest.runtime.variables.IVariable;
 import org.webharvest.runtime.variables.NodeVariable;
@@ -58,8 +59,14 @@ public class TemplateProcessor extends BaseProcessor {
 
     public IVariable execute(Scraper scraper, ScraperContext context) {
         IVariable body = getBodyTextContent(templateDef, scraper, context);
-        
-        String result = BaseTemplater.execute(body.toString(), scraper.getScriptEngine());
+
+        String language = BaseTemplater.execute( templateDef.getLanguage(), scraper.getScriptEngine());
+        if (language != null) {
+            language = language.toLowerCase();
+        }
+        ScriptEngine scriptEngine = language == null ? scraper.getScriptEngine() : scraper.getScriptEngine(language);
+
+        String result = BaseTemplater.execute(body.toString(), scriptEngine);
         
         return new NodeVariable(result);
     }

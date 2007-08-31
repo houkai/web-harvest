@@ -65,7 +65,7 @@ public class DefinitionResolver {
         elementInfos.put( "file", new ElementInfo("file", FileDef.class, null, "id,!path,action,type,charset") );
         elementInfos.put( "var-def", new ElementInfo("var-def", VarDefDef.class, null, "id,!name") );
         elementInfos.put( "var", new ElementInfo("var", VarDef.class, "", "id,!name") );
-        elementInfos.put( "http", new ElementInfo("http", HttpDef.class, null, "id,!url,method,charset,username,password") );
+        elementInfos.put( "http", new ElementInfo("http", HttpDef.class, null, "id,!url,method,charset,username,password,cookie-policy") );
         elementInfos.put( "http-param", new ElementInfo("http-param", HttpParamDef.class, null, "id,!name") );
         elementInfos.put( "http-header", new ElementInfo("http-header", HttpHeaderDef.class, null, "id,!name") );
         elementInfos.put( "html-to-xml", new ElementInfo("html-to-xml", HtmlToXmlDef.class, null, htmlToXmlAtts) );
@@ -80,7 +80,7 @@ public class DefinitionResolver {
         elementInfos.put( "xslt", new ElementInfo("xslt", XsltDef.class, "!xml,!stylesheet", "id") );
         elementInfos.put( "xml", new ElementInfo("xml", BaseElementDef.class, null, "id") );
         elementInfos.put( "stylesheet", new ElementInfo("stylesheet", BaseElementDef.class, null, "id") );
-        elementInfos.put( "template", new ElementInfo("template", TemplateDef.class, null, "id") );
+        elementInfos.put( "template", new ElementInfo("template", TemplateDef.class, null, "id,language") );
         elementInfos.put( "case", new ElementInfo("case", CaseDef.class, "!if,else", "id") );
         elementInfos.put( "if", new ElementInfo("if", BaseElementDef.class, null, "!condition,id") );
         elementInfos.put( "else", new ElementInfo("else", BaseElementDef.class, null, "id") );
@@ -95,7 +95,7 @@ public class DefinitionResolver {
         elementInfos.put( "include", new ElementInfo("include", IncludeDef.class, "", "id,!path") );
         elementInfos.put( "try", new ElementInfo("try", TryDef.class, "!body,!catch", "id") );
         elementInfos.put( "catch", new ElementInfo("catch", BaseElementDef.class, null, "id") );
-        elementInfos.put( "script", new ElementInfo("script", ScriptDef.class, null, "id,language") );
+        elementInfos.put( "script", new ElementInfo("script", ScriptDef.class, null, "id,language,return") );
     }
 
     /**

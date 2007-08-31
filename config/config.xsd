@@ -67,6 +67,7 @@
 					<xs:attribute name="charset"/>
 					<xs:attribute name="username"/>
 					<xs:attribute name="password"/>
+					<xs:attribute name="cookie-policy"/>
 					<xs:attribute name="id"/>
 				</xs:complexType>
 			</xs:element>
@@ -181,6 +182,7 @@
 			<xs:element name="template">
 				<xs:complexType mixed="true">
 					<xs:group ref="groupProcessors" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:attribute name="language"/>
 					<xs:attribute name="id"/>
 				</xs:complexType>
 			</xs:element>
@@ -188,6 +190,7 @@
 				<xs:complexType mixed="true">
 					<xs:group ref="groupProcessors" minOccurs="0" maxOccurs="unbounded"/>
 					<xs:attribute name="language"/>
+					<xs:attribute name="return"/>
 					<xs:attribute name="id"/>
 				</xs:complexType>
 			</xs:element>

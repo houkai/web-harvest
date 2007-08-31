@@ -51,6 +51,7 @@ public class HttpDef extends BaseElementDef {
     private String charset;
     private String username;
     private String password;
+    private String cookiePolicy;
 
     public HttpDef(XmlNode xmlNode) {
         super(xmlNode);
@@ -60,6 +61,7 @@ public class HttpDef extends BaseElementDef {
         this.charset = (String) xmlNode.get("charset");
         this.username = (String) xmlNode.get("username");
         this.password = (String) xmlNode.get("password");
+        this.cookiePolicy = (String) xmlNode.get("cookie-policy");
     }
 
     public String getMethod() {
@@ -81,6 +83,10 @@ public class HttpDef extends BaseElementDef {
 	public String getUsername() {
 		return username;
 	}
+
+    public String getCookiePolicy() {
+        return cookiePolicy;
+    }
 
     public String getShortElementName() {
         return "http";
