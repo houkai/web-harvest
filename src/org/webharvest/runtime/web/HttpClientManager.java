@@ -134,8 +134,6 @@ public class HttpClientManager {
             url = "http://" + url;
         }
 
-        System.out.println("--->" + client.getParams().getCookiePolicy());
-
         url = CommonUtil.encodeUrl(url, charset);
         
         // if username and password are specified, define new credentials for authenticaton
