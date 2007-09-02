@@ -9,8 +9,10 @@
 	<property name="dir.doc" value="doc"/>
 	<property name="dir.dist" value="dist"/>
 	<property name="dir.zip" value="zip"/>
-	<property name="jarfile" value="webharvest${version}.jar"/>
-	
+	<property name="dir.licences" value="licences"/>
+	<property name="jarfile" value="webharvest_${version}.jar"/>
+	<property name="jarallfile" value="webharvest_all_${version}.jar"/>
+
 	<!-- classpath -->
 	<path id="classpath.compile">
 		<pathelement location="${dir.lib}/commons-codec-1.3.jar"/>
@@ -39,7 +41,9 @@
 
 	<!--  creates jar library -->
 	<target name="jar" depends="build" description="creates jar library">
-		<jar destfile="${jarfile}" basedir="${dir.dist}" manifest="config/MANIFEST.MF"/>
+		<jar destfile="${jarfile}" basedir="${dir.dist}" manifest="config/MANIFEST.MF">
+            <zipfileset dir="${dir.licences}" prefix="META-INF"/>
+        </jar>
 	</target>
 
 	<!--  creates complete self-executable jar library with embedded dependancies -->
@@ -58,7 +62,8 @@
 
         <delete dir="${dir.dist}/META-INF"/>
 
-        <jar destfile="${jarfile}" basedir="${dir.dist}" manifest="config/MANIFEST.MF" index="Yes">
+        <jar destfile="${jarallfile}" basedir="${dir.dist}" manifest="config/MANIFEST.MF" index="Yes">
+            <zipfileset dir="${dir.licences}" prefix="META-INF"/>
             <indexjars>
                 <pathelement path="${dir.lib}/commons-codec-1.3.jar"/>
                 <pathelement path="${dir.lib}/commons-codec-1.3.jar"/>
