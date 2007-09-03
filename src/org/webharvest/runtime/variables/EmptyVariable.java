@@ -42,7 +42,7 @@ import java.util.List;
 /**
  * Empty variable.
  */
-public class EmptyVariable implements IVariable {
+public class EmptyVariable extends IVariable {
 
     public static final EmptyVariable INSTANCE = new EmptyVariable();
 

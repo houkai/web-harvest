@@ -44,7 +44,7 @@ import java.util.List;
 /**
  * List variable - String wrapper.
  */
-public class ListVariable implements IVariable {
+public class ListVariable extends IVariable {
 
     private List list;
 

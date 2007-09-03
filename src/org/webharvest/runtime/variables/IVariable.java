@@ -36,23 +36,116 @@
 */
 package org.webharvest.runtime.variables;
 
-import java.util.List;
+import java.util.*;
 
 /**
  * Variables Interface.
  */
-public interface IVariable {
+public abstract class IVariable {
 
-    public byte[] toBinary();
+    abstract public byte[] toBinary();
 
-    public String toString();
+    abstract public String toString();
 
-    public List toList();
+    abstract public List toList();
 
-    public String toText();
+    abstract public String toText();
 
-    public boolean isEmpty();
+    abstract public boolean isEmpty();
 
-    public Object getWrappedObject();
+    abstract public Object getWrappedObject();
+
+    /**
+     * Safely converts this variable to boolean value.
+     * @return boolean value
+     */
+    public boolean toBoolean() {
+        Object wrappedObject = getWrappedObject();
+        if (wrappedObject == null) {
+            return false;
+        } else if (wrappedObject instanceof Boolean) {
+            return ((Boolean) wrappedObject).booleanValue(); 
+        } else {
+            String strValue = toString().trim();
+            return "true".equalsIgnoreCase(strValue) || "yes".equalsIgnoreCase(strValue) || "1".equalsIgnoreCase(strValue);
+        }
+    }
+
+    /**
+     * Safely converts this variable to integer value.
+     * @return int value
+     */
+    public int toInt() {
+        Object wrappedObject = getWrappedObject();
+        if (wrappedObject == null) {
+            return 0;
+        } else if (wrappedObject instanceof Number) {
+            return ((Number)wrappedObject).intValue();
+        } else if (wrappedObject instanceof Boolean) {
+            return ((Boolean)wrappedObject).booleanValue() ? 1 : 0;
+        } else {
+            return Integer.parseInt( toString().trim() );
+        }
+    }
+
+    /**
+     * Safely converts this variable to long value.
+     * @return long value
+     */
+    public long toLong() {
+        Object wrappedObject = getWrappedObject();
+        if (wrappedObject == null) {
+            return 0L;
+        } else if (wrappedObject instanceof Number) {
+            return ((Number)wrappedObject).longValue();
+        } else if (wrappedObject instanceof Boolean) {
+            return ((Boolean)wrappedObject).booleanValue() ? 1L : 0L;
+        } else {
+            return Long.parseLong( toString().trim() );
+        }
+    }
+
+    /**
+     * Safely converts this variable to double value.
+     * @return double value
+     */
+    public double toDouble() {
+        Object wrappedObject = getWrappedObject();
+        if (wrappedObject == null) {
+            return 0d;
+        } else if (wrappedObject instanceof Number) {
+            return ((Number)wrappedObject).doubleValue();
+        } else if (wrappedObject instanceof Boolean) {
+            return ((Boolean)wrappedObject).booleanValue() ? 1d : 0d;
+        } else {
+            return Double.parseDouble( toString().trim() );
+        }
+    }
+
+    /**
+     * Safely converts this variable to array of objects.
+     * @return array of objects
+     */
+    public Object[] toArray() {
+        Object wrappedObject = getWrappedObject();
+        if (wrappedObject == null) {
+            return new Object[] {};
+        } else if (wrappedObject instanceof Object[]) {
+            return (Object[]) wrappedObject;
+        } else if (wrappedObject instanceof Collection) {
+            Collection collection = (Collection) wrappedObject;
+            Object result[] = new Object[collection.size()];
+            int index = 0;
+            Iterator iterator = collection.iterator();
+            while (iterator.hasNext()) {
+                result[index] = iterator.next();
+                index++;
+            }
+
+            return result;
+        } else {
+            return new Object[] {wrappedObject};
+        }
+    }
 
 }
