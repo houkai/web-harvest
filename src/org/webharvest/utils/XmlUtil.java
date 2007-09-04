@@ -75,6 +75,18 @@ public class XmlUtil {
         StringReader reader = new StringReader(xml);
 
         dynamicContext.setContextItem(sqc.buildDocument(new StreamSource(reader)));
+
+        return createListOfXmlNodes(exp, dynamicContext);
+    }
+
+    /**
+     * Creates list variable of resulting XML nodes.
+     * @param exp
+     * @param dynamicContext
+     * @return
+     * @throws XPathException
+     */
+    public static ListVariable createListOfXmlNodes(XQueryExpression exp, DynamicQueryContext dynamicContext) throws XPathException {
         final SequenceIterator iter = exp.iterator(dynamicContext);
 
         ListVariable listVariable = new ListVariable();
@@ -84,7 +96,8 @@ public class XmlUtil {
                 break;
             }
 
-            String value = CommonUtil.serializeItem(item);
+//            String value = CommonUtil.serializeItem(item);
+            XmlNodeWrapper value = new XmlNodeWrapper(item);
             listVariable.addVariable( new NodeVariable(value) );
         }
 

@@ -56,6 +56,7 @@ import org.webharvest.runtime.variables.ListVariable;
 import org.webharvest.runtime.variables.NodeVariable;
 import org.webharvest.utils.CommonUtil;
 import org.webharvest.utils.KeyValuePair;
+import org.webharvest.utils.XmlUtil;
 
 import javax.xml.transform.stream.StreamSource;
 import java.io.StringReader;
@@ -150,20 +151,7 @@ public class XQueryProcessor extends BaseProcessor {
                 }
             }
 
-            final SequenceIterator iter = exp.iterator(dynamicContext);
-		    
-		    ListVariable listVariable = new ListVariable();
-		    while (true) {
-	            Item item = iter.next();
-	            if (item == null) {
-	                break;
-	            }
-	            
-	            String value = CommonUtil.serializeItem(item);
-	            listVariable.addVariable( new NodeVariable(value) );
-	        }
-
-	        return listVariable;
+	        return XmlUtil.createListOfXmlNodes(exp, dynamicContext);
 	    } catch (XPathException e) {
 	    	throw new ScraperXQueryException("Error executing XQuery expression (XQuery = [" + xqExpression + "])!", e);
 	    }
