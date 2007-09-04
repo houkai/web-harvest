@@ -40,7 +40,7 @@ import org.bounce.text.ScrollableEditorPanel;
 import org.webharvest.gui.component.DropDownButton;
 import org.webharvest.gui.component.DropDownButtonListener;
 import org.webharvest.gui.component.ProportionalSplitPane;
-import org.webharvest.runtime.variables.IVariable;
+import org.webharvest.runtime.variables.AbstractVariable;
 import org.webharvest.runtime.variables.ListVariable;
 import org.webharvest.runtime.RuntimeConfig;
 import org.webharvest.utils.Constants;
@@ -414,8 +414,8 @@ public class ViewerFrame extends JFrame implements DropDownButtonListener, Actio
                 break;
             case IMAGE_VIEW:
                 if (!this.refreshed[IMAGE_VIEW]) {
-                    if (value instanceof IVariable) {
-                        IVariable var = (IVariable) value;
+                    if (value instanceof AbstractVariable) {
+                        AbstractVariable var = (AbstractVariable) value;
                         this.imageLabel.setIcon( new ImageIcon(var.toBinary()) );
                     } else {
                         this.imageLabel.setIcon(null);
@@ -424,8 +424,8 @@ public class ViewerFrame extends JFrame implements DropDownButtonListener, Actio
                 break;
             case LIST_VIEW:
                 if (!this.refreshed[LIST_VIEW]) {
-                    if (value instanceof IVariable) {
-                        IVariable var = (IVariable) value;
+                    if (value instanceof AbstractVariable) {
+                        AbstractVariable var = (AbstractVariable) value;
                         java.util.List list = var.toList();
                         String html = "<table width=\"100%\">";
                         for (int i = 0; i < list.size(); i++) {

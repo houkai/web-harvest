@@ -43,7 +43,7 @@ import org.webharvest.runtime.Scraper;
 import org.webharvest.runtime.ScraperContext;
 import org.webharvest.runtime.scripting.ScriptEngine;
 import org.webharvest.runtime.templaters.BaseTemplater;
-import org.webharvest.runtime.variables.IVariable;
+import org.webharvest.runtime.variables.AbstractVariable;
 import org.webharvest.runtime.variables.NodeVariable;
 import org.webharvest.utils.CommonUtil;
 
@@ -61,8 +61,8 @@ public class HtmlToXmlProcessor extends BaseProcessor {
         this.htmlToXmlDef = htmlToXmlDef;
     }
 
-    public IVariable execute(Scraper scraper, ScraperContext context) {
-        IVariable body = getBodyTextContent(htmlToXmlDef, scraper, context);
+    public AbstractVariable execute(Scraper scraper, ScraperContext context) {
+        AbstractVariable body = getBodyTextContent(htmlToXmlDef, scraper, context);
 
         HtmlCleaner cleaner = new HtmlCleaner( body.toString() );
 

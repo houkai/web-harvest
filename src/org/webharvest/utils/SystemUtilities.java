@@ -37,7 +37,7 @@
 package org.webharvest.utils;
 
 import org.webharvest.exception.BaseException;
-import org.webharvest.runtime.variables.IVariable;
+import org.webharvest.runtime.variables.AbstractVariable;
 import org.webharvest.runtime.variables.NodeVariable;
 
 import java.text.SimpleDateFormat;
@@ -49,13 +49,13 @@ import java.util.Date;
  */
 public class SystemUtilities {
 
-    public static final IVariable lf = new NodeVariable("\n");
-    public static final IVariable tab = new NodeVariable("\t");
-    public static final IVariable cr = new NodeVariable("\r");
-    public static final IVariable space = new NodeVariable(" ");
-    public static final IVariable quot = new NodeVariable("\"");
-    public static final IVariable apos = new NodeVariable("\'");
-    public static final IVariable backspace = new NodeVariable("\b");
+    public static final AbstractVariable lf = new NodeVariable("\n");
+    public static final AbstractVariable tab = new NodeVariable("\t");
+    public static final AbstractVariable cr = new NodeVariable("\r");
+    public static final AbstractVariable space = new NodeVariable(" ");
+    public static final AbstractVariable quot = new NodeVariable("\"");
+    public static final AbstractVariable apos = new NodeVariable("\'");
+    public static final AbstractVariable backspace = new NodeVariable("\b");
 
     /**
 	 * Returns formatted date/time for specified format string.

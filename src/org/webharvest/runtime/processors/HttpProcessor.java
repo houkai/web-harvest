@@ -43,7 +43,7 @@ import org.webharvest.runtime.Scraper;
 import org.webharvest.runtime.ScraperContext;
 import org.webharvest.runtime.scripting.ScriptEngine;
 import org.webharvest.runtime.templaters.BaseTemplater;
-import org.webharvest.runtime.variables.IVariable;
+import org.webharvest.runtime.variables.AbstractVariable;
 import org.webharvest.runtime.variables.NodeVariable;
 import org.webharvest.runtime.web.HttpClientManager;
 import org.webharvest.runtime.web.HttpResponseWrapper;
@@ -67,7 +67,7 @@ public class HttpProcessor extends BaseProcessor {
         this.httpDef = httpDef;
     }
 
-    public IVariable execute(Scraper scraper, ScraperContext context) {
+    public AbstractVariable execute(Scraper scraper, ScraperContext context) {
     	scraper.setRunningHttpProcessor(this);
 
         ScriptEngine scriptEngine = scraper.getScriptEngine();
@@ -97,7 +97,7 @@ public class HttpProcessor extends BaseProcessor {
         long contentLength = res.getContentLength();
         scraper.getLogger().info("Downloaded: " + url + ", mime type = " + mimeType + ", length = " + contentLength + "B.");
 
-        IVariable result;
+        AbstractVariable result;
         
         if (mimeType == null || mimeType.toLowerCase().indexOf("text") == 0) {
             String text;

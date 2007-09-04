@@ -1,7 +1,6 @@
 package org.webharvest.runtime;
 
 import org.webharvest.runtime.processors.BaseProcessor;
-import org.webharvest.runtime.variables.IVariable;
 
 import java.util.Map;
 

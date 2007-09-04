@@ -61,7 +61,7 @@ public class FileProcessor extends BaseProcessor {
         this.fileDef = fileDef;
     }
 
-    public IVariable execute(Scraper scraper, ScraperContext context) {
+    public AbstractVariable execute(Scraper scraper, ScraperContext context) {
         String workingDir = scraper.getWorkingDir();
 
         ScriptEngine scriptEngine = scraper.getScriptEngine();
@@ -94,8 +94,8 @@ public class FileProcessor extends BaseProcessor {
      * Writing content to the specified file.
      * If parameter "append" is true, then append content, otherwise write
      */
-    private IVariable executeFileWrite(boolean append, Scraper scraper, ScraperContext context, String fullPath, String type, String charset) {
-        IVariable result;
+    private AbstractVariable executeFileWrite(boolean append, Scraper scraper, ScraperContext context, String fullPath, String type, String charset) {
+        AbstractVariable result;
         
         try {
         	// ensure that target directory exists
@@ -105,11 +105,11 @@ public class FileProcessor extends BaseProcessor {
             byte[] data;
 
             if ( Types.TYPE_BINARY.equalsIgnoreCase(type) ) {
-                IVariable bodyListVar = new BodyProcessor(fileDef).execute(scraper, context);
+                AbstractVariable bodyListVar = new BodyProcessor(fileDef).execute(scraper, context);
                 result = Appender.appendBinary(bodyListVar);
                 data = result.toBinary();
             } else {
-                IVariable body = getBodyTextContent(fileDef, scraper, context);
+                AbstractVariable body = getBodyTextContent(fileDef, scraper, context);
                 String content = body.toString();
                 data = content.getBytes(charset);
                 result = new NodeVariable(content);
@@ -128,7 +128,7 @@ public class FileProcessor extends BaseProcessor {
     /**
      * Reading the specified file.
      */
-    private IVariable executeFileRead(String fullPath, String type, String charset, Scraper scraper) {
+    private AbstractVariable executeFileRead(String fullPath, String type, String charset, Scraper scraper) {
         if ( Types.TYPE_BINARY.equalsIgnoreCase(type) ) {
             try {
                 byte[] data = CommonUtil.readBytesFromFile(new File(fullPath));

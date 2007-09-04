@@ -42,7 +42,7 @@ import java.util.List;
 /**
  * Node variable - Single node wrapper.
  */
-public class NodeVariable extends IVariable {
+public class NodeVariable extends AbstractVariable {
 
     private Object data;
 
@@ -77,10 +77,6 @@ public class NodeVariable extends IVariable {
         }
 
         return list;
-    }
-    
-    public String toText() {
-    	return toString();
     }
 
     public boolean isEmpty() {

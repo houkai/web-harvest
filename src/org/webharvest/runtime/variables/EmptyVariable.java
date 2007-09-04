@@ -42,7 +42,7 @@ import java.util.List;
 /**
  * Empty variable.
  */
-public class EmptyVariable extends IVariable {
+public class EmptyVariable extends AbstractVariable {
 
     public static final EmptyVariable INSTANCE = new EmptyVariable();
 
@@ -70,10 +70,6 @@ public class EmptyVariable extends IVariable {
     public String toXml() {
     	return EMPTY_VALUE_OBJECT;
 	}
-    
-    public String toText() {
-    	return "";
-    }
 
     public boolean isEmpty() {
         return true;

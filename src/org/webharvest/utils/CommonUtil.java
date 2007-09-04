@@ -36,7 +36,6 @@
 */
 package org.webharvest.utils;
 
-import net.sf.saxon.Configuration;
 import net.sf.saxon.om.Item;
 import net.sf.saxon.om.NodeInfo;
 import net.sf.saxon.query.QueryResult;
@@ -44,7 +43,7 @@ import net.sf.saxon.trans.XPathException;
 import net.sf.saxon.type.Type;
 import org.webharvest.exception.VariableException;
 import org.webharvest.runtime.variables.EmptyVariable;
-import org.webharvest.runtime.variables.IVariable;
+import org.webharvest.runtime.variables.AbstractVariable;
 import org.webharvest.runtime.variables.ListVariable;
 import org.webharvest.runtime.variables.NodeVariable;
 
@@ -54,7 +53,6 @@ import java.io.*;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.*;
-import java.lang.reflect.Method;
 
 /**
  * Basic evaluation utilities
@@ -459,15 +457,15 @@ public class CommonUtil {
     }
 
     /**
-     * Creates appropriate IVariable instance for the specified object.
+     * Creates appropriate AbstractVariable instance for the specified object.
      * For colleactions and arrays ListVariable instance is returned,
      * for null it is an EmptyVariable, and for others it is NodeVariable
      * that wraps specified object. 
      * @param value
      */
-    public static IVariable createVariable(Object value) {
-        if (value instanceof IVariable) {
-            return (IVariable) value;
+    public static AbstractVariable createVariable(Object value) {
+        if (value instanceof AbstractVariable) {
+            return (AbstractVariable) value;
         } else if (value == null) {
             return new EmptyVariable();
         } else if (value instanceof Collection) {

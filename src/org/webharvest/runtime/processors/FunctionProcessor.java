@@ -40,7 +40,7 @@ import org.webharvest.definition.FunctionDef;
 import org.webharvest.runtime.Scraper;
 import org.webharvest.runtime.ScraperContext;
 import org.webharvest.runtime.variables.EmptyVariable;
-import org.webharvest.runtime.variables.IVariable;
+import org.webharvest.runtime.variables.AbstractVariable;
 
 /**
  * Function definition processor.
@@ -54,7 +54,7 @@ public class FunctionProcessor extends BaseProcessor {
         this.functionDef = functionDef;
     }
 
-    public IVariable execute(Scraper scraper, ScraperContext context) {
+    public AbstractVariable execute(Scraper scraper, ScraperContext context) {
         scraper.getConfiguration().addFunctionDef( functionDef );
 
         this.setProperty("Name", functionDef.getName());

@@ -42,7 +42,7 @@ import org.webharvest.runtime.Scraper;
 import org.webharvest.runtime.ScraperContext;
 import org.webharvest.runtime.scripting.ScriptEngine;
 import org.webharvest.runtime.templaters.BaseTemplater;
-import org.webharvest.runtime.variables.IVariable;
+import org.webharvest.runtime.variables.AbstractVariable;
 
 /**
  * Variable definition http header processor.
@@ -56,10 +56,10 @@ public class HttpHeaderProcessor extends BaseProcessor {
         this.httpHeaderDef = httpHeaderDef;
     }
 
-    public IVariable execute(Scraper scraper, ScraperContext context) {
+    public AbstractVariable execute(Scraper scraper, ScraperContext context) {
         ScriptEngine scriptEngine = scraper.getScriptEngine();
         String name = BaseTemplater.execute( httpHeaderDef.getName(), scriptEngine);
-    	IVariable value = getBodyTextContent(httpHeaderDef, scraper, context);
+    	AbstractVariable value = getBodyTextContent(httpHeaderDef, scraper, context);
         
     	HttpProcessor httpProcessor = scraper.getRunningHttpProcessor();
     	if (httpProcessor != null) {

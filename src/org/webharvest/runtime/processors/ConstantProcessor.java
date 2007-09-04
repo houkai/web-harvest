@@ -39,7 +39,7 @@ package org.webharvest.runtime.processors;
 import org.webharvest.definition.ConstantDef;
 import org.webharvest.runtime.Scraper;
 import org.webharvest.runtime.ScraperContext;
-import org.webharvest.runtime.variables.IVariable;
+import org.webharvest.runtime.variables.AbstractVariable;
 import org.webharvest.runtime.variables.NodeVariable;
 
 /**
@@ -54,7 +54,7 @@ public class ConstantProcessor extends BaseProcessor {
         this.constantDef = constantDef;
     }
 
-    public IVariable execute(Scraper scraper, ScraperContext context) {
+    public AbstractVariable execute(Scraper scraper, ScraperContext context) {
 		return new NodeVariable( constantDef.getText() );
     }
 

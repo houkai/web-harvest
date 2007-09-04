@@ -41,15 +41,13 @@ import java.util.*;
 /**
  * Variables Interface.
  */
-public abstract class IVariable {
+public abstract class AbstractVariable {
 
     abstract public byte[] toBinary();
 
     abstract public String toString();
 
     abstract public List toList();
-
-    abstract public String toText();
 
     abstract public boolean isEmpty();
 

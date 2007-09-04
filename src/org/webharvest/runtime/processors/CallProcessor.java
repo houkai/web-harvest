@@ -43,9 +43,8 @@ import org.webharvest.exception.FunctionException;
 import org.webharvest.runtime.Scraper;
 import org.webharvest.runtime.ScraperContext;
 import org.webharvest.runtime.scripting.ScriptEngine;
-import org.webharvest.runtime.scripting.BeanShellScriptEngine;
 import org.webharvest.runtime.templaters.BaseTemplater;
-import org.webharvest.runtime.variables.IVariable;
+import org.webharvest.runtime.variables.AbstractVariable;
 import org.webharvest.runtime.variables.NodeVariable;
 
 /**
@@ -58,7 +57,7 @@ public class CallProcessor extends BaseProcessor {
     ScraperContext functionContext;
     ScriptEngine scriptEngine;
 
-    private IVariable functionResult = new NodeVariable("");
+    private AbstractVariable functionResult = new NodeVariable("");
 
     public CallProcessor(CallDef callDef, ScraperConfiguration configuration) {
         super(callDef);
@@ -67,7 +66,7 @@ public class CallProcessor extends BaseProcessor {
         this.callDef = callDef;
     }
 
-    public IVariable execute(Scraper scraper, ScraperContext context) {
+    public AbstractVariable execute(Scraper scraper, ScraperContext context) {
         // adds this runtiome info to the running functions stack
         scraper.addRunningFunction(this);
 
@@ -92,11 +91,11 @@ public class CallProcessor extends BaseProcessor {
         return functionResult;
     }
 
-    public void setFunctionResult(IVariable result) {
+    public void setFunctionResult(AbstractVariable result) {
         this.functionResult = result;
     }
     
-    public void addContextVariable(String name, IVariable variable) {
+    public void addContextVariable(String name, AbstractVariable variable) {
     	functionContext.put(name, variable);
     }
 

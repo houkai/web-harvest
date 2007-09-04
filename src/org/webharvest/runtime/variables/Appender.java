@@ -36,13 +36,12 @@
 */
 package org.webharvest.runtime.variables;
 
-import java.util.List;
 import java.util.Iterator;
 
 
 public class Appender {
 
-    public static NodeVariable appendText(IVariable body) {
+    public static NodeVariable appendText(AbstractVariable body) {
         if (body == null) {
             return new NodeVariable("");
         }
@@ -51,14 +50,14 @@ public class Appender {
 
         Iterator iterator = body.toList().iterator();
         while (iterator.hasNext()) {
-            IVariable curr =  (IVariable) iterator.next();
+            AbstractVariable curr =  (AbstractVariable) iterator.next();
             text += curr == null ? "" : curr.toString();
         }
 
         return new NodeVariable(text);
     }
 
-    public static NodeVariable appendBinary(IVariable body) {
+    public static NodeVariable appendBinary(AbstractVariable body) {
         if (body == null) {
             return new NodeVariable("");
         }
@@ -67,7 +66,7 @@ public class Appender {
 
         Iterator iterator = body.toList().iterator();
         while (iterator.hasNext()) {
-            IVariable currVariable =  (IVariable) iterator.next();
+            AbstractVariable currVariable =  (AbstractVariable) iterator.next();
             byte bytes[] = currVariable.toBinary();
             if (bytes != null) {
                 if (result == null) {

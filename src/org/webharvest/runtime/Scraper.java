@@ -44,8 +44,7 @@ import org.webharvest.runtime.processors.CallProcessor;
 import org.webharvest.runtime.processors.HttpProcessor;
 import org.webharvest.runtime.processors.ProcessorResolver;
 import org.webharvest.runtime.scripting.ScriptEngine;
-import org.webharvest.runtime.scripting.BeanShellScriptEngine;
-import org.webharvest.runtime.variables.IVariable;
+import org.webharvest.runtime.variables.AbstractVariable;
 import org.webharvest.runtime.variables.NodeVariable;
 import org.webharvest.runtime.web.HttpClientManager;
 import org.webharvest.utils.CommonUtil;
@@ -126,7 +125,7 @@ public class Scraper {
         this.context.put(name, new NodeVariable(value));
     }
 
-    public IVariable execute(List ops) {
+    public AbstractVariable execute(List ops) {
         this.setStatus(STATUS_RUNNING);
 
         // inform al listeners that execution is just about to start

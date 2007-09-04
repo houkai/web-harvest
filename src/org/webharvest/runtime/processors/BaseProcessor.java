@@ -36,9 +36,7 @@
 */
 package org.webharvest.runtime.processors;
 
-import org.apache.log4j.Logger;
 import org.webharvest.definition.BaseElementDef;
-import org.webharvest.definition.IElementDef;
 import org.webharvest.runtime.Scraper;
 import org.webharvest.runtime.ScraperContext;
 import org.webharvest.runtime.templaters.BaseTemplater;
@@ -53,8 +51,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Map;
-import java.util.HashMap;
 import java.util.TreeMap;
+import java.util.LinkedHashMap;
 import java.text.SimpleDateFormat;
 
 /**
@@ -63,10 +61,10 @@ import java.text.SimpleDateFormat;
  */
 abstract public class BaseProcessor {
 
-    abstract public IVariable execute(Scraper scraper, ScraperContext context);
+    abstract public AbstractVariable execute(Scraper scraper, ScraperContext context);
 
     protected BaseElementDef elementDef;
-    private Map properties = new TreeMap();
+    private Map properties = new LinkedHashMap();
 
     protected BaseProcessor() {
     }
@@ -82,7 +80,7 @@ abstract public class BaseProcessor {
     /**
      * Wrapper for the execute method. Adds controling and logging logic.
      */
-    public IVariable run(Scraper scraper, ScraperContext context) {
+    public AbstractVariable run(Scraper scraper, ScraperContext context) {
         int scraperStatus = scraper.getStatus();
 
         if (scraperStatus == Scraper.STATUS_STOPPED) {
@@ -118,7 +116,7 @@ abstract public class BaseProcessor {
 
         scraper.increaseRunningLevel();
         scraper.setExecutingProcessor(this);
-        IVariable result = execute(scraper, context);
+        AbstractVariable result = execute(scraper, context);
         long executionTime = System.currentTimeMillis() - startTime;
 
         setProperty(Constants.EXECUTION_TIME_PROPERTY_NAME, new Long(executionTime));
@@ -148,7 +146,7 @@ abstract public class BaseProcessor {
         }
     }
 
-    protected void debug(BaseElementDef elementDef, Scraper scraper, IVariable variable) {
+    protected void debug(BaseElementDef elementDef, Scraper scraper, AbstractVariable variable) {
         String id = (elementDef != null) ? BaseTemplater.execute( elementDef.getId(), scraper.getScriptEngine() ) : null;
 
         if (scraper.isDebugMode() && id != null) {
@@ -158,18 +156,18 @@ abstract public class BaseProcessor {
         }
     }
 
-    protected IVariable runBodyTextContent(BaseElementDef elementDef, Scraper scraper, ScraperContext context) {
+    protected AbstractVariable runBodyTextContent(BaseElementDef elementDef, Scraper scraper, ScraperContext context) {
         if (elementDef == null) {
             return null;
         } else if (elementDef.hasOperations()) {
-            IVariable body = new BodyProcessor(elementDef).run(scraper, context);
+            AbstractVariable body = new BodyProcessor(elementDef).run(scraper, context);
             return Appender.appendText(body);
         } else {
             return new NodeVariable(elementDef.getBodyText());
         }
     }
 
-    protected IVariable getBodyTextContent(BaseElementDef elementDef, Scraper scraper, ScraperContext context,
+    protected AbstractVariable getBodyTextContent(BaseElementDef elementDef, Scraper scraper, ScraperContext context,
                                            boolean registerExecution, KeyValuePair properties[]) {
         if (elementDef == null) {
             return null;
@@ -180,18 +178,18 @@ abstract public class BaseProcessor {
                     bodyProcessor.setProperty(properties[i].getKey(), properties[i].getValue());
                 }
             }
-            IVariable body = registerExecution ?  bodyProcessor.run(scraper, context) :  bodyProcessor.execute(scraper, context);
+            AbstractVariable body = registerExecution ?  bodyProcessor.run(scraper, context) :  bodyProcessor.execute(scraper, context);
             return Appender.appendText(body);
         } else {
             return new NodeVariable(elementDef.getBodyText());
         }
     }
 
-    protected IVariable getBodyTextContent(BaseElementDef elementDef, Scraper scraper, ScraperContext context, boolean registerExecution) {
+    protected AbstractVariable getBodyTextContent(BaseElementDef elementDef, Scraper scraper, ScraperContext context, boolean registerExecution) {
         return getBodyTextContent(elementDef, scraper, context, registerExecution, null);
     }
 
-    protected IVariable getBodyTextContent(BaseElementDef elementDef, Scraper scraper, ScraperContext context) {
+    protected AbstractVariable getBodyTextContent(BaseElementDef elementDef, Scraper scraper, ScraperContext context) {
         return getBodyTextContent(elementDef, scraper, context, false);
     }
 
@@ -199,7 +197,7 @@ abstract public class BaseProcessor {
         return elementDef;
     }
 
-    private void writeDebugFile(IVariable var, String processorId, Scraper scraper) {
+    private void writeDebugFile(AbstractVariable var, String processorId, Scraper scraper) {
         byte[] data = var == null ? new byte[] {} : var.toString().getBytes();
 
         String workingDir = scraper.getWorkingDir();

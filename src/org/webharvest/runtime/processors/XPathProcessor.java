@@ -36,13 +36,6 @@
 */
 package org.webharvest.runtime.processors;
 
-import net.sf.saxon.Configuration;
-import net.sf.saxon.om.Item;
-import net.sf.saxon.om.SequenceIterator;
-import net.sf.saxon.om.NamespaceResolver;
-import net.sf.saxon.query.DynamicQueryContext;
-import net.sf.saxon.query.StaticQueryContext;
-import net.sf.saxon.query.XQueryExpression;
 import net.sf.saxon.trans.XPathException;
 import org.webharvest.definition.XPathDef;
 import org.webharvest.exception.ScraperXPathException;
@@ -50,21 +43,12 @@ import org.webharvest.runtime.Scraper;
 import org.webharvest.runtime.ScraperContext;
 import org.webharvest.runtime.RuntimeConfig;
 import org.webharvest.runtime.templaters.BaseTemplater;
-import org.webharvest.runtime.variables.IVariable;
-import org.webharvest.runtime.variables.ListVariable;
-import org.webharvest.runtime.variables.NodeVariable;
-import org.webharvest.utils.CommonUtil;
+import org.webharvest.runtime.variables.AbstractVariable;
 import org.webharvest.utils.XmlUtil;
 import org.xml.sax.*;
 
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.transform.TransformerFactoryConfigurationError;
-import javax.xml.parsers.SAXParserFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
 import java.io.StringReader;
 import java.io.IOException;
-import java.util.Iterator;
 
 /**
  * XQuery processor.
@@ -78,8 +62,8 @@ public class XPathProcessor extends BaseProcessor {
         this.xpathDef = xpathDef;
     }
 
-    public IVariable execute(Scraper scraper, ScraperContext context) {
-        IVariable xml = getBodyTextContent(xpathDef, scraper, context);
+    public AbstractVariable execute(Scraper scraper, ScraperContext context) {
+        AbstractVariable xml = getBodyTextContent(xpathDef, scraper, context);
         String expression = BaseTemplater.execute( xpathDef.getExpression(), scraper.getScriptEngine() );
         this.setProperty("Expression", expression);
 

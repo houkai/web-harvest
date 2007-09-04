@@ -15,7 +15,7 @@ public class BodyProcessor extends BaseProcessor {
         super(elementDef);
     }
 
-    public IVariable execute(Scraper scraper, ScraperContext context) {
+    public AbstractVariable execute(Scraper scraper, ScraperContext context) {
         IElementDef[] defs = elementDef.getOperationDefs();
         ListVariable result = new ListVariable();
 

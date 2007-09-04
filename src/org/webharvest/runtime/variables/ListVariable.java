@@ -44,9 +44,11 @@ import java.util.List;
 /**
  * List variable - String wrapper.
  */
-public class ListVariable extends IVariable {
+public class ListVariable extends AbstractVariable {
 
     private List list;
+
+    private String cachedStringRepresentation = null;
 
     public ListVariable() {
         this.list = new ArrayList();
@@ -59,7 +61,7 @@ public class ListVariable extends IVariable {
     		Iterator it = list.iterator();
     		while (it.hasNext()) {
                 Object object = it.next();
-                IVariable var = object instanceof IVariable ? (IVariable) object : new NodeVariable(object);
+                AbstractVariable var = object instanceof AbstractVariable ? (AbstractVariable) object : new NodeVariable(object);
     			if ( !var.isEmpty() ) {
     				this.list.add(var);
     			}
@@ -68,15 +70,19 @@ public class ListVariable extends IVariable {
     }
 
     public String toString() {
-        String result = "";
+        if (cachedStringRepresentation == null) {
+            StringBuffer buffer = new StringBuffer();
 
-        Iterator it = list.iterator();
-        while (it.hasNext()) {
-            IVariable var =  (IVariable) it.next();
-            result += var.toString();
+            Iterator it = list.iterator();
+            while (it.hasNext()) {
+                AbstractVariable var = (AbstractVariable) it.next();
+                buffer.append(var.toString());
+            }
+
+            cachedStringRepresentation = buffer.toString();
         }
 
-        return result;
+        return cachedStringRepresentation;
     }
 
     public byte[] toBinary() {
@@ -84,7 +90,7 @@ public class ListVariable extends IVariable {
         
         Iterator it = list.iterator();
         while (it.hasNext()) {
-        	IVariable currVar = (IVariable) it.next();
+        	AbstractVariable currVar = (AbstractVariable) it.next();
         	byte[] curr = currVar.toBinary();
         	if (curr != null) {
         		if (result == null) {
@@ -105,22 +111,10 @@ public class ListVariable extends IVariable {
         return list;
     }
 
-    public String toText() {
-        String result = "";
-
-        Iterator it = list.iterator();
-        while (it.hasNext()) {
-            IVariable var =  (IVariable) it.next();
-            result += var.toText();
-        }
-
-        return result;
-    }
-
     public boolean isEmpty() {
         Iterator it = list.iterator();
         while (it.hasNext()) {
-            IVariable var =  (IVariable) it.next();
+            AbstractVariable var =  (AbstractVariable) it.next();
             if (!var.isEmpty()) {
                 return false;
             }
@@ -129,7 +123,10 @@ public class ListVariable extends IVariable {
         return true;
     }
 
-    public void addVariable(IVariable variable) {
+    public void addVariable(AbstractVariable variable) {
+        // in order string value needs to be recached
+        cachedStringRepresentation = null;
+
         if (variable instanceof ListVariable) {
             list.addAll( ((ListVariable)variable).getList() );
         } else {
@@ -148,7 +145,7 @@ public class ListVariable extends IVariable {
     public boolean contains(Object item) {
     	Iterator it = list.iterator();
     	while (it.hasNext()) {
-    		IVariable currVariable = (IVariable) it.next();
+    		AbstractVariable currVariable = (AbstractVariable) it.next();
     		if ( currVariable != null && currVariable.toString().equals(item.toString()) ) {
     			return true;
     		}

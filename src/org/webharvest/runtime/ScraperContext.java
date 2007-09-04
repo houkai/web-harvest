@@ -36,7 +36,7 @@
 */
 package org.webharvest.runtime;
 
-import org.webharvest.runtime.variables.IVariable;
+import org.webharvest.runtime.variables.AbstractVariable;
 import org.webharvest.utils.Catalog;
 import org.webharvest.utils.CommonUtil;
 import org.webharvest.utils.SystemUtilities;
@@ -52,12 +52,12 @@ public class ScraperContext extends Catalog {
 		this.put("sys", new SystemUtilities());
 	}
 	
-	public IVariable getVar(String name) {
-		return (IVariable) this.get(name);
+	public AbstractVariable getVar(String name) {
+		return (AbstractVariable) this.get(name);
     }
 
     public Object setVar(Object key, Object value) {
-        IVariable var = CommonUtil.createVariable(value);
+        AbstractVariable var = CommonUtil.createVariable(value);
         return super.put( key, var);
     }
    

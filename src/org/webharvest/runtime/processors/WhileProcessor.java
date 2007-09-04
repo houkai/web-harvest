@@ -41,7 +41,7 @@ import org.webharvest.runtime.Scraper;
 import org.webharvest.runtime.ScraperContext;
 import org.webharvest.runtime.scripting.ScriptEngine;
 import org.webharvest.runtime.templaters.BaseTemplater;
-import org.webharvest.runtime.variables.IVariable;
+import org.webharvest.runtime.variables.AbstractVariable;
 import org.webharvest.runtime.variables.ListVariable;
 import org.webharvest.runtime.variables.NodeVariable;
 import org.webharvest.utils.CommonUtil;
@@ -62,7 +62,7 @@ public class WhileProcessor extends BaseProcessor {
         this.whileDef = whileDef;
     }
 
-    public IVariable execute(Scraper scraper, ScraperContext context) {
+    public AbstractVariable execute(Scraper scraper, ScraperContext context) {
         ScriptEngine scriptEngine = scraper.getScriptEngine();
         String index = BaseTemplater.execute( whileDef.getIndex(), scriptEngine);
         String maxLoopsString = BaseTemplater.execute( whileDef.getMaxLoops(), scriptEngine);
@@ -74,7 +74,7 @@ public class WhileProcessor extends BaseProcessor {
 
         List resultList = new ArrayList();
 
-        IVariable indexBeforeLoop = (IVariable) context.get(index);
+        AbstractVariable indexBeforeLoop = (AbstractVariable) context.get(index);
 
         int i = 1;
 
@@ -91,7 +91,7 @@ public class WhileProcessor extends BaseProcessor {
 
         // iterates while testing variable represents boolean true or loop limit is exceeded
         while ( CommonUtil.isBooleanTrue(condition) && (i <= maxLoops) ) {
-            IVariable loopResult = new BodyProcessor(whileDef).execute(scraper, context);
+            AbstractVariable loopResult = new BodyProcessor(whileDef).execute(scraper, context);
             resultList.addAll( loopResult.toList() );
 
             i++;
