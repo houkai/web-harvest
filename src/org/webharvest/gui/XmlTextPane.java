@@ -235,7 +235,7 @@ public class XmlTextPane extends JEditorPane {
 
         this.setEditorKit(kit);
 
-        this.setFont( new Font( "Courier", Font.PLAIN, 12));
+        this.setFont( new Font( "Monospaced", Font.PLAIN, 12));
 
         this.registerKeyboardAction(shiftTabAction, KeyStroke.getKeyStroke( KeyEvent.VK_TAB, ActionEvent.SHIFT_MASK), JComponent.WHEN_FOCUSED);
         this.getActionMap().put(tabAction.getValue(Action.NAME), tabAction);
