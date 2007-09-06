@@ -286,7 +286,9 @@ public class AutoCompleter implements ActionListener {
     private void completeAttribute(String name) throws BadLocationException {
         Document document = xmlPane.getDocument();
         int pos = xmlPane.getCaretPosition();
-        String template = (name + "=\"\" ").substring(this.prefixLength);
+        String cursorChar = document.getText(pos, 1);
+        boolean toAppendSpace = !">".equals(cursorChar) && !" ".equals(cursorChar);
+        String template = (name + "=\"\"" + (toAppendSpace ? " " : "")).substring(this.prefixLength);
 
         document.insertString(pos, template, null);
     }

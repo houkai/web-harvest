@@ -176,6 +176,7 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
                 if (path != null) {
                     int line = locateInSource( (DefaultMutableTreeNode) path.getLastPathComponent(), false );
                     xmlEditorPanel.addMarker( ScrollableEditorPanel.DEFAULT_MARKER_TYPE, line );
+                    xmlPane.grabFocus();
                 }
             }
         });
@@ -691,7 +692,13 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
                         offset += line.length();
                     }
 
-                    this.xmlPane.setCaretPosition(offset);
+                    if (offset < content.length()) {
+                        content = content.substring(0, offset);
+                    }
+
+                    int startIndex = content.lastIndexOf('<');
+
+                    this.xmlPane.setCaretPosition(startIndex >= 0 ? startIndex : 0);
                 } catch (BadLocationException e) {
                     e.printStackTrace();
                 }
