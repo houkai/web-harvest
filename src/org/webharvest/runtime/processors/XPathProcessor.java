@@ -39,16 +39,12 @@ package org.webharvest.runtime.processors;
 import net.sf.saxon.trans.XPathException;
 import org.webharvest.definition.XPathDef;
 import org.webharvest.exception.ScraperXPathException;
+import org.webharvest.runtime.RuntimeConfig;
 import org.webharvest.runtime.Scraper;
 import org.webharvest.runtime.ScraperContext;
-import org.webharvest.runtime.RuntimeConfig;
 import org.webharvest.runtime.templaters.BaseTemplater;
 import org.webharvest.runtime.variables.AbstractVariable;
 import org.webharvest.utils.XmlUtil;
-import org.xml.sax.*;
-
-import java.io.StringReader;
-import java.io.IOException;
 
 /**
  * XQuery processor.
@@ -71,16 +67,8 @@ public class XPathProcessor extends BaseProcessor {
             RuntimeConfig runtimeConfig = scraper.getRuntimeConfig();
             return XmlUtil.evaluateXPath(expression, xml.toString(), runtimeConfig);
         } catch (XPathException e) {
-        	e.printStackTrace();
             throw new ScraperXPathException("Error parsing XPath expression (XPath = [" + expression + "])!", e);
         }
-    }
-
-    public static void main(String[] args) throws SAXException, IOException {
-        XMLReader parser = org.xml.sax.helpers.XMLReaderFactory.createXMLReader();
-        parser.setFeature("http://xml.org/sax/features/namespaces", false);
-        String xml = "<mama><a:td>ewfewfwe</a:td><td>ewf324324e</td></mama>";
-        parser.parse(new InputSource(new StringReader(xml)));
     }
 
 }
