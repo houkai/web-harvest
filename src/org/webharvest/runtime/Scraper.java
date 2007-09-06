@@ -109,7 +109,7 @@ public class Scraper {
 
         this.httpClientManager = new HttpClientManager();
 
-        this.context = new ScraperContext();
+        this.context = new ScraperContext(httpClientManager);
         this.scriptEngine = configuration.createScriptEngine(this.context);
         this.usedScriptEngines.put(configuration.getDefaultScriptEngine(), this.scriptEngine);
     }
@@ -138,7 +138,7 @@ public class Scraper {
         Iterator it = ops.iterator();
         while (it.hasNext()) {
             IElementDef elementDef = (IElementDef) it.next();
-            BaseProcessor processor = ProcessorResolver.createProcessor(elementDef, this.configuration);
+            BaseProcessor processor = ProcessorResolver.createProcessor(elementDef, this.configuration, this);
 
             if (processor != null) {
                 processor.run(this, context);

@@ -50,7 +50,6 @@ import java.util.Map;
  */
 public class HttpResponseWrapper {
 	
-	private long contentLength;
 	private String charset;
 	private String mimeType;
 	private byte[] body;
@@ -83,7 +82,6 @@ public class HttpResponseWrapper {
         	}
         }
 
-        this.contentLength = method.getResponseContentLength();
         this.charset = method.getResponseCharSet();
         this.statusCode = method.getStatusCode();
         this.statusText = method.getStatusText();
@@ -91,7 +89,7 @@ public class HttpResponseWrapper {
     }
 
     public long getContentLength() {
-        return contentLength;
+        return this.body == null ? 0 : this.body.length;
     }
 
     public String getCharset() {

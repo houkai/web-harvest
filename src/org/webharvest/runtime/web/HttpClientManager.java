@@ -64,11 +64,14 @@ public class HttpClientManager {
 
     private HttpClient client;
 
+    private HttpInfo httpInfo;
+
     /**
      * Constructor.
      */
     public HttpClientManager() {
         client = new HttpClient();
+        httpInfo = new HttpInfo(client);
         
         HttpClientParams clientParams = new HttpClientParams();
         clientParams.setBooleanParameter("http.protocol.allow-circular-redirects", true);
@@ -189,7 +192,12 @@ public class HttpClientManager {
                 }
             }
 
-            return new HttpResponseWrapper(method);
+            HttpResponseWrapper httpResponseWrapper = new HttpResponseWrapper(method);
+
+            // updates HTTP info with response's details
+            this.httpInfo.setResponse(httpResponseWrapper);
+
+            return httpResponseWrapper;
         } catch (IOException e) {
             throw new org.webharvest.exception.HttpException("IO error during HTTP execution for URL: " + url, e);
         } finally {
@@ -247,4 +255,12 @@ public class HttpClientManager {
         return new GetMethod(url);
     }
 
+    public HttpClient getHttpClient() {
+        return client;
+    }
+
+    public HttpInfo getHttpInfo() {
+        return httpInfo;
+    }
+    
 }

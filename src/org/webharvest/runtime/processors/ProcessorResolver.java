@@ -37,10 +37,11 @@
 package org.webharvest.runtime.processors;
 
 import org.webharvest.definition.*;
+import org.webharvest.runtime.Scraper;
 
 public class ProcessorResolver {
 	
-    public static BaseProcessor createProcessor(IElementDef elementDef, ScraperConfiguration configuration) {
+    public static BaseProcessor createProcessor(IElementDef elementDef, ScraperConfiguration configuration, Scraper scraper) {
         if (elementDef instanceof EmptyDef) {
             return new EmptyProcessor( (EmptyDef)elementDef );
         } else if (elementDef instanceof TextDef) {
@@ -82,7 +83,7 @@ public class ProcessorResolver {
 	    } else if (elementDef instanceof IncludeDef) {
 	    	return new IncludeProcessor( (IncludeDef)elementDef );
 	    } else if (elementDef instanceof CallDef) {
-	    	return new CallProcessor( (CallDef)elementDef, configuration );
+	    	return new CallProcessor( (CallDef)elementDef, configuration, scraper );
 	    } else if (elementDef instanceof CallParamDef) {
 	    	return new CallParamProcessor( (CallParamDef)elementDef );
 	    } else if (elementDef instanceof ReturnDef) {

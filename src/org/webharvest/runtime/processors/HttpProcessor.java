@@ -128,9 +128,6 @@ public class HttpProcessor extends BaseProcessor {
             }
         }
 
-        // define context variable containing information about HTTP response
-        context.put("http", new HttpInfo(res));
-
         return result;
     }
     

@@ -37,51 +37,36 @@
 
 package org.webharvest.runtime.web;
 
+import org.apache.commons.httpclient.HttpClient;
+
+import java.util.Map;
+import java.util.HashMap;
+
 /**
- * Class wraps HttpResponseWrapper and offers information to the user. 
+ * Class offers access to HTTP client and response details to the user. 
  */
 public class HttpInfo {
 
-    private HttpResponseWrapper wrapper;
+    public HttpClient client;
+    
+    public long contentLength = 0;
+    public String charset = "";
+    public String mimeType = "";
+    public Map headers = new HashMap(); 
+    public int statusCode = 0;
+    public String statusText = ""; 
 
-    public HttpInfo(HttpResponseWrapper wrapper) {
-        this.wrapper = wrapper;
+    public HttpInfo(HttpClient client) {
+        this.client = client;
     }
 
-    public long getContentLength() {
-        return wrapper != null ? wrapper.getContentLength() : 0;
-    }
-
-    public String getCharset() {
-		return wrapper != null ? wrapper.getCharset() : "";
-	}
-
-	public String getMimeType() {
-		return wrapper != null ? wrapper.getMimeType() : "";
-	}
-
-	public boolean doesHeaderExist(String headerName) {
-        if (wrapper != null) {
-            return wrapper.getHeaderValue(headerName) != null;
-        }
-
-        return false;
-    }
-
-	public String getHeader(String headerName) {
-        if (wrapper != null) {
-            return wrapper.getHeaderValue(headerName);
-        }
-
-        return "";
-    }
-
-    public int getStatusCode() {
-        return wrapper != null ? wrapper.getStatusCode() : 0;
-    }
-
-    public String getStatusText() {
-        return wrapper != null ? wrapper.getStatusText() : "";
+    public void setResponse(HttpResponseWrapper wrapper) {
+        this.contentLength = wrapper.getContentLength(); 
+        this.charset = wrapper.getCharset(); 
+        this.mimeType = wrapper.getMimeType(); 
+        this.headers = wrapper.getHeaders(); 
+        this.statusCode = wrapper.getStatusCode();
+        this.statusText = wrapper.getStatusText();
     }
 
 }
