@@ -588,8 +588,10 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
         setCommandEnabled(COMMAND_UNDO, configPanel != null);
         setCommandEnabled(COMMAND_REDO, configPanel != null); 
 
-        setCommandEnabled(COMMAND_CUT, configPanel != null);
-        setCommandEnabled(COMMAND_COPY, configPanel != null);
+        boolean hasSelection = configPanel != null && configPanel.getXmlPane().hasSelection();
+
+        setCommandEnabled(COMMAND_CUT, hasSelection);
+        setCommandEnabled(COMMAND_COPY, hasSelection);
         setCommandEnabled(COMMAND_PASTE, configPanel != null);
 
         int tabCount = tabbedPane.getTabCount();

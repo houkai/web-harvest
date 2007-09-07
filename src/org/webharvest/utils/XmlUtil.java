@@ -96,7 +96,6 @@ public class XmlUtil {
                 break;
             }
 
-//            String value = CommonUtil.serializeItem(item);
             XmlNodeWrapper value = new XmlNodeWrapper(item);
             listVariable.addVariable( new NodeVariable(value) );
         }

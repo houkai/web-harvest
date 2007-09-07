@@ -262,5 +262,13 @@ public class XmlTextPane extends JEditorPane {
     public UndoableEditListener getUndoManager() {
         return undoManager;
     }
-    
+
+    /**
+     * @return True if some text is selected, false otherwise
+     */
+    public boolean hasSelection() {
+        String selectedText = this.getSelectedText();
+        return selectedText != null && !"".equals(selectedText);
+    }
+
 }

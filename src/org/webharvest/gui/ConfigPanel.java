@@ -67,7 +67,7 @@ import java.util.Map;
  * It is part of multiple-document interface where several such instances may exist at
  * the same time.
  */
-public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeSelectionListener {
+public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeSelectionListener, CaretListener {
 
     // basic skeletion for new opened configuration
     private static final String BASIC_CONFIG_SKELETION = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\n<config>\n\t\n</config>";
@@ -223,6 +223,8 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
 
         //Create the XML editor pane.
         this.xmlPane = new XmlTextPane();
+        this.xmlPane.addCaretListener(this);
+
         final AutoCompleter autoCompleter = new AutoCompleter(this.xmlPane);
         this.xmlPane.addKeyListener(new KeyAdapter() {
             public void keyPressed(KeyEvent e) {
@@ -334,6 +336,14 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
         }
 
         updateControls();
+    }
+
+    /**
+     * Occures whenever caret position is changed inside editor
+     * @param e
+     */
+    public void caretUpdate(CaretEvent e) {
+        ide.updateGUI();
     }
 
     private void updateControls() {
