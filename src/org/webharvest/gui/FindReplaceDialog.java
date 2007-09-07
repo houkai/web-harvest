@@ -306,30 +306,14 @@ public class FindReplaceDialog extends JDialog {
                     textComponent.grabFocus();
                     textComponent.select(index, index + searchText.length());
                 } else {
-                    showTooltipMessage("Next occurrence of \"" + searchText + "\" not found.");
+                    Component top = textComponent;
+                    while (top.getParent() != null) {
+                        top = top.getParent();
+                    }
+                    JOptionPane.showMessageDialog(top, "Next occurrence of \"" + searchText + "\" not found.", "Information", JOptionPane.INFORMATION_MESSAGE);
                 }
             }
         }
-    }
-
-    /**
-     * Displays specified message in the tooltip at the caret position.
-     * @param text
-     */
-    private void showTooltipMessage(String text) {
-        ToolTipManager toolTipManager = ToolTipManager.sharedInstance();
-        this.textComponent.setToolTipText(text);
-
-        int previousInitialDelay = toolTipManager.getInitialDelay();
-        toolTipManager.setInitialDelay(0);
-
-        Point caretPosition = this.textComponent.getCaret().getMagicCaretPosition();
-        toolTipManager.registerComponent(this.textComponent);
-        toolTipManager.mouseMoved( new MouseEvent(this.textComponent, 0, 0, 0, (int)caretPosition.getX(), (int)caretPosition.getY(), 0, false) );
-
-        toolTipManager.setInitialDelay(previousInitialDelay);
-
-        toolTipManager.unregisterComponent(this.textComponent);
     }
 
     public void replace(boolean backward) {
