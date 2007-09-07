@@ -110,9 +110,13 @@ public class ViewerFrame extends JFrame implements DropDownButtonListener, Actio
     private XmlTextPane xmlPane;
     private JPanel imagePanel;
     private JLabel imageLabel;
+    private int zoomFactor = 100;
+    private JLabel zoomFactorLabel;
     private JEditorPane listPane;
     private JCheckBox keepSyncCheckBox;
     private JButton findButton;
+    private JButton zoomInButton;
+    private JButton zoomOutButton;
     private JButton xmlValidateButton;
     private JButton xmlPrettyPrintButton;
 
@@ -190,10 +194,30 @@ public class ViewerFrame extends JFrame implements DropDownButtonListener, Actio
             }
         };
 
+        final MyAction zoomInAction = new MyAction("Zoom In", ResourceManager.getZoomInIcon(), "Zoom Image In", KeyStroke.getKeyStroke( KeyEvent.VK_PLUS, 0)) {
+            public void actionPerformed(ActionEvent e) {
+                zoom(true);
+            }
+        };
+
+        final MyAction zoomOutAction = new MyAction("Zoom Out", ResourceManager.getZoomOutIcon(), "Zoom Image Out", KeyStroke.getKeyStroke( KeyEvent.VK_MINUS, 0)) {
+            public void actionPerformed(ActionEvent e) {
+                zoom(false);
+            }
+        };
+
         this.findButton = new JButton(findTextAction);
         this.findButton.registerKeyboardAction(findTextAction, KeyStroke.getKeyStroke( KeyEvent.VK_F, ActionEvent.CTRL_MASK), JComponent.WHEN_IN_FOCUSED_WINDOW);
         this.findButton.registerKeyboardAction(findNextAction, KeyStroke.getKeyStroke( KeyEvent.VK_F3, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);
         this.findButton.registerKeyboardAction(findPrevAction, KeyStroke.getKeyStroke( KeyEvent.VK_F3, ActionEvent.SHIFT_MASK), JComponent.WHEN_IN_FOCUSED_WINDOW);
+
+        this.zoomInButton = new JButton(zoomInAction);
+        this.zoomInButton.registerKeyboardAction(zoomInAction, KeyStroke.getKeyStroke( KeyEvent.VK_ADD, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);
+
+        this.zoomOutButton = new JButton(zoomOutAction);
+        this.zoomOutButton.registerKeyboardAction(zoomOutAction, KeyStroke.getKeyStroke( KeyEvent.VK_SUBTRACT, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);
+
+        this.zoomFactorLabel = new JLabel();
 
         this.xmlValidateButton = new JButton("Check well-formedness", ResourceManager.getValidateIcon());
         this.xmlValidateButton.addActionListener(new ActionListener() {
@@ -213,6 +237,9 @@ public class ViewerFrame extends JFrame implements DropDownButtonListener, Actio
         toolBar.add(this.findButton);
         toolBar.add(this.xmlValidateButton);
         toolBar.add(this.xmlPrettyPrintButton);
+        toolBar.add(this.zoomInButton);
+        toolBar.add(this.zoomOutButton);
+        toolBar.add(this.zoomFactorLabel);
 
         contentPane.add(toolBar, BorderLayout.NORTH);
 
@@ -416,11 +443,13 @@ public class ViewerFrame extends JFrame implements DropDownButtonListener, Actio
             case IMAGE_VIEW:
                 if (!this.refreshed[IMAGE_VIEW]) {
                     if (value instanceof AbstractVariable) {
-                        AbstractVariable var = (AbstractVariable) value;
-                        this.imageLabel.setIcon( new ImageIcon(var.toBinary()) );
+                        this.imageLabel.setIcon(createImgIcon());
                     } else {
                         this.imageLabel.setIcon(null);
                     }
+                    this.zoomFactorLabel.setText("  Size: " + zoomFactor + "%");
+                    this.imageLabel.repaint();
+                    this.imagePanel.getParent().validate();
                 }
                 break;
             case LIST_VIEW:
@@ -462,6 +491,9 @@ public class ViewerFrame extends JFrame implements DropDownButtonListener, Actio
         this.findButton.setVisible( this.currentView == TEXT_VIEW  || this.currentView == XML_VIEW );
         this.xmlValidateButton.setVisible( this.currentView == XML_VIEW );
         this.xmlPrettyPrintButton.setVisible( this.currentView == XML_VIEW );
+        this.zoomInButton.setVisible( this.currentView == IMAGE_VIEW);
+        this.zoomOutButton.setVisible( this.currentView == IMAGE_VIEW);
+        this.zoomFactorLabel.setVisible( this.currentView == IMAGE_VIEW);
     }
 
     private void openView(int viewIndex) {
@@ -504,6 +536,30 @@ public class ViewerFrame extends JFrame implements DropDownButtonListener, Actio
                 this.nodeInfo.removeSynchronizedView(this);
             }
         }
+    }
+
+    private void zoom(boolean zoomIn) {
+        if (zoomIn && zoomFactor < 500) {
+            this.zoomFactor += 20;
+        } else if (!zoomIn && zoomFactor > 20) {
+            this.zoomFactor -= 20;
+        }
+        refreshed[currentView] = false;
+        refresh(currentView);
+    }
+
+    private ImageIcon createImgIcon() {
+        AbstractVariable var = (AbstractVariable) value;
+        ImageIcon imageIcon = new ImageIcon(var.toBinary());
+        Image img = imageIcon.getImage();
+
+        int newWidth = (int) (img.getWidth(this) * zoomFactor / 100.0); 
+        int newHeight = (int) (img.getHeight(this) * zoomFactor / 100.0);
+
+        Image resizedImg = zoomFactor != 100 ? img.getScaledInstance(newWidth, newHeight, Image.SCALE_FAST) : img;
+        imageIcon.setImage(resizedImg);
+
+        return imageIcon;
     }
 
 }

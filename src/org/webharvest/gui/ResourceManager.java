@@ -143,6 +143,14 @@ public class ResourceManager {
         return getIcon("resources/icons/validate.gif");
     }
 
+    public static Icon getZoomInIcon() {
+        return getIcon("resources/icons/zoomin.gif");
+    }
+
+    public static Icon getZoomOutIcon() {
+        return getIcon("resources/icons/zoomout.gif");
+    }
+
     public static Icon getPrettyPrintIcon() {
         return getIcon("resources/icons/prettyprint.gif");
     }
