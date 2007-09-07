@@ -410,6 +410,7 @@ public class ViewerFrame extends JFrame implements DropDownButtonListener, Actio
                     } else {
                         this.htmlPane.setText(null);
                     }
+                    htmlPane.setCaretPosition(0);
                 }
                 break;
             case IMAGE_VIEW:
@@ -443,6 +444,7 @@ public class ViewerFrame extends JFrame implements DropDownButtonListener, Actio
                     } else {
                         this.listPane.setText(value == null ? "" : value.toString());
                     }
+                    listPane.setCaretPosition(0);
                 }
                 break;
         }

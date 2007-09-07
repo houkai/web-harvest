@@ -501,9 +501,9 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
     }
 
     public void onExecutionStart(Scraper scraper) {
-        if ( ide.getSettings().isDynamicConfigLocate() ) {
-            this.xmlPane.setEditable(false);
-        }
+//        if ( ide.getSettings().isDynamicConfigLocate() ) {
+//            this.xmlPane.setEditable(false);
+//        }
         this.xmlEditorPanel.clearAllMarkers();
         updateControls();
         this.ide.updateGUI();
@@ -734,6 +734,10 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
 
     public XmlTextPane getXmlPane() {
         return xmlPane;
+    }
+
+    public JTree getTree() {
+        return tree;
     }
 
     public ScrollableEditorPanel getXmlEditorPanel() {

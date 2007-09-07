@@ -49,14 +49,10 @@ import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
-import java.net.URL;
-import java.net.MalformedURLException;
-import java.util.*;
 import java.lang.reflect.Method;
-
-import groovy.util.GroovyScriptEngine;
-import groovy.lang.Binding;
-import groovy.lang.GroovyShell;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.*;
 
 public class Ide extends JFrame implements ActionListener, ChangeListener {
 
@@ -837,26 +833,6 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
         } catch (Exception e) {
             DialogHelper.showErrorMessage( "Error attempting to launch web browser" + ":\n" + e.getLocalizedMessage() );
         }
-    }
-
-    /**
-     * GUI starting point. 
-     * @param args
-     */
-    public static void main(String[] args) {
-        Binding binding = new Binding();
-        GroovyShell shell = new GroovyShell(binding);
-        binding.setVariable("foo", new Integer(2));
-
-        Object value = shell.evaluate("println 'Hello World!'; x = 123; return foo * 10");
-        System.out.println("value = " + value);
-
-
-//        SwingUtilities.invokeLater(new Runnable() {
-//            public void run() {
-//                new Ide().createAndShowGUI();
-//            }
-//        });
     }
 
 }
