@@ -292,7 +292,7 @@ public class ViewerFrame extends JFrame implements DropDownButtonListener, Actio
         JSplitPane splitPane = new ProportionalSplitPane(JSplitPane.VERTICAL_SPLIT);
         splitPane.setResizeWeight(1.0d);
         splitPane.setBorder(null);
-        splitPane.setTopComponent( new JScrollPane(new ScrollableEditorPanel(xmlPane, false)) );
+        splitPane.setTopComponent( new XmlEditorScrollPane(xmlPane, false) );
         splitPane.setBottomComponent(xpathPanel);
         splitPane.setDividerLocation(0.75d);
         splitPane.setDividerSize(Constants.SPLITTER_WIDTH);

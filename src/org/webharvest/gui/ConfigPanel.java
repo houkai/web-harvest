@@ -72,7 +72,7 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
     // basic skeletion for new opened configuration
     private static final String BASIC_CONFIG_SKELETION = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\n<config>\n\t\n</config>";
 
-    private ScrollableEditorPanel xmlEditorPanel;
+    private XmlEditorScrollPane xmlEditorScrollPane;
 
     // loger for this configuration panel
     private Logger logger;
@@ -171,11 +171,11 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
         JMenuItem menuItem = new JMenuItem("Locate in source");
         menuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                xmlEditorPanel.clearMarkers(ScrollableEditorPanel.DEFAULT_MARKER_TYPE);
+                xmlEditorScrollPane.clearMarkers(XmlEditorScrollPane.DEFAULT_MARKER_TYPE);
                 TreePath path = tree.getSelectionPath();
                 if (path != null) {
                     int line = locateInSource( (DefaultMutableTreeNode) path.getLastPathComponent(), false );
-                    xmlEditorPanel.addMarker( ScrollableEditorPanel.DEFAULT_MARKER_TYPE, line );
+                    xmlEditorScrollPane.addMarker( XmlEditorScrollPane.DEFAULT_MARKER_TYPE, line );
                     xmlPane.grabFocus();
                 }
             }
@@ -254,8 +254,7 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
             DialogHelper.showErrorMessage( e.getMessage() );
         }
 
-        this.xmlEditorPanel = new ScrollableEditorPanel( this.xmlPane, this.ide.getSettings().isShowLineNumbersByDefault() );
-        JScrollPane xmlView = new JScrollPane(this.xmlEditorPanel);
+        this.xmlEditorScrollPane = new XmlEditorScrollPane( this.xmlPane, this.ide.getSettings().isShowLineNumbersByDefault() );
 
         this.propertiesGrid = new PropertiesGrid();
         JScrollPane propertiesView = new JScrollPane(propertiesGrid);
@@ -271,7 +270,7 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
         leftSplitter = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
         leftSplitter.setBorder(null);
         leftSplitter.setLeftComponent(leftView);
-        leftSplitter.setRightComponent(xmlView);
+        leftSplitter.setRightComponent( this.xmlEditorScrollPane );
         leftSplitter.setDividerSize(Constants.SPLITTER_WIDTH);
 
         leftSplitter.setDividerLocation(250);
@@ -493,8 +492,8 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
                 setExecutingNode(nodeInfo);
                 if ( ide.getSettings().isDynamicConfigLocate() ) {
                     int lineNumber = locateInSource( nodeInfo.getNode(), true );
-                    xmlEditorPanel.clearMarkers(ScrollableEditorPanel.RUNNING_MARKER_TYPE);
-                    xmlEditorPanel.addMarker(ScrollableEditorPanel.RUNNING_MARKER_TYPE, lineNumber);
+                    xmlEditorScrollPane.clearMarkers(XmlEditorScrollPane.RUNNING_MARKER_TYPE);
+                    xmlEditorScrollPane.addMarker(XmlEditorScrollPane.RUNNING_MARKER_TYPE, lineNumber);
                 }
             }
         }
@@ -504,7 +503,7 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
 //        if ( ide.getSettings().isDynamicConfigLocate() ) {
 //            this.xmlPane.setEditable(false);
 //        }
-        this.xmlEditorPanel.clearAllMarkers();
+        this.xmlEditorScrollPane.clearAllMarkers();
         updateControls();
         this.ide.updateGUI();
     }
@@ -596,15 +595,15 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
     }
 
     public void markException(Exception e) {
-        xmlEditorPanel.clearMarkers(ScrollableEditorPanel.ERROR_MARKER_TYPE);
-        xmlEditorPanel.clearMarkers(ScrollableEditorPanel.RUNNING_MARKER_TYPE);
+        xmlEditorScrollPane.clearMarkers(XmlEditorScrollPane.ERROR_MARKER_TYPE);
+        xmlEditorScrollPane.clearMarkers(XmlEditorScrollPane.RUNNING_MARKER_TYPE);
 
         this.nodeRenderer.markException(e);
         TreeNodeInfo treeNodeInfo = this.nodeRenderer.getExecutingNodeInfo();
         if (treeNodeInfo != null) {
             this.treeModel.nodeChanged( treeNodeInfo.getNode() );
-            int line = locateInSource( (DefaultMutableTreeNode) treeNodeInfo.getNode(), true );
-            xmlEditorPanel.addMarker( ScrollableEditorPanel.ERROR_MARKER_TYPE, line );
+            int line = locateInSource( treeNodeInfo.getNode(), true );
+            xmlEditorScrollPane.addMarker( XmlEditorScrollPane.ERROR_MARKER_TYPE, line );
         }
     }
 
@@ -740,8 +739,8 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
         return tree;
     }
 
-    public ScrollableEditorPanel getXmlEditorPanel() {
-        return xmlEditorPanel;
+    public XmlEditorScrollPane getXmlEditorScrollPane() {
+        return xmlEditorScrollPane;
     }
 
     public void setConfigFile(File file) {

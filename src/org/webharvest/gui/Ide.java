@@ -605,7 +605,7 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
         setCommandEnabled(COMMAND_VIEW_LOG, configPanel != null);
         setCommandSelected(COMMAND_VIEW_LOG, configPanel != null && configPanel.isLogVisible());
         setCommandEnabled(COMMAND_VIEW_LOG, configPanel != null);
-        setCommandSelected(COMMAND_VIEW_LINENUMBERS, configPanel != null && configPanel.getXmlEditorPanel().isShowLineNumbers());
+        setCommandSelected(COMMAND_VIEW_LINENUMBERS, configPanel != null && configPanel.getXmlEditorScrollPane().isShowLineNumbers());
         setCommandEnabled(COMMAND_VIEW_LINENUMBERS, configPanel != null);
     }
 
@@ -766,7 +766,7 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
         } else if ( COMMAND_VIEW_LINENUMBERS.equals(cmd) ) {
             ConfigPanel activeConfigPanel = getActiveConfigPanel();
             if (activeConfigPanel != null) {
-                activeConfigPanel.getXmlEditorPanel().toggleShowLineNumbers();
+                activeConfigPanel.getXmlEditorScrollPane().toggleShowLineNumbers();
             }
         }
         

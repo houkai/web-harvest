@@ -48,7 +48,7 @@ public class ConfigDocument implements DocumentListener {
     private void updateDocumentChanged(boolean changed) {
         this.isChanged = changed;
         if (changed) {
-            this.configPanel.getXmlEditorPanel().onDocChanged();
+            this.configPanel.getXmlEditorScrollPane().onDocChanged();
         }
         updateGUI();
     }

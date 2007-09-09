@@ -55,106 +55,8 @@ import javax.swing.text.BadLocationException;
  * @version $Revision: 1.1 $, $Date: 2005/03/28 13:35:41 $
  */
 public class ScrollableEditorPanel extends JPanel implements Scrollable {
-    public static final int DEFAULT_MARKER_TYPE = 0;
-    public static final int RUNNING_MARKER_TYPE = 1;
-    public static final int ERROR_MARKER_TYPE = 2;
-
-    /**
-     * Panel used for optionally displying line numbers.
-     */
-    private class LineNumberPanel extends JPanel {
-        private final Color BORDER_COLOR = new Color(128, 128, 128);
-        private final Color NUMBER_COLOR = new Color(128, 128, 128);
-        private final Color DEFAULT_MARKER_COLOR = new Color(164, 164, 164);
-        private final Color RUNNING_MARKER_COLOR = new Color(0, 128, 0);
-        private final Color ERROR_MARKER_COLOR = new Color(255, 0, 0);
-
-        private final Font font = editor.getFont();
-
-        public Dimension getPreferredSize() {
-            int editorHeight = editor.getHeight();
-            FontMetrics fm = getFontMetrics(font);
-            int lineHeight = fm.getHeight();
-            int maxHeight = calculateTextHeight();
-
-            int numOfLines = lineHeight > 0 ? maxHeight / lineHeight : 0;
-
-            String lastValue = String.valueOf(numOfLines);
-            Rectangle2D rect = fm.getStringBounds(lastValue, getGraphics());
-
-            return new Dimension(20 + (int)rect.getWidth(), editorHeight);
-        }
-
-        public void paint(Graphics g) {
-            g.setColor(Color.white);
-            g.fillRect(0, 0, getWidth() - 1, getHeight() - 1);
-            g.setColor(NUMBER_COLOR);
-
-            g.setFont(font);
-
-            int x = 5;
-            int lineHeight = getFontMetrics(font).getHeight();
-            int y = lineHeight;
-
-            int maxHeight = calculateTextHeight();
-
-            int lineNum = 1;
-            while (y < maxHeight) {
-                g.drawString("" + lineNum, x, y);
-                lineNum++;
-                y += lineHeight;
-            }
-
-            int right = getWidth() - 1;
-            g.setColor(BORDER_COLOR);
-            g.drawLine(right, 0, right, getHeight() - 1);
-
-            for (int i = 0; i < markers.size(); i++) {
-                LineMarker lineMarker = (LineMarker) markers.get(i);
-                switch(lineMarker.markerType) {
-                    case DEFAULT_MARKER_TYPE:
-                        g.setColor(DEFAULT_MARKER_COLOR);
-                        g.drawString(String.valueOf((char)0x25BA), this.getWidth() - 12, lineHeight * lineMarker.line);
-                        break;
-                    case RUNNING_MARKER_TYPE:
-                        g.setColor(RUNNING_MARKER_COLOR);
-                        g.drawString(String.valueOf((char)0x25BA), this.getWidth() - 12, lineHeight * lineMarker.line);
-                        break;
-                    case ERROR_MARKER_TYPE:
-                        g.setColor(ERROR_MARKER_COLOR);
-                        g.drawString(String.valueOf((char)0x25BA), this.getWidth() - 12, lineHeight * lineMarker.line);
-                        break;
-                }
-            }
-        }
-
-        private int calculateTextHeight() {
-            int maxHeight = 0;
-            int lastOffset = editor.getDocument().getEndPosition().getOffset();
-            try {
-                maxHeight = (int) (editor.modelToView(lastOffset).getMaxY());
-            } catch (Exception e) {
-                maxHeight = 0;
-            }
-            return maxHeight;
-        }
-    }
-
-    private class LineMarker {
-        private int markerType = DEFAULT_MARKER_TYPE;
-        private int line = -1;
-
-        public LineMarker(int markerType, int line) {
-            this.markerType = markerType;
-            this.line = line;
-        }
-    }
 
     private JEditorPane editor = null;
-
-    private ScrollableEditorPanel.LineNumberPanel lineNumberPanel;
-
-    private boolean showLineNumbers = true;
 
     // list of all markers
     private java.util.List markers = new ArrayList();
@@ -165,16 +67,9 @@ public class ScrollableEditorPanel extends JPanel implements Scrollable {
      *
      * @param editor the parent editor.
      */
-    public ScrollableEditorPanel(JEditorPane editor, boolean showLineNumbers) {
+    public ScrollableEditorPanel(JEditorPane editor) {
         super(new BorderLayout());
-
         this.editor = editor;
-        this.showLineNumbers = showLineNumbers;
-
-        this.lineNumberPanel = new LineNumberPanel();
-        this.lineNumberPanel.setVisible(showLineNumbers);
-
-        add(this.lineNumberPanel, BorderLayout.WEST);
         add(editor, BorderLayout.CENTER);
     }
 
@@ -228,73 +123,6 @@ public class ScrollableEditorPanel extends JPanel implements Scrollable {
             return (((JViewport) getParent()).getHeight() > getPreferredSize().height);
         }
         return false;
-    }
-
-    public void setShowLineNumbers(boolean showLineNumbers) {
-        this.showLineNumbers = showLineNumbers;
-        this.lineNumberPanel.setVisible(showLineNumbers);
-        repaintLineNumbers();
-    }
-
-    public void toggleShowLineNumbers() {
-        setShowLineNumbers(!showLineNumbers);
-    }
- 
-    public boolean isShowLineNumbers() {
-        return showLineNumbers;
-    }
-
-    /**
-     * Initiates repaint of line numbers area.
-     */
-    private void repaintLineNumbers() {
-        if (showLineNumbers) {
-            this.lineNumberPanel.repaint();
-        }
-    }
-
-    /**
-     * Adds new editor marker specified by type and line number
-     * @param markerType
-     * @param line
-     */
-    public void addMarker(int markerType, int line) {
-        this.markers.add( new LineMarker(markerType, line) );
-        if (showLineNumbers) {
-            this.lineNumberPanel.repaint();
-        }
-    }
-
-    /**
-     * Clears list of all editor markers.
-     */
-    public void clearAllMarkers() {
-        this.markers.clear();
-        if (this.showLineNumbers) {
-            this.lineNumberPanel.repaint();
-        }
-    }
-
-    /**
-     * Deletes all markers of specified type.
-     */
-    public void clearMarkers(int markerType) {
-        Iterator iterator = markers.iterator();
-        while (iterator.hasNext()) {
-            LineMarker lineMarker = (LineMarker) iterator.next();
-            if (lineMarker.markerType == markerType) {
-                iterator.remove();
-            }
-        }
-
-        if (this.showLineNumbers) {
-            this.lineNumberPanel.repaint();
-        }
-    }
-
-    public void onDocChanged() {
-        clearAllMarkers();
-        repaintLineNumbers();
     }
 
 }
