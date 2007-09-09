@@ -248,7 +248,7 @@ public class ViewerFrame extends JFrame implements DropDownButtonListener, Actio
         // text view
         this.textArea = new JTextArea();
         this.textArea.setEditable(false);
-        this.textArea.setFont( new Font("Courier New", Font.PLAIN, 11) );
+        this.textArea.setFont( new Font("Monospaced", Font.PLAIN, 12) );
         this.cardPanel.add( new JScrollPane(this.textArea), String.valueOf(TEXT_VIEW) );
 
         // XML view
