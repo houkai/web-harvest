@@ -114,6 +114,7 @@ public class ViewerFrame extends JFrame implements DropDownButtonListener, Actio
     private JLabel zoomFactorLabel;
     private JEditorPane listPane;
     private JCheckBox keepSyncCheckBox;
+    private JCheckBox wrapTextCheckBox;
     private JButton findButton;
     private JButton zoomInButton;
     private JButton zoomOutButton;
@@ -211,6 +212,10 @@ public class ViewerFrame extends JFrame implements DropDownButtonListener, Actio
         this.findButton.registerKeyboardAction(findNextAction, KeyStroke.getKeyStroke( KeyEvent.VK_F3, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);
         this.findButton.registerKeyboardAction(findPrevAction, KeyStroke.getKeyStroke( KeyEvent.VK_F3, ActionEvent.SHIFT_MASK), JComponent.WHEN_IN_FOCUSED_WINDOW);
 
+        this.wrapTextCheckBox = new JCheckBox("Wrap Text");
+        this.wrapTextCheckBox.addActionListener(this);
+        toolBar.add(this.wrapTextCheckBox);
+
         this.zoomInButton = new JButton(zoomInAction);
         this.zoomInButton.registerKeyboardAction(zoomInAction, KeyStroke.getKeyStroke( KeyEvent.VK_ADD, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);
 
@@ -248,6 +253,7 @@ public class ViewerFrame extends JFrame implements DropDownButtonListener, Actio
         // text view
         this.textArea = new JTextArea();
         this.textArea.setEditable(false);
+        this.textArea.setWrapStyleWord(true);
         this.textArea.setFont( new Font("Monospaced", Font.PLAIN, 12) );
         this.cardPanel.add( new JScrollPane(this.textArea), String.valueOf(TEXT_VIEW) );
 
@@ -494,6 +500,7 @@ public class ViewerFrame extends JFrame implements DropDownButtonListener, Actio
         this.zoomInButton.setVisible( this.currentView == IMAGE_VIEW);
         this.zoomOutButton.setVisible( this.currentView == IMAGE_VIEW);
         this.zoomFactorLabel.setVisible( this.currentView == IMAGE_VIEW);
+        this.wrapTextCheckBox.setVisible( this.currentView == TEXT_VIEW);
     }
 
     private void openView(int viewIndex) {
@@ -528,13 +535,16 @@ public class ViewerFrame extends JFrame implements DropDownButtonListener, Actio
     }
 
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == this.keepSyncCheckBox) {
+        Object source = e.getSource();
+        if (source == this.keepSyncCheckBox) {
             boolean isSynchronized = this.keepSyncCheckBox.isSelected();
             if (isSynchronized) {
                 this.nodeInfo.addSynchronizedView(this);
             } else {
                 this.nodeInfo.removeSynchronizedView(this);
             }
+        } else if (source == this.wrapTextCheckBox) {
+            this.textArea.setLineWrap( this.wrapTextCheckBox.isSelected() );
         }
     }
 
