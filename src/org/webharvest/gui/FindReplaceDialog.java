@@ -38,9 +38,13 @@ package org.webharvest.gui;
 
 import javax.swing.*;
 import javax.swing.text.JTextComponent;
+import javax.swing.text.Document;
+import javax.swing.text.BadLocationException;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.*;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeEvent;
 
 public class FindReplaceDialog extends JDialog {
 
@@ -126,14 +130,10 @@ public class FindReplaceDialog extends JDialog {
 
         JPanel optionsPanel = createOptionsPanel();
         JPanel directionsPanel = createDirectionsPanel();
-        JPanel scopePanel = createScopePanel();
-        JPanel originPanel = createOriginPanel();
 
-        JPanel middlePanel = new JPanel(new GridLayout(2, 2));
+        JPanel middlePanel = new JPanel(new GridLayout(1, 2));
         middlePanel.add(optionsPanel);
         middlePanel.add(directionsPanel);
-        middlePanel.add(scopePanel);
-        middlePanel.add(originPanel);
 
         JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.setBorder(new EmptyBorder(new Insets(4, 4, 4, 4)));
@@ -169,7 +169,7 @@ public class FindReplaceDialog extends JDialog {
     }
 
     private JPanel createDirectionsPanel() {
-        JPanel directionsPanel = new JPanel(new GridLayout(2, 1));
+        JPanel directionsPanel = new JPanel(new GridLayout(3, 1));
         directionsPanel.setBorder(BorderFactory.createTitledBorder("Direction"));
 
         ButtonGroup group = new ButtonGroup();
@@ -177,56 +177,21 @@ public class FindReplaceDialog extends JDialog {
         this.forwardRadioButton = new JRadioButton("Forward");
         this.forwardRadioButton.setSelected(true);
         this.backwordRadioButton = new JRadioButton("Backword");
+        this.entireScopeRadioButton = new JRadioButton("Entire scope");
 
         group.add(this.forwardRadioButton);
         group.add(this.backwordRadioButton);
-        
+        group.add(this.entireScopeRadioButton);
+
         directionsPanel.add(this.forwardRadioButton);
         directionsPanel.add(this.backwordRadioButton);
-        
+        directionsPanel.add(this.entireScopeRadioButton);
+
         return directionsPanel;
     }
 
-    private JPanel createScopePanel() {
-        JPanel scopePanel = new JPanel(new GridLayout(2, 1));
-        scopePanel.setBorder(BorderFactory.createTitledBorder("Scope"));
-
-        ButtonGroup group = new ButtonGroup();
-
-        this.globalRadioButton = new JRadioButton("Global");
-        this.globalRadioButton.setSelected(true);
-        this.selectedTextRadioButton = new JRadioButton("Selected text");
-
-        group.add(this.globalRadioButton);
-        group.add(this.selectedTextRadioButton);
-
-        scopePanel.add(this.globalRadioButton);
-        scopePanel.add(this.selectedTextRadioButton);
-
-        return scopePanel;
-    }
-
-    private JPanel createOriginPanel() {
-        JPanel originPanel = new JPanel(new GridLayout(2, 1));
-        originPanel.setBorder(BorderFactory.createTitledBorder("Origin"));
-
-        ButtonGroup group = new ButtonGroup();
-
-        this.fromCursorRadioButton = new JRadioButton("From cursor");
-        this.fromCursorRadioButton.setSelected(true);
-        this.entireScopeRadioButton = new JRadioButton("Entire scope");
-
-        group.add(this.fromCursorRadioButton);
-        group.add(this.entireScopeRadioButton);
-
-        originPanel.add(this.fromCursorRadioButton);
-        originPanel.add(this.entireScopeRadioButton);
-
-        return originPanel;
-    }
-
     private JPanel createOptionsPanel() {
-        JPanel optionsPanel = new JPanel(new GridLayout(2, 1));
+        JPanel optionsPanel = new JPanel(new GridLayout(3, 1));
         optionsPanel.setBorder(BorderFactory.createTitledBorder("Options"));
         this.caseSensitiveCheckBox = new JCheckBox("Case sensitive");
         optionsPanel.add(this.caseSensitiveCheckBox);
@@ -273,51 +238,133 @@ public class FindReplaceDialog extends JDialog {
         setVisible(true);
     }
 
-    public void find(boolean backward) {
-        if (backward) {
-            backward = this.forwardRadioButton.isSelected(); 
-        } else {
-            backward = this.backwordRadioButton.isSelected();
-        }
-        
-        this.setVisible(false);
-        if (this.textComponent != null) {
-            String content = this.textComponent.getText();
-            String searchText = this.searchField.getText();
-            if ( !"".equals(searchText) ) {
-                int startPosition = 0;
-                if ( this.fromCursorRadioButton.isSelected() ) {
-                    startPosition = textComponent.getCaretPosition();
-                } else if (backward) {
-                    startPosition = content.length() - 1;
-                } else {
-                    startPosition = 0;
-                }
+    public boolean find(boolean backward) {
+        String searchText = this.searchField.getText();
 
-                int index = -1;
-                if (backward) {
-                    content = content.substring( 0, Math.max(startPosition - searchText.length(), 1) );
-                    index = content.lastIndexOf(searchText);
-                } else {
-                    index = content.indexOf(searchText, startPosition);
-                }
-                
-                if (index >= 0) {
-                    textComponent.grabFocus();
-                    textComponent.select(index, index + searchText.length());
-                } else {
-                    Component top = textComponent;
-                    while (top.getParent() != null) {
-                        top = top.getParent();
-                    }
-                    JOptionPane.showMessageDialog(top, "Next occurrence of \"" + searchText + "\" not found.", "Information", JOptionPane.INFORMATION_MESSAGE);
-                }
-            }
+        // there should be something to perform search on and something to search
+        if ( this.textComponent == null || "".equals(searchText) ) {
+            return false;
         }
+
+        // if find/replace dialog is opened only radio button is relevant
+        if ( this.isVisible() ) {
+            backward = this.backwordRadioButton.isSelected(); 
+        }
+
+        int startPosition = this.textComponent.getCaretPosition();
+        Document doc = this.textComponent.getDocument();
+        int len = doc.getLength();
+
+        String content = "";
+        try {
+            if (backward) {
+                content = doc.getText(0, startPosition > 1 ? startPosition - 1 : 0);
+                startPosition = 0;
+            } else if ( this.isVisible() && this.entireScopeRadioButton.isSelected() ) {
+                content = doc.getText(0, len);
+                startPosition = 0;
+            } else {
+                content = doc.getText(startPosition, len - startPosition);
+            }
+        } catch (BadLocationException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        // hide this find/replace dialog
+        this.setVisible(false);
+
+        if ( !this.caseSensitiveCheckBox.isSelected() ) {
+            content = content.toLowerCase();
+            searchText = searchText.toLowerCase();
+        }
+
+        // search for occurence
+        int index = backward ? content.lastIndexOf(searchText) : content.indexOf(searchText);
+
+        if (index >= 0) {
+            textComponent.grabFocus();
+            textComponent.select(startPosition + index, startPosition + index + searchText.length());
+            
+            return true;
+        } else {
+            Component top = findTopComponent();
+            JOptionPane.showMessageDialog(top, "Next occurrence of \"" + searchText + "\" not found.", "Information", JOptionPane.INFORMATION_MESSAGE);
+        }
+
+        return false;
+    }
+
+    /**
+     * Finds the top component in the hierarchy.
+     */
+    private Component findTopComponent() {
+        Component top = textComponent;
+        while (top.getParent() != null) {
+            top = top.getParent();
+        }
+        return top;
     }
 
     public void replace(boolean backward) {
-        
+        String searchText = this.searchField.getText();
+        String replaceText = this.replaceField.getText();
+
+        // there should be something to perform search on and something to search
+        if ( this.textComponent == null || "".equals(searchText) ) {
+            return;
+        }
+
+        Object[] options = {"Replace", "Skip", "All", "Cancel"};
+
+        final JOptionPane optionPane = new JOptionPane("Do you want to replace this occurence?",
+                                                 JOptionPane.QUESTION_MESSAGE,
+                                                 JOptionPane.YES_NO_CANCEL_OPTION,
+                                                 null,
+                                                 options,
+                                                 options[0] );
+
+        final JDialog dialog = new JDialog((Frame)findTopComponent(), "Replace", true);
+
+        optionPane.addPropertyChangeListener(
+            new PropertyChangeListener() {
+                public void propertyChange(PropertyChangeEvent e) {
+                    String prop = e.getPropertyName();
+                    if ( dialog.isVisible() && (e.getSource() == optionPane) && (prop.equals(JOptionPane.VALUE_PROPERTY))) {
+//                        System.out.println("**** " + ((Integer)optionPane.getValue()).intValue() );
+                        //If you were going to check something
+                        //before closing the window, you'd do
+                        //it here.
+//                        dialog.setVisible(false);
+                    }
+                }
+        });
+        dialog.setContentPane(optionPane);
+        dialog.pack();
+
+        int result = 3;
+        boolean found = false;
+        do {
+            found = find(false);
+            if (found) {
+                dialog.setVisible(true);
+                result = ((Integer)optionPane.getValue()).intValue();
+
+//                result = JOptionPane.showOptionDialog(
+//                                findTopComponent(),
+//                                "Do you want to replace this occurence?",
+//                                "Replace",
+//                                JOptionPane.YES_NO_CANCEL_OPTION,
+//                                JOptionPane.QUESTION_MESSAGE,
+//                                null,
+//                                options,
+//                                options[0] );
+                if (result == 0) {
+                    this.textComponent.replaceSelection(replaceText);
+                }
+            }
+        } while (found && result != 2 && result != 3);
+        dialog.setVisible(false);
     }
 
     public String getSearchText() {

@@ -98,7 +98,7 @@ public class WelcomePanel extends JPanel {
         titleLabel.setFont(new Font("Verdana", Font.PLAIN, 24));
         this.add(titleLabel);
 
-        JLabel subtitleLabel = new JLabel("version 1.0 alpha, build 2", SwingConstants.LEFT);
+        JLabel subtitleLabel = new JLabel("version 1.0", SwingConstants.LEFT);
         subtitleLabel.setFont(new Font("Verdana", Font.PLAIN, 12));
         this.add(subtitleLabel);
 
