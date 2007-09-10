@@ -307,16 +307,17 @@ public class FindReplaceDialog extends JDialog {
     }
 
     public void replace(boolean backward) {
-        String searchText = this.searchField.getText();
-        String replaceText = this.replaceField.getText();
+        this.setVisible(false);
+
+        final String searchText = this.searchField.getText();
+        final String replaceText = this.replaceField.getText();
 
         // there should be something to perform search on and something to search
         if ( this.textComponent == null || "".equals(searchText) ) {
             return;
         }
 
-        Object[] options = {"Replace", "Skip", "All", "Cancel"};
-
+        final Object[] options = {"Replace", "Skip", "All", "Cancel"};
         final JOptionPane optionPane = new JOptionPane("Do you want to replace this occurence?",
                                                  JOptionPane.QUESTION_MESSAGE,
                                                  JOptionPane.YES_NO_CANCEL_OPTION,
@@ -330,41 +331,31 @@ public class FindReplaceDialog extends JDialog {
             new PropertyChangeListener() {
                 public void propertyChange(PropertyChangeEvent e) {
                     String prop = e.getPropertyName();
-                    if ( dialog.isVisible() && (e.getSource() == optionPane) && (prop.equals(JOptionPane.VALUE_PROPERTY))) {
-//                        System.out.println("**** " + ((Integer)optionPane.getValue()).intValue() );
-                        //If you were going to check something
-                        //before closing the window, you'd do
-                        //it here.
-//                        dialog.setVisible(false);
+                    if ( dialog.isVisible() && (e.getSource() == optionPane) && (prop.equals(JOptionPane.VALUE_PROPERTY)) ) {
+                        Object newValue = e.getNewValue();
+                        if ( options[0].equals(newValue) ) {
+                            if (find(false)) {
+                                textComponent.replaceSelection(replaceText);
+                            } else {
+                                dialog.setVisible(false);
+                            }
+                        } else if ( options[1].equals(newValue) ) {
+                            if (!find(false)) {
+                                dialog.setVisible(false);
+                            }
+                        } else if ( options[2].equals(newValue) ) {
+                            // replace all
+                            dialog.setVisible(false);
+                        } else if ( options[3].equals(newValue) ) {
+                            dialog.setVisible(false);
+                        }
                     }
                 }
         });
         dialog.setContentPane(optionPane);
         dialog.pack();
 
-        int result = 3;
-        boolean found = false;
-        do {
-            found = find(false);
-            if (found) {
-                dialog.setVisible(true);
-                result = ((Integer)optionPane.getValue()).intValue();
-
-//                result = JOptionPane.showOptionDialog(
-//                                findTopComponent(),
-//                                "Do you want to replace this occurence?",
-//                                "Replace",
-//                                JOptionPane.YES_NO_CANCEL_OPTION,
-//                                JOptionPane.QUESTION_MESSAGE,
-//                                null,
-//                                options,
-//                                options[0] );
-                if (result == 0) {
-                    this.textComponent.replaceSelection(replaceText);
-                }
-            }
-        } while (found && result != 2 && result != 3);
-        dialog.setVisible(false);
+        dialog.setVisible(true);
     }
 
     public String getSearchText() {
