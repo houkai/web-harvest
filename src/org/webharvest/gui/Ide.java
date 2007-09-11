@@ -318,7 +318,7 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
         defineToolbarButton("Pause execution", COMMAND_PAUSE, ResourceManager.getPauseIcon(), toolBar);
         defineToolbarButton("Stop execution", COMMAND_STOP, ResourceManager.getStopIcon(), toolBar);
         toolBar.addSeparator(new Dimension(10, 0));
-        defineToolbarButton("Initial configuration parameters", COMMAND_RUNPARAMS, ResourceManager.getRunParamsIcon(), toolBar);        
+        defineToolbarButton("Define initial run parameters", COMMAND_RUNPARAMS, ResourceManager.getRunParamsIcon(), toolBar);        
         toolBar.addSeparator(new Dimension(10, 0));
         defineToolbarButton("Open Settings Dialog", COMMAND_SETTINGS, ResourceManager.getSettingsIcon(), toolBar);
 
@@ -556,6 +556,8 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
         defineMenuItem(menu, "Pause", ResourceManager.getPauseIcon(), KeyEvent.VK_R, COMMAND_PAUSE, null);
         defineMenuItem(menu, "Stop", ResourceManager.getStopIcon(), KeyEvent.VK_S, COMMAND_STOP, null);
         menu.addSeparator();
+        defineMenuItem(menu, "Define Run Parameters", ResourceManager.getRunParamsIcon(), KeyEvent.VK_P, COMMAND_RUNPARAMS, KeyStroke.getKeyStroke(KeyEvent.VK_F12, 0));
+        menu.addSeparator();
         defineMenuItem(menu, "Settings...", ResourceManager.getSettingsIcon(), KeyEvent.VK_T, COMMAND_SETTINGS, null);
         menuBar.add(menu);
 
@@ -596,7 +598,7 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
         setCommandEnabled(COMMAND_RUN, configPanel != null && configPanel.getScraperStatus() != Scraper.STATUS_RUNNING);
         setCommandEnabled(COMMAND_PAUSE, configPanel != null && configPanel.getScraperStatus() == Scraper.STATUS_RUNNING);
         setCommandEnabled(COMMAND_STOP, configPanel != null && configPanel.getScraperStatus() == Scraper.STATUS_RUNNING);
-        setCommandEnabled(COMMAND_RUNPARAMS, configPanel != null);
+        setCommandEnabled(COMMAND_RUNPARAMS, configPanel != null && configPanel.getScraperStatus() != Scraper.STATUS_RUNNING);
 
         setCommandEnabled(COMMAND_UNDO, configPanel != null);
         setCommandEnabled(COMMAND_REDO, configPanel != null); 

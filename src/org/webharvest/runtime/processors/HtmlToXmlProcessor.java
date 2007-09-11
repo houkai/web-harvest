@@ -145,6 +145,8 @@ public class HtmlToXmlProcessor extends BaseProcessor {
                 result = cleaner.getXmlAsString();
             } else if ( "pretty".equalsIgnoreCase(outputType) ) {
                 result = cleaner.getPrettyXmlAsString();
+            } else if ( "browser-compact".equalsIgnoreCase(outputType) ) {
+                result = cleaner.getBrowserCompactXmlAsString();
             }  else {
                 result = cleaner.getCompactXmlAsString();
             }

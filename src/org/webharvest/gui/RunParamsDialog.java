@@ -88,8 +88,10 @@ public class RunParamsDialog extends JDialog {
         }
 
         public void setValueAt(Object value, int rowIndex, int columnIndex) {
-            String rowArray[] = (String[]) params.get(rowIndex);
-            rowArray[columnIndex] = (String) value;
+            if (rowIndex < getRowCount()) { 
+                String rowArray[] = (String[]) params.get(rowIndex);
+                rowArray[columnIndex] = (String) value;
+            }
         }
     }
 
@@ -99,8 +101,11 @@ public class RunParamsDialog extends JDialog {
     // Ide instance where this dialog belongs.
     private Ide ide;
 
+    // table data model
+    private MyTableModel dataModel;
+
     public RunParamsDialog(Ide ide) throws HeadlessException {
-        super(ide, "Initial Configuration Parameters", true);
+        super(ide, "Initial Run Parameters", true);
         this.ide = ide;
         this.setResizable(false);
 
@@ -111,13 +116,13 @@ public class RunParamsDialog extends JDialog {
         Container contentPane = this.getContentPane();
         contentPane.setLayout( new BorderLayout() );
 
-        final MyTableModel dataModel = new MyTableModel();
+        this.dataModel = new MyTableModel();
 
-        final JTable table = new JTable(dataModel) {
+        final JTable table = new JTable(this.dataModel) {
             public void editingStopped(ChangeEvent event) {
                 TableCellEditor editor = (TableCellEditor) event.getSource();
-                int row = getSelectedRow();
-                int column = getSelectedColumn();
+                int row = getEditingRow();
+                int column = getEditingColumn();
                 if (row < 0) {
                     row = 0;
                 }
@@ -128,7 +133,10 @@ public class RunParamsDialog extends JDialog {
                 dataModel.setValueAt(value, row, column);
                 super.editingStopped(event);
             }
+
+
         };
+        table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         JPanel buttonPanel = new JPanel(new GridLayout(6, 1, 10, 5));
         buttonPanel.setBorder(new EmptyBorder(4, 2, 4, 4));
 
@@ -227,6 +235,7 @@ public class RunParamsDialog extends JDialog {
                     }
                 }
             }
+            dataModel.fireTableDataChanged();
         }
         
         super.setVisible(b);
