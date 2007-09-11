@@ -61,6 +61,7 @@ import java.net.URL;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.LinkedHashMap;
 
 /**
  * Single panel containing XML configuration.
@@ -110,6 +111,9 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
     }
 
     private ConfigDocument configDocument;
+
+    // initial configuration parameters
+    private Map initParams = null;
 
     private Ide ide;
 
@@ -619,6 +623,7 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
             if (ok) {
                 Settings settings = ide.getSettings();
                 this.scraper = new Scraper(this.scraperConfiguration, settings.getWorkingPath());
+                this.scraper.addVariablesToContext(initParams);
                 if ( settings.isProxyEnabled() ) {
                     HttpClientManager httpClientManager = scraper.getHttpClientManager();
 
@@ -783,4 +788,12 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
         return this.bottomView.isVisible();
     }
 
+    public Map getInitParams() {
+        return initParams;
+    }
+
+    public void setInitParams(Map initParams) {
+        this.initParams = initParams;
+    }
+    
 }

@@ -81,6 +81,7 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
     private static final String COMMAND_PAUSE = "pause";
     private static final String COMMAND_STOP = "stop";
     private static final String COMMAND_EXIT = "exit";
+    private static final String COMMAND_RUNPARAMS = "runparams";
     private static final String COMMAND_SETTINGS = "settings";
     private static final String COMMAND_ABOUT = "about";
     private static final String COMMAND_HOMEPAGE = "homepage";
@@ -104,6 +105,9 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
 
     // settings dialog box
     private SettingsDialog settingsDialog;
+
+    // initial run params dialog box
+    private RunParamsDialog runParamsDialog;
 
     // find/replace dialog box
     private FindReplaceDialog findReplaceDialog;
@@ -129,6 +133,7 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
         });
 
         this.settingsDialog = new SettingsDialog(this);
+        this.runParamsDialog = new RunParamsDialog(this);
         this.findReplaceDialog = new FindReplaceDialog(this);
     }
 
@@ -225,7 +230,11 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
     }
 
     private void defineToolbarButton(String text, String command, Icon icon, JToolBar toolBar) {
-        JButton button = new JButton(icon);
+        defineToolbarButton(text, command, icon, toolBar, null);
+    }
+    
+    private void defineToolbarButton(String text, String command, Icon icon, JToolBar toolBar, final String label) {
+        JButton button = new JButton(label, icon);
         button.setActionCommand(command);
         button.addActionListener(this);
         button.setToolTipText(text);
@@ -308,6 +317,8 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
         defineToolbarButton("Run", COMMAND_RUN, ResourceManager.getRunIcon(), toolBar);
         defineToolbarButton("Pause execution", COMMAND_PAUSE, ResourceManager.getPauseIcon(), toolBar);
         defineToolbarButton("Stop execution", COMMAND_STOP, ResourceManager.getStopIcon(), toolBar);
+        toolBar.addSeparator(new Dimension(10, 0));
+        defineToolbarButton("Initial configuration parameters", COMMAND_RUNPARAMS, ResourceManager.getRunParamsIcon(), toolBar);        
         toolBar.addSeparator(new Dimension(10, 0));
         defineToolbarButton("Open Settings Dialog", COMMAND_SETTINGS, ResourceManager.getSettingsIcon(), toolBar);
 
@@ -399,6 +410,11 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
     public void defineSettings() {
         this.settingsDialog.setLocationRelativeTo(this);
         this.settingsDialog.setVisible(true);
+    }
+
+    public void defineRuntimeParams() {
+        this.runParamsDialog.setLocationRelativeTo(this);
+        this.runParamsDialog.setVisible(true);
     }
 
     /**
@@ -580,6 +596,7 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
         setCommandEnabled(COMMAND_RUN, configPanel != null && configPanel.getScraperStatus() != Scraper.STATUS_RUNNING);
         setCommandEnabled(COMMAND_PAUSE, configPanel != null && configPanel.getScraperStatus() == Scraper.STATUS_RUNNING);
         setCommandEnabled(COMMAND_STOP, configPanel != null && configPanel.getScraperStatus() == Scraper.STATUS_RUNNING);
+        setCommandEnabled(COMMAND_RUNPARAMS, configPanel != null);
 
         setCommandEnabled(COMMAND_UNDO, configPanel != null);
         setCommandEnabled(COMMAND_REDO, configPanel != null); 
@@ -609,7 +626,7 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
         setCommandEnabled(COMMAND_VIEW_LINENUMBERS, configPanel != null);
     }
 
-    private ConfigPanel getActiveConfigPanel() {
+    public ConfigPanel getActiveConfigPanel() {
         Component component = this.tabbedPane.getSelectedComponent();
         return component instanceof ConfigPanel ? (ConfigPanel)component : null;
     }
@@ -688,6 +705,8 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
             if (activeConfigPanel != null) {
                 activeConfigPanel.stopScraperExecution();
             }
+        } else if ( COMMAND_RUNPARAMS.equals(cmd) ) {
+            defineRuntimeParams();
         } else if ( COMMAND_SETTINGS.equals(cmd) ) {
             defineSettings();
         } else if ( COMMAND_ABOUT.equals(cmd) ) {

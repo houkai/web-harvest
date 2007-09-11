@@ -123,6 +123,10 @@ public class ResourceManager {
         return getIcon("resources/icons/settings.gif");
     }
 
+    public static Icon getRunParamsIcon() {
+        return getIcon("resources/icons/runparams.gif");
+    }
+
     public static Icon getHelpIcon() {
         return getIcon("resources/icons/help.gif");
     }

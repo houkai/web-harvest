@@ -267,24 +267,47 @@ public class ViewerFrame extends JFrame implements DropDownButtonListener, Actio
                 return new Dimension(0, 28);
             }
         };
-        final JTextField xpathExpressionField = new JTextField();
-        xpathExpressionField.addKeyListener(new KeyAdapter() {
-            public void keyPressed(KeyEvent e) {
-                if ( e.getKeyCode() == KeyEvent.VK_ENTER ) {
-                    evaluateXPath(xpathExpressionField.getText());
-                }
+        final JComboBox xpathComboBox = new JComboBox() {
+            public Dimension getPreferredSize() {
+                return new Dimension(0, 20);
+            }
+        };
+        xpathComboBox.getEditor().addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String expression = (String) e.getActionCommand();
+                xpathComboBox.removeItem(expression);
+                xpathComboBox.insertItemAt(expression, 0);
+                xpathComboBox.setSelectedItem(expression);
+                evaluateXPath(expression);
             }
         });
+
+        xpathComboBox.setEditable(true);
+//        xpathComboBox.addKeyListener(new KeyAdapter() {
+//            public void keyPressed(KeyEvent e) {
+//                if ( e.getKeyCode() == KeyEvent.VK_ENTER ) {
+//                    String expression = (String) xpathComboBox.getSelectedItem();
+//                    xpathComboBox.removeItem(expression);
+//                    xpathComboBox.insertItemAt(expression, 0);
+//                    xpathComboBox.setSelectedItem(expression);
+//                    evaluateXPath(expression);
+//                }
+//            }
+//        });
         final JButton xpathEvalButton = new JButton("Evaluate");
 
         xpathEvalButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                evaluateXPath( xpathExpressionField.getText() );
+                String expression = (String) xpathComboBox.getSelectedItem();
+                xpathComboBox.removeItem(expression);
+                xpathComboBox.insertItemAt(expression, 0);
+                xpathComboBox.setSelectedItem(expression);
+                evaluateXPath(expression);
             }
         });
         xpathToolbar.setFloatable(false);
         xpathToolbar.add( new JLabel(" XPath expression: ") );
-        xpathToolbar.add(xpathExpressionField);
+        xpathToolbar.add(xpathComboBox);
         xpathToolbar.add(xpathEvalButton);
 
         this.xpathResultPane = new JEditorPane();

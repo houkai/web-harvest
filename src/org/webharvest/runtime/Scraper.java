@@ -125,6 +125,20 @@ public class Scraper {
         this.context.put(name, new NodeVariable(value));
     }
 
+    /**
+     * Add all map values to the context.
+     * @param map
+     */
+    public void addVariablesToContext(Map map) {
+        if (map != null) {
+            Iterator iterator = map.entrySet().iterator();
+            while (iterator.hasNext()) {
+                Map.Entry entry = (Map.Entry) iterator.next();
+                this.context.put( entry.getKey(), new NodeVariable(entry.getValue()) );
+            }
+        }
+    }
+
     public AbstractVariable execute(List ops) {
         this.setStatus(STATUS_RUNNING);
 
