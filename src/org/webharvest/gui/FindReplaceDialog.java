@@ -45,6 +45,8 @@ import java.awt.*;
 import java.awt.event.*;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeEvent;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 public class FindReplaceDialog extends JDialog {
 
@@ -57,18 +59,15 @@ public class FindReplaceDialog extends JDialog {
     private Frame parentFrame;
 
     // settiongs fields
-    private JTextField searchField;
+    private JComboBox searchComboBox;
     private JLabel replaceLabel;
-    private JTextField replaceField;
+    private JComboBox replaceComboBox;
     private JTextComponent textComponent;
 
     private JCheckBox caseSensitiveCheckBox;
     private JCheckBox regularExpressionsCheckBox;
     private JRadioButton forwardRadioButton;
     private JRadioButton backwordRadioButton;
-    private JRadioButton globalRadioButton;
-    private JRadioButton selectedTextRadioButton;
-    private JRadioButton fromCursorRadioButton;
     private JRadioButton entireScopeRadioButton;
 
     public FindReplaceDialog(Frame parentFrame) throws HeadlessException {
@@ -78,8 +77,9 @@ public class FindReplaceDialog extends JDialog {
 
         addWindowListener( new WindowAdapter() {
            public void windowActivated( WindowEvent e ){
-                searchField.requestFocus();
-                searchField.setSelectionStart(0);
+                searchComboBox.requestFocus();
+                searchComboBox.getEditor().selectAll();
+//                searchComboBox.setSelectedIndex( searchComboBox.getSelectedIndex() );
              }
         } );
 
@@ -97,17 +97,31 @@ public class FindReplaceDialog extends JDialog {
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.insets = new Insets(2, 5, 2, 5);
 
-        searchField = new JTextField("") {
+        searchComboBox = new JComboBox(new Object[] {}) {
             public Dimension getPreferredSize() {
                 return new Dimension(300, 20);
             }
         };
+        searchComboBox.setEditable(true);
+        searchComboBox.getEditor().addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                searchComboBox.setSelectedItem(e.getActionCommand());
+            }
+        });
+        
         replaceLabel = new JLabel("Replace with: ");
-        replaceField = new JTextField("") {
+        replaceComboBox = new JComboBox(new Object[] {}) {
             public Dimension getPreferredSize() {
                 return new Dimension(300, 20);
             }
         };
+        replaceComboBox.setEditable(true);
+        replaceComboBox.getEditor().addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                replaceComboBox.setSelectedItem(e.getActionCommand());
+            }
+        });
+
         caseSensitiveCheckBox = new JCheckBox("Case sensitive", false);
 
         constraints.gridx = 0;
@@ -117,7 +131,7 @@ public class FindReplaceDialog extends JDialog {
         constraints.gridx = 1;
         constraints.gridy = 0;
         constraints.weightx = 1;
-        topPanel.add(searchField, constraints );
+        topPanel.add(searchComboBox, constraints );
 
         constraints.gridx = 0;
         constraints.gridy = 1;
@@ -126,7 +140,7 @@ public class FindReplaceDialog extends JDialog {
         constraints.gridx = 1;
         constraints.gridy = 1;
         constraints.weightx = 1;
-        topPanel.add(replaceField, constraints );
+        topPanel.add(replaceComboBox, constraints );
 
         JPanel optionsPanel = createOptionsPanel();
         JPanel directionsPanel = createDirectionsPanel();
@@ -230,7 +244,7 @@ public class FindReplaceDialog extends JDialog {
         setTextComponent(textComponent);
         this.operation = isReplace ? OPERATION_REPLACE : OPERATION_FIND;
         this.replaceLabel.setVisible(isReplace);
-        this.replaceField.setVisible(isReplace);
+        this.replaceComboBox.setVisible(isReplace);
         this.setTitle(isReplace ? "Replace Text" : "Find Text");
         this.pack();
 
@@ -239,11 +253,21 @@ public class FindReplaceDialog extends JDialog {
     }
 
     public boolean find(boolean backward) {
-        String searchText = this.searchField.getText();
+        return find(backward, true);
+    }
+
+    public boolean find(boolean backward, boolean showMessageIfNotFound) {
+        String searchText = (String)this.searchComboBox.getSelectedItem();
 
         // there should be something to perform search on and something to search
         if ( this.textComponent == null || "".equals(searchText) ) {
             return false;
+        }
+
+        if (this.isVisible()) {
+            this.searchComboBox.removeItem(searchText);
+            this.searchComboBox.insertItemAt(searchText, 0);
+            this.searchComboBox.setSelectedItem(searchText);
         }
 
         // if find/replace dialog is opened only radio button is relevant
@@ -274,20 +298,47 @@ public class FindReplaceDialog extends JDialog {
         // hide this find/replace dialog
         this.setVisible(false);
 
-        if ( !this.caseSensitiveCheckBox.isSelected() ) {
+        boolean isRegexp = this.regularExpressionsCheckBox.isSelected();
+        boolean isCaseSensitive = this.caseSensitiveCheckBox.isSelected();
+        
+        if ( !isCaseSensitive && !isRegexp) {
             content = content.toLowerCase();
             searchText = searchText.toLowerCase();
         }
 
         // search for occurence
-        int index = backward ? content.lastIndexOf(searchText) : content.indexOf(searchText);
+        int index = -1;
+        int foundLen = 0;
+        if (isRegexp) {
+            int flags = Pattern.DOTALL;
+            if (!isCaseSensitive) {
+                flags |= Pattern.CASE_INSENSITIVE;
+            }
+            Pattern pattern = Pattern.compile(searchText, flags);
+            Matcher matcher = pattern.matcher(content);
+
+            if (!backward) {
+                if (matcher.find()) {
+                    index = matcher.start();
+                    foundLen = matcher.end() - index;
+                }
+            } else {
+                while (matcher.find()) {
+                    index = matcher.start();
+                    foundLen = matcher.end() - index;
+                }
+            }
+        } else {
+            index = backward ? content.lastIndexOf(searchText) : content.indexOf(searchText);
+            foundLen = searchText.length();
+        }
 
         if (index >= 0) {
             textComponent.grabFocus();
-            textComponent.select(startPosition + index, startPosition + index + searchText.length());
+            textComponent.select(startPosition + index, startPosition + index + foundLen);
             
             return true;
-        } else {
+        } else if (showMessageIfNotFound) {
             Component top = findTopComponent();
             JOptionPane.showMessageDialog(top, "Next occurrence of \"" + searchText + "\" not found.", "Information", JOptionPane.INFORMATION_MESSAGE);
         }
@@ -307,13 +358,23 @@ public class FindReplaceDialog extends JDialog {
     }
 
     public void replace(boolean backward) {
-        this.setVisible(false);
+        final String searchText = (String)this.searchComboBox.getSelectedItem();
+        final String replaceText = (String)this.replaceComboBox.getSelectedItem();
 
-        final String searchText = this.searchField.getText();
-        final String replaceText = this.replaceField.getText();
+        if (this.isVisible()) {
+            if ( !"".equals(searchText) ) {
+                this.searchComboBox.removeItem(searchText);
+                this.searchComboBox.insertItemAt(searchText, 0);
+                this.searchComboBox.setSelectedItem(searchText);
+            }
+            this.replaceComboBox.removeItem(replaceText);
+            this.replaceComboBox.insertItemAt(replaceText, 0);
+            this.replaceComboBox.setSelectedItem(replaceText);
+        }
 
         // there should be something to perform search on and something to search
         if ( this.textComponent == null || "".equals(searchText) ) {
+            this.setVisible(false);
             return;
         }
 
@@ -325,41 +386,60 @@ public class FindReplaceDialog extends JDialog {
                                                  options,
                                                  options[0] );
 
-        final JDialog dialog = new JDialog((Frame)findTopComponent(), "Replace", true);
-
+        final Frame topFrame = (Frame) findTopComponent();
+        final JDialog dialog = new JDialog(topFrame, "Replace", true) {
+            protected JRootPane createRootPane() {
+                KeyStroke stroke = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
+                JRootPane rootPane = new JRootPane();
+                ActionListener actionListener = new ActionListener() {
+                    public void actionPerformed(ActionEvent actionEvent) {
+                        optionPane.setValue("Cancel");
+                        setVisible(false);
+                    }
+                };
+                rootPane.registerKeyboardAction(actionListener, stroke, JComponent.WHEN_IN_FOCUSED_WINDOW);
+                return rootPane;
+            }
+        };
+        dialog.setContentPane(optionPane);
         optionPane.addPropertyChangeListener(
             new PropertyChangeListener() {
                 public void propertyChange(PropertyChangeEvent e) {
                     String prop = e.getPropertyName();
                     if ( dialog.isVisible() && (e.getSource() == optionPane) && (prop.equals(JOptionPane.VALUE_PROPERTY)) ) {
-                        Object newValue = e.getNewValue();
-                        if ( options[0].equals(newValue) ) {
-                            if (find(false)) {
-                                textComponent.replaceSelection(replaceText);
-                            } else {
-                                dialog.setVisible(false);
-                            }
-                        } else if ( options[1].equals(newValue) ) {
-                            if (!find(false)) {
-                                dialog.setVisible(false);
-                            }
-                        } else if ( options[2].equals(newValue) ) {
-                            // replace all
-                            dialog.setVisible(false);
-                        } else if ( options[3].equals(newValue) ) {
-                            dialog.setVisible(false);
-                        }
+                        dialog.setVisible(false);
                     }
                 }
-        });
-        dialog.setContentPane(optionPane);
+            }
+        );
+
         dialog.pack();
 
-        dialog.setVisible(true);
+        Object result = null;
+        boolean found;
+        do {
+            found = find(false);
+            if (found) {
+                optionPane.setValue(null);
+                dialog.setVisible(true);
+                result = optionPane.getValue();
+                if ("Replace".equals(result)) {
+                    this.textComponent.replaceSelection(replaceText);
+                } else if ("All".equals(result)) {
+                    int count = 0;
+                    do {
+                        this.textComponent.replaceSelection(replaceText);
+                        count++;
+                        found = find(false, false);
+                    } while (found);
+                    JOptionPane.showMessageDialog(topFrame, count + " occurence(s) replaced.", "Information", JOptionPane.INFORMATION_MESSAGE);
+                }
+            }
+        } while ( found && !"All".equals(result) && !"Cancel".equals(result) );
     }
 
     public String getSearchText() {
-        return this.searchField.getText();
+        return (String) this.searchComboBox.getSelectedItem();
     }
 
     public void setTextComponent(JTextComponent textComponent) {
@@ -375,4 +455,17 @@ public class FindReplaceDialog extends JDialog {
         this.textComponent = textComponent;
         find(true);
     }
+
+    public static void main(String[] args) {
+        String s = "1ABCDEEEEHIEUIRFEEewgfuiewhf";
+        Pattern pattern = Pattern.compile("\\d", Pattern.DOTALL|Pattern.UNICODE_CASE);
+        Matcher matcher = pattern.matcher(s);
+
+        boolean found = matcher.find();
+        if (found) {
+            System.out.println(matcher.start() + ", " + matcher.end());
+        }
+
+    }
+
 }
