@@ -48,10 +48,10 @@ import org.webharvest.utils.SystemUtilities;
  */
 public class ScraperContext extends Catalog {
 
-    public ScraperContext(HttpClientManager httpClientManager) {
+    public ScraperContext(Scraper scraper) {
 		super();
-		this.put("sys", new SystemUtilities());
-        this.put("http", httpClientManager.getHttpInfo());
+		this.put("sys", new SystemUtilities(scraper));
+        this.put("http", scraper.getHttpClientManager().getHttpInfo());
     }
 	
 	public AbstractVariable getVar(String name) {

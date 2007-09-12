@@ -37,11 +37,17 @@
 package org.webharvest.utils;
 
 import org.webharvest.exception.BaseException;
+import org.webharvest.exception.ScraperXPathException;
 import org.webharvest.runtime.variables.AbstractVariable;
 import org.webharvest.runtime.variables.NodeVariable;
+import org.webharvest.runtime.templaters.BaseTemplater;
+import org.webharvest.runtime.RuntimeConfig;
+import org.webharvest.runtime.Scraper;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import net.sf.saxon.trans.XPathException;
 
 /**
  * Collection of useful constants and functions that are available in each
@@ -56,6 +62,12 @@ public class SystemUtilities {
     public static final AbstractVariable quot = new NodeVariable("\"");
     public static final AbstractVariable apos = new NodeVariable("\'");
     public static final AbstractVariable backspace = new NodeVariable("\b");
+    
+    private Scraper scraper;
+
+    public SystemUtilities(Scraper scraper) {
+        this.scraper = scraper;
+    }
 
     /**
 	 * Returns formatted date/time for specified format string.
@@ -108,6 +120,18 @@ public class SystemUtilities {
         }
 
         throw new BaseException("Cannot make full url for null argumants!");
+    }
+
+    /**
+     * Evaluates XPath expression on specified XML
+     */
+    public AbstractVariable xpath(String expression, String xml) {
+        try {
+            return XmlUtil.evaluateXPath(expression, xml.toString(), scraper.getRuntimeConfig());
+        } catch (XPathException e) {
+            throw new ScraperXPathException("Error parsing XPath expression (XPath = [" + expression + "])!", e);
+        }
+
     }
 
 }

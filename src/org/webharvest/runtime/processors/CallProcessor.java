@@ -61,7 +61,7 @@ public class CallProcessor extends BaseProcessor {
 
     public CallProcessor(CallDef callDef, ScraperConfiguration configuration, Scraper scraper) {
         super(callDef);
-        this.functionContext = new ScraperContext( scraper.getHttpClientManager() );
+        this.functionContext = new ScraperContext(scraper);
         this.scriptEngine = configuration.createScriptEngine(functionContext);
         this.callDef = callDef;
     }

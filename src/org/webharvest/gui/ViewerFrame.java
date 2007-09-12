@@ -267,14 +267,10 @@ public class ViewerFrame extends JFrame implements DropDownButtonListener, Actio
                 return new Dimension(0, 28);
             }
         };
-        final JComboBox xpathComboBox = new JComboBox() {
-            public Dimension getPreferredSize() {
-                return new Dimension(0, 20);
-            }
-        };
+        final JComboBox xpathComboBox = new JComboBox();
         xpathComboBox.getEditor().addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                String expression = (String) e.getActionCommand();
+                String expression = e.getActionCommand();
                 xpathComboBox.removeItem(expression);
                 xpathComboBox.insertItemAt(expression, 0);
                 xpathComboBox.setSelectedItem(expression);
@@ -283,17 +279,7 @@ public class ViewerFrame extends JFrame implements DropDownButtonListener, Actio
         });
 
         xpathComboBox.setEditable(true);
-//        xpathComboBox.addKeyListener(new KeyAdapter() {
-//            public void keyPressed(KeyEvent e) {
-//                if ( e.getKeyCode() == KeyEvent.VK_ENTER ) {
-//                    String expression = (String) xpathComboBox.getSelectedItem();
-//                    xpathComboBox.removeItem(expression);
-//                    xpathComboBox.insertItemAt(expression, 0);
-//                    xpathComboBox.setSelectedItem(expression);
-//                    evaluateXPath(expression);
-//                }
-//            }
-//        });
+
         final JButton xpathEvalButton = new JButton("Evaluate");
 
         xpathEvalButton.addActionListener(new ActionListener() {

@@ -109,7 +109,7 @@ public class Scraper {
 
         this.httpClientManager = new HttpClientManager();
 
-        this.context = new ScraperContext(httpClientManager);
+        this.context = new ScraperContext(this);
         this.scriptEngine = configuration.createScriptEngine(this.context);
         this.usedScriptEngines.put(configuration.getDefaultScriptEngine(), this.scriptEngine);
     }
