@@ -46,10 +46,8 @@ import javax.swing.*;
 public class ScraperExecutionThread extends Thread {
 
     private Scraper scraper;
-    private ConfigPanel configPanel;
 
-    public ScraperExecutionThread(ConfigPanel configPanel, Scraper scraper) {
-        this.configPanel = configPanel;
+    public ScraperExecutionThread(Scraper scraper) {
         this.scraper = scraper;
     }
 

@@ -134,7 +134,7 @@ public class ViewerFrame extends JFrame implements DropDownButtonListener, Actio
     public ViewerFrame(final String propertyName, final Object value, final TreeNodeInfo nodeInfo, final int viewIndex) {
         String elementName = nodeInfo.getElementDef().getShortElementName();
         setTitle("[processor: " + elementName + ", property: " + propertyName + "]");
-        this.setIconImage( ((ImageIcon) ResourceManager.getViewIcon()).getImage() );
+        this.setIconImage( ((ImageIcon) ResourceManager.VIEW_ICON).getImage() );
 
         this.propertyName = propertyName;
         this.value = value;
@@ -177,7 +177,7 @@ public class ViewerFrame extends JFrame implements DropDownButtonListener, Actio
         toolBar.add( new JLabel(" View as: ") );
         toolBar.add(viewTypeButton);
 
-        final MyAction findTextAction = new MyAction("Find", ResourceManager.getFindIcon(), "Find text", KeyStroke.getKeyStroke( KeyEvent.VK_F, ActionEvent.CTRL_MASK)) {
+        final MyAction findTextAction = new MyAction("Find", ResourceManager.FIND_ICON, "Find text", KeyStroke.getKeyStroke( KeyEvent.VK_F, ActionEvent.CTRL_MASK)) {
             public void actionPerformed(ActionEvent e) {
                 findText(FIND_OPEN);
             }
@@ -195,13 +195,13 @@ public class ViewerFrame extends JFrame implements DropDownButtonListener, Actio
             }
         };
 
-        final MyAction zoomInAction = new MyAction("Zoom In", ResourceManager.getZoomInIcon(), "Zoom Image In", KeyStroke.getKeyStroke( KeyEvent.VK_PLUS, 0)) {
+        final MyAction zoomInAction = new MyAction("Zoom In", ResourceManager.ZOOMIN_ICON, "Zoom Image In", KeyStroke.getKeyStroke( KeyEvent.VK_PLUS, 0)) {
             public void actionPerformed(ActionEvent e) {
                 zoom(true);
             }
         };
 
-        final MyAction zoomOutAction = new MyAction("Zoom Out", ResourceManager.getZoomOutIcon(), "Zoom Image Out", KeyStroke.getKeyStroke( KeyEvent.VK_MINUS, 0)) {
+        final MyAction zoomOutAction = new MyAction("Zoom Out", ResourceManager.ZOOMOUT_ICON, "Zoom Image Out", KeyStroke.getKeyStroke( KeyEvent.VK_MINUS, 0)) {
             public void actionPerformed(ActionEvent e) {
                 zoom(false);
             }
@@ -224,14 +224,14 @@ public class ViewerFrame extends JFrame implements DropDownButtonListener, Actio
 
         this.zoomFactorLabel = new JLabel();
 
-        this.xmlValidateButton = new JButton("Check well-formedness", ResourceManager.getValidateIcon());
+        this.xmlValidateButton = new JButton("Check well-formedness", ResourceManager.VALIDATE_ICON);
         this.xmlValidateButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 validateXml(true);
             }
         });
 
-        this.xmlPrettyPrintButton = new JButton("Pretty-print", ResourceManager.getPrettyPrintIcon());
+        this.xmlPrettyPrintButton = new JButton("Pretty-print", ResourceManager.PRETTY_PRINT_ICON);
         this.xmlPrettyPrintButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 prettyPrintXml();

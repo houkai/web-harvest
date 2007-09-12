@@ -36,6 +36,8 @@
 */
 package org.webharvest.gui;
 
+import org.webharvest.utils.Constants;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
@@ -98,7 +100,7 @@ public class WelcomePanel extends JPanel {
         titleLabel.setFont(new Font("Verdana", Font.PLAIN, 24));
         this.add(titleLabel);
 
-        JLabel subtitleLabel = new JLabel("version 1.0", SwingConstants.LEFT);
+        JLabel subtitleLabel = new JLabel("version " + Constants.WEB_HARVEST_VERSION, SwingConstants.LEFT);
         subtitleLabel.setFont(new Font("Verdana", Font.PLAIN, 12));
         this.add(subtitleLabel);
 
@@ -129,11 +131,11 @@ public class WelcomePanel extends JPanel {
             }
         };
 
-        this.add( getLinkLabel("Create new configuration file", ResourceManager.getNewIcon(), newCommand) );
+        this.add( getLinkLabel("Create new configuration file", ResourceManager.NEW_ICON, newCommand) );
         this.add(Box.createRigidArea( new Dimension(1, 5)) );
-        this.add( getLinkLabel("Open configuration file", ResourceManager.getOpenIcon(), openCommand) );
+        this.add( getLinkLabel("Open configuration file", ResourceManager.OPEN_ICON, openCommand) );
         this.add(Box.createRigidArea( new Dimension(1, 5)) );
-        this.add( getLinkLabel("Modify execution settings", ResourceManager.getSettingsIcon(), settingsCommand) );
+        this.add( getLinkLabel("Modify execution settings", ResourceManager.SETTINGS_ICON, settingsCommand) );
 
         this.add(Box.createRigidArea( new Dimension(1, 15)) );
 
@@ -170,7 +172,7 @@ public class WelcomePanel extends JPanel {
     }
 
     private JLabel getExampleLabel(final String text, WelcomeCommand command) {
-        JLabel label = getLinkLabel(text, ResourceManager.getDownloadIcon(), command);
+        JLabel label = getLinkLabel(text, ResourceManager.DOWNLOAD_ICON, command);
         return label;
     }
 

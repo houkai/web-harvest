@@ -42,6 +42,7 @@ package org.webharvest.gui;
  */
 
 import org.webharvest.runtime.Scraper;
+import org.webharvest.utils.Constants;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -299,7 +300,7 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
     public void createAndShowGUI() {
         this.setJMenuBar( defineMenuBar() );
         this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        this.setIconImage( ((ImageIcon) ResourceManager.getWebHarvestIcon()).getImage() );
+        this.setIconImage( ((ImageIcon) ResourceManager.WEB_HARVEST_ICON).getImage() );
 
         JPanel mainPanel = new JPanel( new BorderLayout() );
         mainPanel.setOpaque(true);
@@ -309,18 +310,18 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
         toolBar.setFloatable(false);
         toolBar.setBorderPainted(true);
 
-        defineToolbarButton("New configuration file", COMMAND_NEW, ResourceManager.getNewIcon(), toolBar);
-        defineToolbarButton("Open configuration file", COMMAND_OPEN, ResourceManager.getOpenIcon(), toolBar);
-        defineToolbarButton("Save configuration file", COMMAND_SAVE, ResourceManager.getSaveIcon(), toolBar);
-        defineToolbarButton("Synchronize tree view with XML editor", COMMAND_REFRESH, ResourceManager.getRefreshIcon(), toolBar);
+        defineToolbarButton("New configuration file", COMMAND_NEW, ResourceManager.NEW_ICON, toolBar);
+        defineToolbarButton("Open configuration file", COMMAND_OPEN, ResourceManager.OPEN_ICON, toolBar);
+        defineToolbarButton("Save configuration file", COMMAND_SAVE, ResourceManager.SAVE_ICON, toolBar);
+        defineToolbarButton("Synchronize tree view with XML editor", COMMAND_REFRESH, ResourceManager.REFRESH_ICON, toolBar);
         toolBar.addSeparator(new Dimension(10, 0));
-        defineToolbarButton("Run", COMMAND_RUN, ResourceManager.getRunIcon(), toolBar);
-        defineToolbarButton("Pause execution", COMMAND_PAUSE, ResourceManager.getPauseIcon(), toolBar);
-        defineToolbarButton("Stop execution", COMMAND_STOP, ResourceManager.getStopIcon(), toolBar);
+        defineToolbarButton("Run", COMMAND_RUN, ResourceManager.RUN_ICON, toolBar);
+        defineToolbarButton("Pause execution", COMMAND_PAUSE, ResourceManager.PAUSE_ICON, toolBar);
+        defineToolbarButton("Stop execution", COMMAND_STOP, ResourceManager.STOP_ICON, toolBar);
         toolBar.addSeparator(new Dimension(10, 0));
-        defineToolbarButton("Define initial run parameters", COMMAND_RUNPARAMS, ResourceManager.getRunParamsIcon(), toolBar);        
+        defineToolbarButton("Define initial run parameters", COMMAND_RUNPARAMS, ResourceManager.RUN_PARAMS_ICON, toolBar);        
         toolBar.addSeparator(new Dimension(10, 0));
-        defineToolbarButton("Open Settings Dialog", COMMAND_SETTINGS, ResourceManager.getSettingsIcon(), toolBar);
+        defineToolbarButton("Open Settings Dialog", COMMAND_SETTINGS, ResourceManager.SETTINGS_ICON, toolBar);
 
         mainPanel.add(toolBar, BorderLayout.NORTH);
 
@@ -428,7 +429,7 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
      */
     private void defineMenuItem(JMenu menu, String text, Icon icon, int mnemonic, String command, KeyStroke keyStroke) {
         JMenuItem menuItem = new JMenuItem(text);
-        menuItem.setIcon(icon == null ? ResourceManager.getNoneIcon() : icon);
+        menuItem.setIcon(icon == null ? ResourceManager.NONE_ICON : icon);
         menuItem.setMnemonic(mnemonic);
         menuItem.setAccelerator(keyStroke);
         menuItem.setActionCommand(command);
@@ -450,7 +451,7 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
     private void defineCheckboxMenuItem(JMenu menu, String text, Icon icon, int mnemonic, String command, KeyStroke keyStroke, boolean isChecked) {
         JCheckBoxMenuItem menuItem = new JCheckBoxMenuItem(text);
         menuItem.setSelected(isChecked);
-        menuItem.setIcon(icon == null ? ResourceManager.getNoneIcon() : icon);
+        menuItem.setIcon(icon == null ? ResourceManager.NONE_ICON : icon);
         menuItem.setMnemonic(mnemonic);
         menuItem.setAccelerator(keyStroke);
         menuItem.setActionCommand(command);
@@ -496,12 +497,12 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
 
         // Build the CONFIGURATION menu.
         menu = new JMenu("Config");
-        defineMenuItem(menu, "New", ResourceManager.getNewIcon(), KeyEvent.VK_N, COMMAND_NEW, KeyStroke.getKeyStroke( KeyEvent.VK_N, ActionEvent.CTRL_MASK));
-        defineMenuItem(menu, "Open", ResourceManager.getOpenIcon(), KeyEvent.VK_O, COMMAND_OPEN, KeyStroke.getKeyStroke( KeyEvent.VK_O, ActionEvent.CTRL_MASK));
-        defineMenuItem(menu, "Save", ResourceManager.getSaveIcon(),  KeyEvent.VK_S, COMMAND_SAVE, KeyStroke.getKeyStroke( KeyEvent.VK_S, ActionEvent.CTRL_MASK));
+        defineMenuItem(menu, "New", ResourceManager.NEW_ICON, KeyEvent.VK_N, COMMAND_NEW, KeyStroke.getKeyStroke( KeyEvent.VK_N, ActionEvent.CTRL_MASK));
+        defineMenuItem(menu, "Open", ResourceManager.OPEN_ICON, KeyEvent.VK_O, COMMAND_OPEN, KeyStroke.getKeyStroke( KeyEvent.VK_O, ActionEvent.CTRL_MASK));
+        defineMenuItem(menu, "Save", ResourceManager.SAVE_ICON,  KeyEvent.VK_S, COMMAND_SAVE, KeyStroke.getKeyStroke( KeyEvent.VK_S, ActionEvent.CTRL_MASK));
         defineMenuItem(menu, "Save As", null, KeyEvent.VK_V, COMMAND_SAVEAS, null);
         menu.addSeparator();
-        defineMenuItem(menu, "Close", ResourceManager.getCloseIcon(), KeyEvent.VK_C, COMMAND_CLOSE, KeyStroke.getKeyStroke( KeyEvent.VK_F4, ActionEvent.CTRL_MASK));
+        defineMenuItem(menu, "Close", ResourceManager.CLOSE_ICON, KeyEvent.VK_C, COMMAND_CLOSE, KeyStroke.getKeyStroke( KeyEvent.VK_F4, ActionEvent.CTRL_MASK));
         defineMenuItem(menu, "Close All", null, KeyEvent.VK_A, COMMAND_CLOSE_ALL, null);
         menu.addSeparator();
         defineMenuItem(menu, "Exit", null, KeyEvent.VK_X, COMMAND_EXIT, null);
@@ -509,17 +510,17 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
 
         // Build the EDIT menu.
         menu = new JMenu("Edit");
-        defineMenuItem(menu, "Undo", ResourceManager.getUndoIcon(), KeyEvent.VK_U, COMMAND_UNDO, KeyStroke.getKeyStroke( KeyEvent.VK_Z, ActionEvent.CTRL_MASK));
-        defineMenuItem(menu, "Redo", ResourceManager.getRedoIcon(), KeyEvent.VK_R, COMMAND_REDO, KeyStroke.getKeyStroke( KeyEvent.VK_Y, ActionEvent.CTRL_MASK));
+        defineMenuItem(menu, "Undo", ResourceManager.UNDO_ICON, KeyEvent.VK_U, COMMAND_UNDO, KeyStroke.getKeyStroke( KeyEvent.VK_Z, ActionEvent.CTRL_MASK));
+        defineMenuItem(menu, "Redo", ResourceManager.REDO_ICON, KeyEvent.VK_R, COMMAND_REDO, KeyStroke.getKeyStroke( KeyEvent.VK_Y, ActionEvent.CTRL_MASK));
         menu.addSeparator();
-        defineMenuItem(menu, "Find", ResourceManager.getFindIcon(), KeyEvent.VK_F, COMMAND_FIND, KeyStroke.getKeyStroke( KeyEvent.VK_F, ActionEvent.CTRL_MASK));
+        defineMenuItem(menu, "Find", ResourceManager.FIND_ICON, KeyEvent.VK_F, COMMAND_FIND, KeyStroke.getKeyStroke( KeyEvent.VK_F, ActionEvent.CTRL_MASK));
         defineMenuItem(menu, "Replace", null, KeyEvent.VK_L, COMMAND_REPLACE, KeyStroke.getKeyStroke( KeyEvent.VK_R, ActionEvent.CTRL_MASK));
         defineMenuItem(menu, "Find Next", null, KeyEvent.VK_N, COMMAND_FINDNEXT, KeyStroke.getKeyStroke( KeyEvent.VK_F3, 0));
         defineMenuItem(menu, "Find Previous", null, KeyEvent.VK_V, COMMAND_FINDPREV, KeyStroke.getKeyStroke( KeyEvent.VK_F3, ActionEvent.SHIFT_MASK));
         menu.addSeparator();
-        defineMenuItem(menu, "Cut", ResourceManager.getCutIcon(), KeyEvent.VK_U, COMMAND_CUT, KeyStroke.getKeyStroke( KeyEvent.VK_X, ActionEvent.CTRL_MASK));
-        defineMenuItem(menu, "Copy", ResourceManager.getCopyIcon(), KeyEvent.VK_C, COMMAND_COPY, KeyStroke.getKeyStroke( KeyEvent.VK_C, ActionEvent.CTRL_MASK));
-        defineMenuItem(menu, "Paste", ResourceManager.getPasteIcon(), KeyEvent.VK_P, COMMAND_PASTE, KeyStroke.getKeyStroke( KeyEvent.VK_V, ActionEvent.CTRL_MASK));
+        defineMenuItem(menu, "Cut", ResourceManager.CUT_ICON, KeyEvent.VK_U, COMMAND_CUT, KeyStroke.getKeyStroke( KeyEvent.VK_X, ActionEvent.CTRL_MASK));
+        defineMenuItem(menu, "Copy", ResourceManager.COPY_ICON, KeyEvent.VK_C, COMMAND_COPY, KeyStroke.getKeyStroke( KeyEvent.VK_C, ActionEvent.CTRL_MASK));
+        defineMenuItem(menu, "Paste", ResourceManager.PASTE_ICON, KeyEvent.VK_P, COMMAND_PASTE, KeyStroke.getKeyStroke( KeyEvent.VK_V, ActionEvent.CTRL_MASK));
         menu.addSeparator();
         defineMenuItem(menu, "Next Tab", null, KeyEvent.VK_E, COMMAND_NEXTTAB, KeyStroke.getKeyStroke( KeyEvent.VK_RIGHT, ActionEvent.ALT_MASK | ActionEvent.CTRL_MASK));
         defineMenuItem(menu, "Previous Tab", null, KeyEvent.VK_P, COMMAND_PREVTAB, KeyStroke.getKeyStroke( KeyEvent.VK_LEFT, ActionEvent.ALT_MASK | ActionEvent.CTRL_MASK));
@@ -527,22 +528,22 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
 
         // Build the editor popup menu.
         editorPopupMenu = new JPopupMenu();
-        definePopupMenuItem(editorPopupMenu, "Undo", ResourceManager.getUndoIcon(), KeyEvent.VK_U, COMMAND_UNDO, KeyStroke.getKeyStroke( KeyEvent.VK_Z, ActionEvent.CTRL_MASK));
-        definePopupMenuItem(editorPopupMenu, "Redo", ResourceManager.getRedoIcon(), KeyEvent.VK_R, COMMAND_REDO, KeyStroke.getKeyStroke( KeyEvent.VK_Y, ActionEvent.CTRL_MASK));
+        definePopupMenuItem(editorPopupMenu, "Undo", ResourceManager.UNDO_ICON, KeyEvent.VK_U, COMMAND_UNDO, KeyStroke.getKeyStroke( KeyEvent.VK_Z, ActionEvent.CTRL_MASK));
+        definePopupMenuItem(editorPopupMenu, "Redo", ResourceManager.REDO_ICON, KeyEvent.VK_R, COMMAND_REDO, KeyStroke.getKeyStroke( KeyEvent.VK_Y, ActionEvent.CTRL_MASK));
         editorPopupMenu.addSeparator();
-        definePopupMenuItem(editorPopupMenu, "Find", ResourceManager.getFindIcon(), KeyEvent.VK_F, COMMAND_FIND, KeyStroke.getKeyStroke( KeyEvent.VK_F, ActionEvent.CTRL_MASK));
+        definePopupMenuItem(editorPopupMenu, "Find", ResourceManager.FIND_ICON, KeyEvent.VK_F, COMMAND_FIND, KeyStroke.getKeyStroke( KeyEvent.VK_F, ActionEvent.CTRL_MASK));
         definePopupMenuItem(editorPopupMenu, "Replace", null, KeyEvent.VK_L, COMMAND_REPLACE, KeyStroke.getKeyStroke( KeyEvent.VK_R, ActionEvent.CTRL_MASK));
         definePopupMenuItem(editorPopupMenu, "Find Next", null, KeyEvent.VK_N, COMMAND_FINDNEXT, KeyStroke.getKeyStroke( KeyEvent.VK_F3, 0));
         definePopupMenuItem(editorPopupMenu, "Find Previous", null, KeyEvent.VK_V, COMMAND_FINDPREV, KeyStroke.getKeyStroke( KeyEvent.VK_F3, ActionEvent.SHIFT_MASK));
         editorPopupMenu.addSeparator();
-        definePopupMenuItem(editorPopupMenu, "Cut", ResourceManager.getCutIcon(), KeyEvent.VK_U, COMMAND_CUT, KeyStroke.getKeyStroke( KeyEvent.VK_X, ActionEvent.CTRL_MASK));
-        definePopupMenuItem(editorPopupMenu, "Copy", ResourceManager.getCopyIcon(), KeyEvent.VK_C, COMMAND_COPY, KeyStroke.getKeyStroke( KeyEvent.VK_C, ActionEvent.CTRL_MASK));
-        definePopupMenuItem(editorPopupMenu, "Paste", ResourceManager.getPasteIcon(), KeyEvent.VK_P, COMMAND_PASTE, KeyStroke.getKeyStroke( KeyEvent.VK_V, ActionEvent.CTRL_MASK));
+        definePopupMenuItem(editorPopupMenu, "Cut", ResourceManager.CUT_ICON, KeyEvent.VK_U, COMMAND_CUT, KeyStroke.getKeyStroke( KeyEvent.VK_X, ActionEvent.CTRL_MASK));
+        definePopupMenuItem(editorPopupMenu, "Copy", ResourceManager.COPY_ICON, KeyEvent.VK_C, COMMAND_COPY, KeyStroke.getKeyStroke( KeyEvent.VK_C, ActionEvent.CTRL_MASK));
+        definePopupMenuItem(editorPopupMenu, "Paste", ResourceManager.PASTE_ICON, KeyEvent.VK_P, COMMAND_PASTE, KeyStroke.getKeyStroke( KeyEvent.VK_V, ActionEvent.CTRL_MASK));
         menuBar.add(editorPopupMenu);
 
         // Build the VIEW menu.
         menu = new JMenu("View");
-        defineMenuItem(menu, "Synchronize tree", ResourceManager.getRefreshIcon(), KeyEvent.VK_R, COMMAND_REFRESH, KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0));
+        defineMenuItem(menu, "Synchronize tree", ResourceManager.REFRESH_ICON, KeyEvent.VK_R, COMMAND_REFRESH, KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0));
         menu.addSeparator();
         defineCheckboxMenuItem(menu, "Hierarchy", null, KeyEvent.VK_H, COMMAND_VIEW_HIERARCHY, null, false);
         defineCheckboxMenuItem(menu, "Log", null, KeyEvent.VK_L, COMMAND_VIEW_LOG, null, false);
@@ -552,20 +553,20 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
 
         // Build the EXECUTION menu.
         menu = new JMenu("Execution");
-        defineMenuItem(menu, "Run", ResourceManager.getRunIcon(), KeyEvent.VK_R, COMMAND_RUN, KeyStroke.getKeyStroke(KeyEvent.VK_F9, 0));
-        defineMenuItem(menu, "Pause", ResourceManager.getPauseIcon(), KeyEvent.VK_R, COMMAND_PAUSE, null);
-        defineMenuItem(menu, "Stop", ResourceManager.getStopIcon(), KeyEvent.VK_S, COMMAND_STOP, null);
+        defineMenuItem(menu, "Run", ResourceManager.RUN_ICON, KeyEvent.VK_R, COMMAND_RUN, KeyStroke.getKeyStroke(KeyEvent.VK_F9, 0));
+        defineMenuItem(menu, "Pause", ResourceManager.PAUSE_ICON, KeyEvent.VK_R, COMMAND_PAUSE, null);
+        defineMenuItem(menu, "Stop", ResourceManager.STOP_ICON, KeyEvent.VK_S, COMMAND_STOP, null);
         menu.addSeparator();
-        defineMenuItem(menu, "Define Run Parameters", ResourceManager.getRunParamsIcon(), KeyEvent.VK_P, COMMAND_RUNPARAMS, KeyStroke.getKeyStroke(KeyEvent.VK_F12, 0));
+        defineMenuItem(menu, "Define Run Parameters", ResourceManager.RUN_PARAMS_ICON, KeyEvent.VK_P, COMMAND_RUNPARAMS, KeyStroke.getKeyStroke(KeyEvent.VK_F12, 0));
         menu.addSeparator();
-        defineMenuItem(menu, "Settings...", ResourceManager.getSettingsIcon(), KeyEvent.VK_T, COMMAND_SETTINGS, null);
+        defineMenuItem(menu, "Settings...", ResourceManager.SETTINGS_ICON, KeyEvent.VK_T, COMMAND_SETTINGS, null);
         menuBar.add(menu);
 
         // Build the HELP menu.
         menu = new JMenu("Help");
-        defineMenuItem(menu, "Help", ResourceManager.getHelpIcon(), KeyEvent.VK_H, COMMAND_UNDERDEVELOPMENT, null);
+        defineMenuItem(menu, "Help", ResourceManager.HELP_ICON, KeyEvent.VK_H, COMMAND_UNDERDEVELOPMENT, null);
         menu.addSeparator();
-        defineMenuItem(menu, "Program Homepage", ResourceManager.getHomepageIcon(), KeyEvent.VK_H, COMMAND_HOMEPAGE, null);
+        defineMenuItem(menu, "Program Homepage", ResourceManager.HOMEPAGE_ICON, KeyEvent.VK_H, COMMAND_HOMEPAGE, null);
         menu.addSeparator();
         defineMenuItem(menu, "About Web-Harvest", null, KeyEvent.VK_A, COMMAND_ABOUT, null);
         menuBar.add(menu);
@@ -712,7 +713,7 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
         } else if ( COMMAND_SETTINGS.equals(cmd) ) {
             defineSettings();
         } else if ( COMMAND_ABOUT.equals(cmd) ) {
-            JOptionPane.showMessageDialog(this, "Web-Harvest GUI, version 1.0 alpha, build 2", "Status", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Web-Harvest version " + Constants.WEB_HARVEST_VERSION, "Status", JOptionPane.INFORMATION_MESSAGE);
         } else if ( COMMAND_HOMEPAGE.equals(cmd) ) {
             openURLInBrowser("http://web-harvest.sourceforge.net");
         } else if ( COMMAND_EXIT.equals(cmd) ) {

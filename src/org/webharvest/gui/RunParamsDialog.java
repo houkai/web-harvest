@@ -104,6 +104,9 @@ public class RunParamsDialog extends JDialog {
     // table data model
     private MyTableModel dataModel;
 
+    // table with parameters
+    private JTable table;
+
     public RunParamsDialog(Ide ide) throws HeadlessException {
         super(ide, "Initial Run Parameters", true);
         this.ide = ide;
@@ -118,7 +121,7 @@ public class RunParamsDialog extends JDialog {
 
         this.dataModel = new MyTableModel();
 
-        final JTable table = new JTable(this.dataModel) {
+        table = new JTable(this.dataModel) {
             public void editingStopped(ChangeEvent event) {
                 TableCellEditor editor = (TableCellEditor) event.getSource();
                 int row = getEditingRow();
@@ -141,6 +144,7 @@ public class RunParamsDialog extends JDialog {
         buttonPanel.setBorder(new EmptyBorder(4, 2, 4, 4));
 
         JButton addButton = new JButton("Add");
+        addButton.setMnemonic('A');
         addButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 dataModel.addEmptyRow();
@@ -152,6 +156,7 @@ public class RunParamsDialog extends JDialog {
         });
 
         JButton removeButton = new JButton("Remove");
+        removeButton.setMnemonic('R');
         removeButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 dataModel.removeRow(table.getSelectedRow());
@@ -159,13 +164,24 @@ public class RunParamsDialog extends JDialog {
         });
 
         JButton okButton = new JButton("OK");
+        okButton.setMnemonic('O');
         okButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                defineParams();
+                setVisible(false);
+            }
+        });
+
+        JButton applyButton = new JButton("Apply");
+        applyButton.setMnemonic('p');
+        applyButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 defineParams();
             }
         });
 
         JButton cancelButton = new JButton("Cancel");
+        cancelButton.setMnemonic('C');
         cancelButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 setVisible(false);
@@ -176,6 +192,7 @@ public class RunParamsDialog extends JDialog {
         buttonPanel.add(removeButton);
         buttonPanel.add(new JLabel(" "));
         buttonPanel.add(okButton);
+        buttonPanel.add(applyButton);
         buttonPanel.add(cancelButton);
 
         JPanel leftPane = new JPanel(new BorderLayout());
@@ -208,13 +225,13 @@ public class RunParamsDialog extends JDialog {
             Iterator iterator = params.iterator();
             while (iterator.hasNext()) {
                 String[] pair = (String[]) iterator.next();
-                paramMap.put(pair[0], pair[1]);
+                if ( pair != null && pair[0] != null && !"".equals(pair[0].trim()) && pair[1] != null ) {
+                    paramMap.put(pair[0], pair[1]);
+                }
             }
 
             configPanel.setInitParams(paramMap);
         }
-
-        setVisible(false);
     }
 
     public Dimension getPreferredSize() {
@@ -239,6 +256,9 @@ public class RunParamsDialog extends JDialog {
         }
         
         super.setVisible(b);
+        if (b) {
+            table.grabFocus();
+        }
     }
     
 }

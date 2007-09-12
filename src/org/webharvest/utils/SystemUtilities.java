@@ -70,6 +70,14 @@ public class SystemUtilities {
     }
 
     /**
+     * @param varName
+     * @return True if scraper's context contain not-null variable with specified name.
+     */
+    public boolean isVariableDefined(String varName) {
+        return scraper.getContext().get(varName) != null;
+    }
+
+    /**
 	 * Returns formatted date/time for specified format string.
 	 *   
 	 * @param format
@@ -124,14 +132,23 @@ public class SystemUtilities {
 
     /**
      * Evaluates XPath expression on specified XML
+     * @param expression
+     * @param xml
      */
-    public AbstractVariable xpath(String expression, String xml) {
+    public AbstractVariable xpath(Object expression, Object xml) {
+        if (expression == null) {
+            throw new ScraperXPathException("XPath expression is null!");
+        }
+
+        if (xml == null) {
+            throw new ScraperXPathException("XML value is null!");
+        }
+
         try {
-            return XmlUtil.evaluateXPath(expression, xml.toString(), scraper.getRuntimeConfig());
+            return XmlUtil.evaluateXPath(expression.toString(), xml.toString(), scraper.getRuntimeConfig());
         } catch (XPathException e) {
             throw new ScraperXPathException("Error parsing XPath expression (XPath = [" + expression + "])!", e);
         }
-
     }
 
 }

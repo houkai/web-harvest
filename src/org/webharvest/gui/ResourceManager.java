@@ -44,135 +44,42 @@ import javax.swing.*;
  */
 public class ResourceManager {
 
-    private static Class clazz = ResourceManager.class;
+    private static final Class clazz = ResourceManager.class;
 
+    public static final Icon WELCOME_LOGO_ICON = getIcon("resources/welcomelogo.jpg");
+    public static final Icon NONE_ICON = getIcon("resources/icons/none.gif");
+    public static final Icon WEB_HARVEST_ICON = getIcon("resources/icons/webharvest.gif");
+    public static final Icon NEW_ICON = getIcon("resources/icons/new.gif");
+    public static final Icon OPEN_ICON = getIcon("resources/icons/open.gif");
+    public static final Icon CLOSE_ICON = getIcon("resources/icons/close.gif");
+    public static final Icon SAVE_ICON = getIcon("resources/icons/save.gif");
+    public static final Icon REFRESH_ICON = getIcon("resources/icons/refresh.gif");
+    public static final Icon RUN_ICON = getIcon("resources/icons/run.gif");
+    public static final Icon PAUSE_ICON = getIcon("resources/icons/pause.gif");
+    public static final Icon STOP_ICON = getIcon("resources/icons/stop.gif");
+    public static final Icon COPY_ICON = getIcon("resources/icons/copy.gif");
+    public static final Icon CUT_ICON = getIcon("resources/icons/cut.gif");
+    public static final Icon PASTE_ICON = getIcon("resources/icons/paste.gif");
+    public static final Icon UNDO_ICON = getIcon("resources/icons/undo.gif");
+    public static final Icon REDO_ICON = getIcon("resources/icons/redo.gif");
+    public static final Icon FIND_ICON = getIcon("resources/icons/find.gif");
+    public static final Icon SETTINGS_ICON = getIcon("resources/icons/settings.gif");
+    public static final Icon RUN_PARAMS_ICON = getIcon("resources/icons/runparams.gif");
+    public static final Icon HELP_ICON = getIcon("resources/icons/help.gif");
+    public static final Icon HOMEPAGE_ICON = getIcon("resources/icons/homepage.gif");
+    public static final Icon DOWNLOAD_ICON = getIcon("resources/icons/download.gif");
+    public static final Icon VIEW_ICON = getIcon("resources/icons/view.gif");
+    public static final Icon VALIDATE_ICON = getIcon("resources/icons/validate.gif");
+    public static final Icon ZOOMIN_ICON = getIcon("resources/icons/zoomin.gif");
+    public static final Icon ZOOMOUT_ICON = getIcon("resources/icons/zoomout.gif");
+    public static final Icon PRETTY_PRINT_ICON = getIcon("resources/icons/prettyprint.gif");
+    public static final Icon SMALL_RUN_ICON = getIcon("resources/icons/small_run.gif");
+    public static final Icon SMALL_ERROR_ICON = getIcon("resources/icons/small_error.gif");
+    public static final Icon SMALL_PAUSED_ICON = getIcon("resources/icons/small_paused.gif");
+    public static final Icon SMALL_FINISHED_ICON = getIcon("resources/icons/small_finished.gif");
 
     public static Icon getIcon(String path) {
         return new ImageIcon(clazz.getResource(path));
-    }
-
-    public static Icon getWelcomeLogo() {
-        return getIcon("resources/welcomelogo.jpg");
-    }
-
-    public static Icon getNoneIcon() {
-        return getIcon("resources/icons/none.gif");
-    }
-
-    public static Icon getWebHarvestIcon() {
-        return getIcon("resources/icons/webharvest.gif");
-    }
-
-    public static Icon getNewIcon() {
-        return getIcon("resources/icons/new.gif");
-    }
-
-    public static Icon getOpenIcon() {
-        return getIcon("resources/icons/open.gif");
-    }
-
-    public static Icon getCloseIcon() {
-        return getIcon("resources/icons/close.gif");
-    }
-
-    public static Icon getSaveIcon() {
-        return getIcon("resources/icons/save.gif");
-    }
-
-    public static Icon getRefreshIcon() {
-        return getIcon("resources/icons/refresh.gif");
-    }
-
-    public static Icon getRunIcon() {
-        return getIcon("resources/icons/run.gif");
-    }
-
-    public static Icon getPauseIcon() {
-        return getIcon("resources/icons/pause.gif");
-    }
-
-    public static Icon getStopIcon() {
-        return getIcon("resources/icons/stop.gif");
-    }
-
-    public static Icon getCopyIcon() {
-        return getIcon("resources/icons/copy.gif");
-    }
-
-    public static Icon getCutIcon() {
-        return getIcon("resources/icons/cut.gif");
-    }
-
-    public static Icon getPasteIcon() {
-        return getIcon("resources/icons/paste.gif");
-    }
-
-    public static Icon getUndoIcon() {
-        return getIcon("resources/icons/undo.gif");
-    }
-
-    public static Icon getRedoIcon() {
-        return getIcon("resources/icons/redo.gif");
-    }
-
-    public static Icon getFindIcon() {
-        return getIcon("resources/icons/find.gif");
-    }
-
-    public static Icon getSettingsIcon() {
-        return getIcon("resources/icons/settings.gif");
-    }
-
-    public static Icon getRunParamsIcon() {
-        return getIcon("resources/icons/runparams.gif");
-    }
-
-    public static Icon getHelpIcon() {
-        return getIcon("resources/icons/help.gif");
-    }
-
-    public static Icon getHomepageIcon() {
-        return getIcon("resources/icons/homepage.gif");
-    }
-
-    public static Icon getDownloadIcon() {
-        return getIcon("resources/icons/download.gif");
-    }
-
-    public static Icon getViewIcon() {
-        return getIcon("resources/icons/view.gif");
-    }
-
-    public static Icon getValidateIcon() {
-        return getIcon("resources/icons/validate.gif");
-    }
-
-    public static Icon getZoomInIcon() {
-        return getIcon("resources/icons/zoomin.gif");
-    }
-
-    public static Icon getZoomOutIcon() {
-        return getIcon("resources/icons/zoomout.gif");
-    }
-
-    public static Icon getPrettyPrintIcon() {
-        return getIcon("resources/icons/prettyprint.gif");
-    }
-
-    public static Icon getSmallRunIcon() {
-        return getIcon("resources/icons/small_run.gif");
-    }
-
-    public static Icon getSmallErrorIcon() {
-        return getIcon("resources/icons/small_error.gif");
-    }
-
-    public static Icon getSmallPausedIcon() {
-        return getIcon("resources/icons/small_paused.gif");
-    }
-
-    public static Icon getSmallFinishedIcon() {
-        return getIcon("resources/icons/small_finished.gif");
     }
 
 }

@@ -451,7 +451,7 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
             e.printStackTrace(new PrintWriter(writer));
             this.logger.error(errorMessage + "\n" + writer.getBuffer().toString());
             
-            ide.setTabIcon(this, ResourceManager.getSmallErrorIcon());
+            ide.setTabIcon(this, ResourceManager.SMALL_ERROR_ICON);
             JOptionPane.showMessageDialog(this, errorMessage, "Parser exception", JOptionPane.ERROR_MESSAGE);
             return false;
         }
@@ -528,10 +528,10 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
         int status = scraper.getStatus();
         if (status == Scraper.STATUS_FINISHED) {
             DialogHelper.showInfoMessage("Configuration \"" + configDocument.getName() + "\" finished execution.");
-            ide.setTabIcon(this, ResourceManager.getSmallFinishedIcon());
+            ide.setTabIcon(this, ResourceManager.SMALL_FINISHED_ICON);
         } else if (status == Scraper.STATUS_STOPPED) {
             DialogHelper.showWarningMessage("Configuration \"" + configDocument.getName() + "\" aborted by user!");
-            ide.setTabIcon(this, ResourceManager.getSmallFinishedIcon());
+            ide.setTabIcon(this, ResourceManager.SMALL_FINISHED_ICON);
         }
 
         // refresh last executing node
@@ -583,7 +583,7 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
 
         DialogHelper.showErrorMessage(errorMessage);
 
-        this.ide.setTabIcon(this, ResourceManager.getSmallErrorIcon());
+        this.ide.setTabIcon(this, ResourceManager.SMALL_ERROR_ICON);
         this.ide.updateGUI();
     }
 
@@ -617,7 +617,7 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
                 this.scraper.notifyAll();
             }
 
-            ide.setTabIcon(this, ResourceManager.getSmallRunIcon());
+            ide.setTabIcon(this, ResourceManager.SMALL_RUN_ICON);
         } else if ( this.scraper == null || this.scraper.getStatus() != Scraper.STATUS_RUNNING ) {
             boolean ok = refreshTree();
             if (ok) {
@@ -645,10 +645,10 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
                 this.scraper.getLogger().addAppender( new TextAreaAppender(this.logTextArea) );
                 this.scraper.addRuntimeListener(this);
 
-                ide.setTabIcon(this, ResourceManager.getSmallRunIcon());
+                ide.setTabIcon(this, ResourceManager.SMALL_RUN_ICON);
 
                 // starts scrapping in separate thread
-                new ScraperExecutionThread(this, this.scraper).start();
+                new ScraperExecutionThread(this.scraper).start();
             }
         }
     }
@@ -674,7 +674,7 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
     public synchronized void pauseScraperExecution() {
         if (this.scraper != null) {
             this.scraper.pauseExecution();
-            ide.setTabIcon(this, ResourceManager.getSmallPausedIcon());
+            ide.setTabIcon(this, ResourceManager.SMALL_PAUSED_ICON);
         }
     }
 

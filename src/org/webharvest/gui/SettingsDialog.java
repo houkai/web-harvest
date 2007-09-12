@@ -141,7 +141,7 @@ public class SettingsDialog extends JDialog implements ChangeListener {
         constraints.gridy = 0;
         JPanel pathPanel = new JPanel( new FlowLayout(FlowLayout.LEFT, 0, 0) );
         pathPanel.add(workingPathField);
-        JButton chooseDirButton = new JButton(ResourceManager.getOpenIcon()) {
+        JButton chooseDirButton = new JButton(ResourceManager.OPEN_ICON) {
             public Dimension getPreferredSize() {
                 return new Dimension(20, 20);
             }
