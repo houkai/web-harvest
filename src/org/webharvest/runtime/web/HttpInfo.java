@@ -54,19 +54,25 @@ public class HttpInfo {
     public String mimeType = "";
     public Map headers = new HashMap(); 
     public int statusCode = 0;
-    public String statusText = ""; 
+    public String statusText = "";
+
+    public long totalLength = 0;
+    public int totalResponses = 0;
 
     public HttpInfo(HttpClient client) {
         this.client = client;
     }
 
     public void setResponse(HttpResponseWrapper wrapper) {
-        this.contentLength = wrapper.getContentLength(); 
-        this.charset = wrapper.getCharset(); 
+        this.contentLength = wrapper.getContentLength();
+        this.charset = wrapper.getCharset();
         this.mimeType = wrapper.getMimeType(); 
         this.headers = wrapper.getHeaders(); 
         this.statusCode = wrapper.getStatusCode();
         this.statusText = wrapper.getStatusText();
+
+        this.totalLength += this.contentLength;
+        this.totalResponses++;
     }
 
 }
