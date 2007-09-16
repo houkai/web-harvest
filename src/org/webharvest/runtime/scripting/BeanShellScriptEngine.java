@@ -56,7 +56,6 @@ public class BeanShellScriptEngine extends ScriptEngine {
     public BeanShellScriptEngine(Map context) {
         super(context);
         this.beanShellInterpreter.getNameSpace().importCommands("org.webharvest.runtime.scripting");
-        this.context = context;
         try {
             this.beanShellInterpreter.set(CONTEXT_VARIABLE_NAME, this.context);
         } catch (EvalError e) {

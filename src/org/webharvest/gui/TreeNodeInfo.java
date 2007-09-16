@@ -80,7 +80,6 @@ public class TreeNodeInfo {
 
     private DefaultMutableTreeNode node;
     private IElementDef elementDef;
-    private BaseProcessor processor;
     private int executionCount = 0;
     private Exception exception = null;
     private Map properties;
@@ -93,20 +92,12 @@ public class TreeNodeInfo {
         this.node = new DefaultMutableTreeNode(this);
     }
 
-    public void setProcessor(BaseProcessor processor) {
-        this.processor = processor;
-    }
-
     public IElementDef getElementDef() {
         return elementDef;
     }
 
     public DefaultMutableTreeNode getNode() {
         return node;
-    }
-
-    public BaseProcessor getProcessor() {
-        return processor;
     }
 
     public Icon getIcon() {

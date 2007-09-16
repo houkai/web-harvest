@@ -96,4 +96,10 @@ abstract public class ScriptEngine  {
         }
     }
 
+    public void dispose() {
+        if (this.context != null) {
+            this.context.clear();
+        }
+    }
+
 }

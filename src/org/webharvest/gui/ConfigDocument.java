@@ -200,5 +200,12 @@ public class ConfigDocument implements DocumentListener {
     public boolean isChanged() {
         return isChanged;
     }
+
+    public void dispose() {
+        this.ide = null;
+        this.configPanel = null;
+        this.xmlPane = null;
+        this.file = null;
+    }
     
 }

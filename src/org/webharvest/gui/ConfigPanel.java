@@ -363,6 +363,11 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
         this.listViewMenuItem.setEnabled(viewAllowed);
     }
 
+    private void releaseScraper() {
+        scraper.dispose();
+        scraper = null;
+    }
+
     /** Required by TreeSelectionListener interface. */
     public void valueChanged(TreeSelectionEvent e) {
         DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
@@ -491,7 +496,6 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
         if (elementDef != null) {
             TreeNodeInfo nodeInfo = (TreeNodeInfo) this.nodeInfos.get(elementDef);
             if (nodeInfo != null) {
-                nodeInfo.setProcessor(processor);
                 nodeInfo.increaseExecutionCount();
                 setExecutingNode(nodeInfo);
                 if ( ide.getSettings().isDynamicConfigLocate() ) {
@@ -504,9 +508,6 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
     }
 
     public void onExecutionStart(Scraper scraper) {
-//        if ( ide.getSettings().isDynamicConfigLocate() ) {
-//            this.xmlPane.setEditable(false);
-//        }
         this.xmlEditorScrollPane.clearAllMarkers();
         updateControls();
         this.ide.updateGUI();
@@ -543,6 +544,9 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
 
         // update GUI controls
         this.ide.updateGUI();
+
+        // releases scraper in order help garbage collector
+        releaseScraper();
     }
 
     public void onProcessorExecutionFinished(Scraper scraper, BaseProcessor processor, Map properties) {
@@ -579,12 +583,17 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
 
         StringWriter writer = new StringWriter();
         e.printStackTrace(new PrintWriter(writer));
-        this.scraper.getLogger().error(errorMessage + "\n" + writer.getBuffer().toString());
+        if (this.scraper != null) {
+            this.scraper.getLogger().error(errorMessage + "\n" + writer.getBuffer().toString());
+        }
 
         DialogHelper.showErrorMessage(errorMessage);
 
         this.ide.setTabIcon(this, ResourceManager.SMALL_ERROR_ICON);
         this.ide.updateGUI();
+
+        // releases scraper in order help garbage collector
+        releaseScraper();
     }
 
     private void setExecutingNode(TreeNodeInfo nodeInfo) {
@@ -794,6 +803,28 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
 
     public void setInitParams(Map initParams) {
         this.initParams = initParams;
+    }
+
+    public void dispose() {
+        if (this.configDocument != null) {
+            this.configDocument.dispose();
+        }
+        if (this.scraper != null) {
+            this.scraper.removeRuntimeListener(this);
+            this.scraper = null;
+        }
+
+        this.xmlPane.removeCaretListener(this);
+        this.tree.removeTreeSelectionListener(this);
+
+        this.scraperConfiguration = null;
+        this.ide = null;
+        this.tree = null;
+        this.treeModel = null;
+        this.nodeInfos = null;
+        this.nodeRenderer = null;
+        this.configDocument = null;
+        this.topNode = null;
     }
     
 }

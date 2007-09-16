@@ -351,4 +351,23 @@ public class Scraper {
         }
     }
 
+    public void dispose() {
+        // empty scraper's variable context
+        this.context.clear();
+
+        // free connection with context
+        this.context.dispose();
+
+        // releases script engines
+        if (this.usedScriptEngines != null) {
+            Iterator iterator = this.usedScriptEngines.values().iterator();
+            while (iterator.hasNext()) {
+                ScriptEngine engine = (ScriptEngine) iterator.next();
+                if (engine != null) {
+                    engine.dispose();
+                }
+            }
+        }
+    }
+    
 }

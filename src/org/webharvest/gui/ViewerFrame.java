@@ -147,6 +147,9 @@ public class ViewerFrame extends JFrame implements DropDownButtonListener, Actio
                     nodeInfo.removeSynchronizedView(ViewerFrame.this);
                 }
                 super.windowClosing(e);
+                ViewerFrame.this.nodeInfo = null;
+                ViewerFrame.this.value = null;
+                dispose();
             }
         });
 

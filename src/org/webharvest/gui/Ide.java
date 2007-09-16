@@ -201,6 +201,8 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
                 if (canceled) {
                     return false;
                 }
+
+                currenConfigPanel.dispose();
             }
         }
 

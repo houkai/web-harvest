@@ -48,9 +48,12 @@ import org.webharvest.utils.SystemUtilities;
  */
 public class ScraperContext extends Catalog {
 
+    private SystemUtilities systemUtilities;
+
     public ScraperContext(Scraper scraper) {
 		super();
-		this.put("sys", new SystemUtilities(scraper));
+        this.systemUtilities = new SystemUtilities(scraper);
+        this.put("sys", this.systemUtilities);
         this.put("http", scraper.getHttpClientManager().getHttpInfo());
     }
 	
@@ -61,6 +64,10 @@ public class ScraperContext extends Catalog {
     public Object setVar(Object key, Object value) {
         AbstractVariable var = CommonUtil.createVariable(value);
         return super.put( key, var);
+    }
+
+    public void dispose() {
+        this.systemUtilities.setScraper(null);
     }
    
 }
