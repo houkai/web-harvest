@@ -67,7 +67,6 @@ public class SystemUtilities {
 
     public SystemUtilities(Scraper scraper) {
         this.scraper = scraper;
-//        this.scraper = null;
     }
 
     public void setScraper(Scraper scraper) {

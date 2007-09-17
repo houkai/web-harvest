@@ -368,6 +368,14 @@ public class Scraper {
                 }
             }
         }
+
+        this.logger.removeAllAppenders();
+        
+        Iterator iterator = usedScriptEngines.values().iterator();
+        while (iterator.hasNext()) {
+            ScriptEngine engine = (ScriptEngine) iterator.next();
+            engine.dispose();
+        }
     }
     
 }

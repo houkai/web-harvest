@@ -70,6 +70,12 @@ import java.util.LinkedHashMap;
  */
 public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeSelectionListener, CaretListener {
 
+    private static final String VIEW_RESULT_AS_TEXT = "View result as text";
+    private static final String VIEW_RESULT_AS_XML = "View result as XML";
+    private static final String VIEW_RESULT_AS_HTML = "View result as HTML";
+    private static final String VIEW_RESULT_AS_IMAGE = "View result as image";
+    private static final String VIEW_RESULT_AS_LIST = "View result as list";
+
     // basic skeletion for new opened configuration
     private static final String BASIC_CONFIG_SKELETION = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\n<config>\n\t\n</config>";
 
@@ -78,14 +84,24 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
     // loger for this configuration panel
     private Logger logger;
 
+    /**
+     * Action listener for view menu items
+     */
     private class ViewerActionListener implements ActionListener {
-        private int viewType = ViewerFrame.TEXT_VIEW;
-
-        public ViewerActionListener(int viewType) {
-            this.viewType = viewType;
-        }
-
         public void actionPerformed(ActionEvent e) {
+            String actionCommand = e.getActionCommand();
+
+            int viewType = ViewerFrame.TEXT_VIEW;
+            if ( VIEW_RESULT_AS_HTML.equalsIgnoreCase(actionCommand) ) {
+                viewType = ViewerFrame.HTML_VIEW;
+            } else if ( VIEW_RESULT_AS_IMAGE.equalsIgnoreCase(actionCommand) ) {
+                viewType = ViewerFrame.IMAGE_VIEW;
+            } else if ( VIEW_RESULT_AS_LIST.equalsIgnoreCase(actionCommand) ) {
+                viewType = ViewerFrame.LIST_VIEW;
+            } else if ( VIEW_RESULT_AS_XML.equalsIgnoreCase(actionCommand) ) {
+                viewType = ViewerFrame.XML_VIEW;
+            }
+
             DefaultMutableTreeNode treeNode;
 
             TreePath path = tree.getSelectionPath();
@@ -97,7 +113,7 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
                         TreeNodeInfo treeNodeInfo = (TreeNodeInfo) userObject;
                         Map properties = treeNodeInfo.getProperties();
                         Object value = properties == null ? null : properties.get(Constants.VALUE_PROPERTY_NAME);
-                        final ViewerFrame viewerFrame = new ViewerFrame( Constants.VALUE_PROPERTY_NAME, value, treeNodeInfo, this.viewType );
+                        final ViewerFrame viewerFrame = new ViewerFrame( Constants.VALUE_PROPERTY_NAME, value, treeNodeInfo, viewType );
                         SwingUtilities.invokeLater(new Runnable() {
                             public void run() {
                                 viewerFrame.setVisible(true);
@@ -188,24 +204,26 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
 
         treePopupMenu.addSeparator();
 
-        textViewMenuItem = new JMenuItem("View result as text");
-        textViewMenuItem.addActionListener( new ViewerActionListener(ViewerFrame.TEXT_VIEW) );
+        ViewerActionListener viewContentActionListener = new ViewerActionListener();
+
+        textViewMenuItem = new JMenuItem(VIEW_RESULT_AS_TEXT);
+        textViewMenuItem.addActionListener(viewContentActionListener);
         treePopupMenu.add(textViewMenuItem);
 
-        xmlViewMenuItem = new JMenuItem("View result as XML");
-        xmlViewMenuItem.addActionListener( new ViewerActionListener(ViewerFrame.XML_VIEW) );
+        xmlViewMenuItem = new JMenuItem(VIEW_RESULT_AS_XML);
+        xmlViewMenuItem.addActionListener(viewContentActionListener);
         treePopupMenu.add(xmlViewMenuItem);
 
-        htmlViewMenuItem = new JMenuItem("View result as HTML");
-        htmlViewMenuItem.addActionListener( new ViewerActionListener(ViewerFrame.HTML_VIEW) );
+        htmlViewMenuItem = new JMenuItem(VIEW_RESULT_AS_HTML);
+        htmlViewMenuItem.addActionListener(viewContentActionListener);
         treePopupMenu.add(htmlViewMenuItem);
 
-        imageViewMenuItem = new JMenuItem("View result as image");
-        imageViewMenuItem.addActionListener( new ViewerActionListener(ViewerFrame.IMAGE_VIEW) );
+        imageViewMenuItem = new JMenuItem(VIEW_RESULT_AS_IMAGE);
+        imageViewMenuItem.addActionListener(viewContentActionListener);
         treePopupMenu.add(imageViewMenuItem);
 
-        listViewMenuItem = new JMenuItem("View result as list");
-        listViewMenuItem.addActionListener( new ViewerActionListener(ViewerFrame.LIST_VIEW) );
+        listViewMenuItem = new JMenuItem(VIEW_RESULT_AS_LIST);
+        listViewMenuItem.addActionListener(viewContentActionListener);
         treePopupMenu.add(listViewMenuItem);
 
         treePopupMenu.setOpaque(true);
@@ -364,8 +382,10 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
     }
 
     private void releaseScraper() {
-        scraper.dispose();
-        scraper = null;
+        if (scraper != null) {
+            scraper.dispose();
+            scraper = null;
+        }
     }
 
     /** Required by TreeSelectionListener interface. */
@@ -434,7 +454,7 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
      * @return
      */
     public boolean refreshTree() {
-        this.scraper = null;
+        releaseScraper();
         updateControls();
 
         String xmlContent = this.xmlPane.getText();
@@ -825,6 +845,8 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
         this.nodeRenderer = null;
         this.configDocument = null;
         this.topNode = null;
+
+        this.logger.removeAllAppenders();
     }
     
 }

@@ -90,4 +90,9 @@ public class BeanShellScriptEngine extends ScriptEngine {
         }
     }
 
+    public void dispose() {
+        this.beanShellInterpreter.getNameSpace().clear();
+        super.dispose();
+    }
+
 }
