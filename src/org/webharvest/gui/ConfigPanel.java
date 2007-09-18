@@ -51,6 +51,7 @@ import org.xml.sax.InputSource;
 import org.apache.log4j.Logger;
 
 import javax.swing.*;
+import javax.swing.border.BevelBorder;
 import javax.swing.text.BadLocationException;
 import javax.swing.event.*;
 import javax.swing.tree.*;
@@ -277,23 +278,26 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
         }
 
         this.xmlEditorScrollPane = new XmlEditorScrollPane( this.xmlPane, this.ide.getSettings().isShowLineNumbersByDefault() );
+        this.xmlEditorScrollPane.setBorder(null);
 
         this.propertiesGrid = new PropertiesGrid();
         JScrollPane propertiesView = new JScrollPane(propertiesGrid);
+        propertiesView.setBorder(null);
+        propertiesView.getViewport().setBackground(Color.white);
         this.leftView = new ProportionalSplitPane(JSplitPane.VERTICAL_SPLIT);
         this.leftView.setResizeWeight(0.8d);
         this.leftView.setBorder(null);
         this.leftView.setTopComponent(treeView);
         this.leftView.setBottomComponent(propertiesView);
         this.leftView.setDividerLocation(0.8d);
-        this.leftView.setDividerSize(Constants.SPLITTER_WIDTH);
+//        this.leftView.setDividerSize(Constants.SPLITTER_WIDTH);
 
         //Add the scroll panes to a split pane.
         leftSplitter = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
         leftSplitter.setBorder(null);
         leftSplitter.setLeftComponent(leftView);
         leftSplitter.setRightComponent( this.xmlEditorScrollPane );
-        leftSplitter.setDividerSize(Constants.SPLITTER_WIDTH);
+//        leftSplitter.setDividerSize(Constants.SPLITTER_WIDTH);
 
         leftSplitter.setDividerLocation(250);
 
@@ -342,9 +346,10 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
         bottomSplitter.setBorder(null);
         bottomSplitter.setTopComponent(leftSplitter);
         this.bottomView = new JScrollPane(logTextArea);
+        this.bottomView.setBorder(null);
         bottomSplitter.setBottomComponent(this.bottomView);
         bottomSplitter.setDividerLocation(0.8d);
-        bottomSplitter.setDividerSize(Constants.SPLITTER_WIDTH);
+//        bottomSplitter.setDividerSize(Constants.SPLITTER_WIDTH);
 
         this.add(bottomSplitter, BorderLayout.CENTER);
 

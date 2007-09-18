@@ -52,6 +52,7 @@ public class PropertiesGrid extends JTable {
     private class ButtonRenderer extends JButton implements TableCellRenderer {
         public ButtonRenderer() {
             setOpaque(true);
+            setRolloverEnabled(true);
         }
 
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
@@ -128,11 +129,10 @@ public class PropertiesGrid extends JTable {
     }
 
     public PropertiesGrid() {
-        final PropertiesGridModel model = new PropertiesGridModel();
+        super( new PropertiesGridModel() );
 
         this.getTableHeader().setReorderingAllowed(false);
 
-        this.setModel(model);
         TableColumnModel columnModel = this.getColumnModel();
         columnModel.getColumn(2).setCellRenderer( new ButtonRenderer() );
         columnModel.getColumn(2).setCellEditor( new ButtonEditor(new JCheckBox()) );

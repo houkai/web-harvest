@@ -162,6 +162,7 @@ public class ViewerFrame extends JFrame implements DropDownButtonListener, Actio
             }
         };
         toolBar.setFloatable(false);
+//        toolBar.setRollover(true);
 
         this.keepSyncCheckBox = new JCheckBox("Keep synchronized");
         this.keepSyncCheckBox.addActionListener(this);

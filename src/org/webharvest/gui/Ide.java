@@ -90,7 +90,7 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
 
     {
         try {
-//            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception e) {
             System.err.println("Couldn't use system look and feel.");
         }
@@ -309,6 +309,7 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
 
         // define toolbar
         JToolBar toolBar = new JToolBar();
+//        toolBar.setRollover(true);
         toolBar.setFloatable(false);
         toolBar.setBorderPainted(true);
 
@@ -541,7 +542,6 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
         definePopupMenuItem(editorPopupMenu, "Cut", ResourceManager.CUT_ICON, KeyEvent.VK_U, COMMAND_CUT, KeyStroke.getKeyStroke( KeyEvent.VK_X, ActionEvent.CTRL_MASK));
         definePopupMenuItem(editorPopupMenu, "Copy", ResourceManager.COPY_ICON, KeyEvent.VK_C, COMMAND_COPY, KeyStroke.getKeyStroke( KeyEvent.VK_C, ActionEvent.CTRL_MASK));
         definePopupMenuItem(editorPopupMenu, "Paste", ResourceManager.PASTE_ICON, KeyEvent.VK_P, COMMAND_PASTE, KeyStroke.getKeyStroke( KeyEvent.VK_V, ActionEvent.CTRL_MASK));
-        menuBar.add(editorPopupMenu);
 
         // Build the VIEW menu.
         menu = new JMenu("View");
