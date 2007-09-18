@@ -45,6 +45,7 @@ import org.webharvest.runtime.Scraper;
 import org.webharvest.utils.Constants;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
@@ -311,7 +312,7 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
         JToolBar toolBar = new JToolBar();
 //        toolBar.setRollover(true);
         toolBar.setFloatable(false);
-        toolBar.setBorderPainted(true);
+//        toolBar.setBorderPainted(true);
 
         defineToolbarButton("New configuration file", COMMAND_NEW, ResourceManager.NEW_ICON, toolBar);
         defineToolbarButton("Open configuration file", COMMAND_OPEN, ResourceManager.OPEN_ICON, toolBar);

@@ -278,7 +278,6 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
         }
 
         this.xmlEditorScrollPane = new XmlEditorScrollPane( this.xmlPane, this.ide.getSettings().isShowLineNumbersByDefault() );
-        this.xmlEditorScrollPane.setBorder(null);
 
         this.propertiesGrid = new PropertiesGrid();
         JScrollPane propertiesView = new JScrollPane(propertiesGrid);
@@ -346,7 +345,6 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
         bottomSplitter.setBorder(null);
         bottomSplitter.setTopComponent(leftSplitter);
         this.bottomView = new JScrollPane(logTextArea);
-        this.bottomView.setBorder(null);
         bottomSplitter.setBottomComponent(this.bottomView);
         bottomSplitter.setDividerLocation(0.8d);
 //        bottomSplitter.setDividerSize(Constants.SPLITTER_WIDTH);

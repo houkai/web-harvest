@@ -56,16 +56,7 @@ public class PropertiesGrid extends JTable {
         }
 
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            if (isSelected) {
-                setForeground(table.getSelectionForeground());
-                setBackground(table.getSelectionBackground());
-            } else {
-                setForeground(table.getForeground());
-                setBackground(UIManager.getColor("Button.background"));
-            }
-
-            setText("...");
-
+            setIcon(ResourceManager.SMALL_VIEW_ICON);
             return this;
         }
     }
