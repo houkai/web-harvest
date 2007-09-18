@@ -43,6 +43,7 @@ package org.webharvest.gui;
 
 import org.webharvest.runtime.Scraper;
 import org.webharvest.utils.Constants;
+import org.webharvest.gui.component.GCPanel;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -326,6 +327,8 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
         defineToolbarButton("Define initial run parameters", COMMAND_RUNPARAMS, ResourceManager.RUN_PARAMS_ICON, toolBar);        
         toolBar.addSeparator(new Dimension(10, 0));
         defineToolbarButton("Open Settings Dialog", COMMAND_SETTINGS, ResourceManager.SETTINGS_ICON, toolBar);
+
+        toolBar.add( new GCPanel(new FlowLayout(FlowLayout.RIGHT)) );
 
         mainPanel.add(toolBar, BorderLayout.NORTH);
 
