@@ -536,9 +536,9 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
         definePopupMenuItem(editorPopupMenu, "Redo", ResourceManager.REDO_ICON, KeyEvent.VK_R, COMMAND_REDO, KeyStroke.getKeyStroke( KeyEvent.VK_Y, ActionEvent.CTRL_MASK));
         editorPopupMenu.addSeparator();
         definePopupMenuItem(editorPopupMenu, "Find", ResourceManager.FIND_ICON, KeyEvent.VK_F, COMMAND_FIND, KeyStroke.getKeyStroke( KeyEvent.VK_F, ActionEvent.CTRL_MASK));
-        definePopupMenuItem(editorPopupMenu, "Replace", null, KeyEvent.VK_L, COMMAND_REPLACE, KeyStroke.getKeyStroke( KeyEvent.VK_R, ActionEvent.CTRL_MASK));
-        definePopupMenuItem(editorPopupMenu, "Find Next", null, KeyEvent.VK_N, COMMAND_FINDNEXT, KeyStroke.getKeyStroke( KeyEvent.VK_F3, 0));
-        definePopupMenuItem(editorPopupMenu, "Find Previous", null, KeyEvent.VK_V, COMMAND_FINDPREV, KeyStroke.getKeyStroke( KeyEvent.VK_F3, ActionEvent.SHIFT_MASK));
+        definePopupMenuItem(editorPopupMenu, "Replace", ResourceManager.NONE_ICON, KeyEvent.VK_L, COMMAND_REPLACE, KeyStroke.getKeyStroke( KeyEvent.VK_R, ActionEvent.CTRL_MASK));
+        definePopupMenuItem(editorPopupMenu, "Find Next", ResourceManager.NONE_ICON, KeyEvent.VK_N, COMMAND_FINDNEXT, KeyStroke.getKeyStroke( KeyEvent.VK_F3, 0));
+        definePopupMenuItem(editorPopupMenu, "Find Previous", ResourceManager.NONE_ICON, KeyEvent.VK_V, COMMAND_FINDPREV, KeyStroke.getKeyStroke( KeyEvent.VK_F3, ActionEvent.SHIFT_MASK));
         editorPopupMenu.addSeparator();
         definePopupMenuItem(editorPopupMenu, "Cut", ResourceManager.CUT_ICON, KeyEvent.VK_U, COMMAND_CUT, KeyStroke.getKeyStroke( KeyEvent.VK_X, ActionEvent.CTRL_MASK));
         definePopupMenuItem(editorPopupMenu, "Copy", ResourceManager.COPY_ICON, KeyEvent.VK_C, COMMAND_COPY, KeyStroke.getKeyStroke( KeyEvent.VK_C, ActionEvent.CTRL_MASK));

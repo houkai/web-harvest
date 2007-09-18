@@ -5,6 +5,7 @@ import org.webharvest.definition.ElementInfo;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
+import javax.swing.border.EmptyBorder;
 import javax.swing.event.MenuKeyEvent;
 import javax.swing.event.MenuKeyListener;
 import javax.swing.text.BadLocationException;
@@ -37,7 +38,7 @@ public class AutoCompleter implements ActionListener {
 
     // popup window look & feel
     private static final Color BG_COLOR = new Color(235, 244, 254);
-    private static final Font POPUP_FONT = new Font( "Courier", Font.PLAIN, 12);
+    private static final Font POPUP_FONT = new Font( "Monospaced", Font.PLAIN, 11);
 
     /**
      * Class that provides listener for key events inside completer popup menu.
@@ -97,7 +98,7 @@ public class AutoCompleter implements ActionListener {
      */
     public AutoCompleter(final XmlTextPane xmlPane) {
         this.xmlPane = xmlPane;
-        this.popupMenu.setBorder( new TitledBorder("") );
+        this.popupMenu.setBorder( new EmptyBorder(1, 1, 1, 1) );
         this.elementInfos = DefinitionResolver.getElementInfos();
     }
 
@@ -105,7 +106,6 @@ public class AutoCompleter implements ActionListener {
         JMenuItem menuItem = new JMenuItem(name);
 
         menuItem.setBackground(BG_COLOR);
-        menuItem.setFont(POPUP_FONT);
         menuItem.addActionListener(this);
 
         menuItem.addMenuKeyListener(this.completerPopupMenuListener);

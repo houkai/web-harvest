@@ -52,7 +52,6 @@ public class PropertiesGrid extends JTable {
     private class ButtonRenderer extends JButton implements TableCellRenderer {
         public ButtonRenderer() {
             setOpaque(true);
-            setRolloverEnabled(true);
         }
 
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
@@ -79,14 +78,7 @@ public class PropertiesGrid extends JTable {
 
         public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
             this.row = row;
-            if (isSelected) {
-                button.setForeground(table.getSelectionForeground());
-                button.setBackground(table.getSelectionBackground());
-            } else {
-                button.setForeground(table.getForeground());
-                button.setBackground(table.getBackground());
-            }
-            button.setText("...");
+            button.setIcon(ResourceManager.SMALL_VIEW_ICON);
             isPushed = true;
 
             return button;
@@ -127,14 +119,7 @@ public class PropertiesGrid extends JTable {
         TableColumnModel columnModel = this.getColumnModel();
         columnModel.getColumn(2).setCellRenderer( new ButtonRenderer() );
         columnModel.getColumn(2).setCellEditor( new ButtonEditor(new JCheckBox()) );
-        columnModel.getColumn(2).setMaxWidth(14);
-    }
-
-    public Component prepareRenderer(TableCellRenderer cellRenderer, int i, int j) {
-        Component component = super.prepareRenderer(cellRenderer, i, j);
-        component.setForeground( j == 0 ? PROPERTY_NAME_FOREGROUND : getForeground() );
-
-        return component;
+        columnModel.getColumn(2).setMaxWidth(15);
     }
 
     public PropertiesGridModel getPropertiesGridModel() {

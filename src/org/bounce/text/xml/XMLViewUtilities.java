@@ -39,6 +39,7 @@ import javax.swing.text.Document;
 import javax.swing.text.Style;
 import javax.swing.text.Segment;
 import javax.swing.text.Utilities;
+import javax.swing.*;
 
 /**
  * The XML View uses the XML scanner to determine the style (font, color) of the
@@ -133,7 +134,7 @@ class XMLViewUtilities {
         String lastToken = null;
         int mark = start;
 
-        g.setColor( Color.black);
+        g.setColor(Color.white);
         // g.setBackground( Color.black);
 
         while ( start < end) {

@@ -76,6 +76,8 @@ public class ViewerFrame extends JFrame implements DropDownButtonListener, Actio
     public static final int HTML_VIEW = 2;
     public static final int IMAGE_VIEW = 3;
     public static final int LIST_VIEW = 4;
+    
+    private static final Dimension TOOLBAR_DIMENSION = new Dimension(0, 25);
 
     private abstract class MyAction extends AbstractAction {
         public MyAction(String text, Icon icon, String desc, KeyStroke keyStroke) {
@@ -158,7 +160,7 @@ public class ViewerFrame extends JFrame implements DropDownButtonListener, Actio
         
         JToolBar toolBar = new JToolBar() {
             public Dimension getPreferredSize() {
-                return new Dimension(0, 28);
+                return TOOLBAR_DIMENSION;
             }
         };
         toolBar.setFloatable(false);
@@ -268,7 +270,7 @@ public class ViewerFrame extends JFrame implements DropDownButtonListener, Actio
         JPanel xpathPanel = new JPanel(new BorderLayout());
         JToolBar xpathToolbar = new JToolBar() {
             public Dimension getPreferredSize() {
-                return new Dimension(0, 28);
+                return TOOLBAR_DIMENSION;
             }
         };
         final JComboBox xpathComboBox = new JComboBox();

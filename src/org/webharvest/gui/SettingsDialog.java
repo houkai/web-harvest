@@ -37,13 +37,13 @@
 package org.webharvest.gui;
 
 import javax.swing.*;
-import javax.swing.filechooser.FileFilter;
-import javax.swing.event.ChangeListener;
+import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
-import javax.swing.border.EtchedBorder;
+import javax.swing.event.ChangeListener;
+import javax.swing.filechooser.FileFilter;
 import java.awt.*;
-import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
@@ -111,7 +111,7 @@ public class SettingsDialog extends JDialog implements ChangeListener {
         Container contentPane = this.getContentPane();
 
         JPanel generalPanel = new JPanel(new GridBagLayout());
-        generalPanel.setBorder( new EtchedBorder() );
+        generalPanel.setBorder( new EmptyBorder(4, 4, 4, 4) );
 
         contentPane.setLayout( new BorderLayout() );
 
@@ -141,7 +141,7 @@ public class SettingsDialog extends JDialog implements ChangeListener {
         constraints.gridy = 0;
         JPanel pathPanel = new JPanel( new FlowLayout(FlowLayout.LEFT, 0, 0) );
         pathPanel.add(workingPathField);
-        JButton chooseDirButton = new JButton(ResourceManager.OPEN_ICON) {
+        JButton chooseDirButton = new JButton(" ... ") {
             public Dimension getPreferredSize() {
                 return new Dimension(20, 20);
             }
@@ -223,6 +223,7 @@ public class SettingsDialog extends JDialog implements ChangeListener {
         buttonPanel.add(cancelButton);
 
         JPanel viewPanel = new JPanel();
+        viewPanel.setBorder( new EmptyBorder(4, 4, 4, 4) );
         viewPanel.setLayout( new BoxLayout(viewPanel, BoxLayout.PAGE_AXIS) );
         this.showHierarchyByDefaultCheckBox = new JCheckBox("Show hierarchy panel by default");
         this.showLogByDefaultCheckBox = new JCheckBox("Show log panel by default");

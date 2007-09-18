@@ -551,11 +551,19 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
 
         int status = scraper.getStatus();
         if (status == Scraper.STATUS_FINISHED) {
-            DialogHelper.showInfoMessage("Configuration \"" + configDocument.getName() + "\" finished execution.");
-            ide.setTabIcon(this, ResourceManager.SMALL_FINISHED_ICON);
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    ide.setTabIcon(ConfigPanel.this, ResourceManager.SMALL_FINISHED_ICON);
+                    DialogHelper.showInfoMessage("Configuration \"" + configDocument.getName() + "\" finished execution.");
+                }
+            });
         } else if (status == Scraper.STATUS_STOPPED) {
-            DialogHelper.showWarningMessage("Configuration \"" + configDocument.getName() + "\" aborted by user!");
-            ide.setTabIcon(this, ResourceManager.SMALL_FINISHED_ICON);
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    DialogHelper.showWarningMessage("Configuration \"" + configDocument.getName() + "\" aborted by user!");
+                    ide.setTabIcon(ConfigPanel.this, ResourceManager.SMALL_FINISHED_ICON);
+                }
+            });
         }
 
         // refresh last executing node
