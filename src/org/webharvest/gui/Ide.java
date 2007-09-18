@@ -334,7 +334,6 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
 
         this.tabbedPane = new JTabbedPane();
         this.tabbedPane.setTabPlacement(JTabbedPane.BOTTOM);
-//        this.tabbedPane.setComponentPopupMenu( defineTabContextMenu() );
         this.tabbedPane.addChangeListener(this);
         final JPopupMenu tabContextMenu = defineTabContextMenu();
         this.tabbedPane.addMouseListener(new MouseAdapter() {
