@@ -44,6 +44,8 @@ import org.webharvest.utils.CommonUtil;
 import javax.swing.*;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.FileInputStream;
+import java.io.File;
 import java.util.Properties;
 import java.util.Map;
 import java.util.HashMap;
@@ -100,17 +102,30 @@ public class CommandLine {
                 workingDir = ".";
             }
 
-            Properties props = new Properties();
-            props.setProperty("log4j.rootLogger", "INFO, stdout");
-            props.setProperty("log4j.appender.stdout", "org.apache.log4j.ConsoleAppender");
-            props.setProperty("log4j.appender.stdout.layout", "org.apache.log4j.PatternLayout");
-            props.setProperty("log4j.appender.stdout.layout.ConversionPattern", "%-5p (%20F:%-3L) - %m\n");
+            String logLevel = (String) params.get("loglevel");
+            if ( logLevel == null || "".equals(logLevel) ) {
+                logLevel = "INFO";
+            }
 
-            props.setProperty("log4j.appender.file", "org.apache.log4j.DailyRollingFileAppender");
-            props.setProperty("log4j.appender.file.File", workingDir + "/out.log");
-            props.setProperty("log4j.appender.file.DatePattern", "yyyy-MM-dd");
-            props.setProperty("log4j.appender.file.layout", "org.apache.log4j.PatternLayout");
-            props.setProperty("log4j.appender.file.layout.ConversionPattern", "%-5p (%20F:%-3L) - %m\n");
+            Properties props = new Properties();
+
+            String logPropsFile = (String) params.get("logpropsfile");
+            if ( logPropsFile != null && !"".equals(logPropsFile) ) {
+                FileInputStream fis = new FileInputStream(new File(logPropsFile));
+                props.load(fis);
+                fis.close();
+            } else {
+                props.setProperty("log4j.rootLogger", logLevel.toUpperCase() + ", stdout");
+                props.setProperty("log4j.appender.stdout", "org.apache.log4j.ConsoleAppender");
+                props.setProperty("log4j.appender.stdout.layout", "org.apache.log4j.PatternLayout");
+                props.setProperty("log4j.appender.stdout.layout.ConversionPattern", "%-5p (%20F:%-3L) - %m\n");
+
+                props.setProperty("log4j.appender.file", "org.apache.log4j.DailyRollingFileAppender");
+                props.setProperty("log4j.appender.file.File", workingDir + "/out.log");
+                props.setProperty("log4j.appender.file.DatePattern", "yyyy-MM-dd");
+                props.setProperty("log4j.appender.file.layout", "org.apache.log4j.PatternLayout");
+                props.setProperty("log4j.appender.file.layout.ConversionPattern", "%-5p (%20F:%-3L) - %m\n");
+            }
 
             PropertyConfigurator.configure(props);
 
@@ -173,6 +188,8 @@ public class CommandLine {
         System.out.println("   java -jar webharvestXX.jar [-h] config=<path> [workdir=<path>] [debug=yes|no]");
         System.out.println("             [proxyhost=<proxy server> [proxyport=<proxy server port>]]");
         System.out.println("             [proxyuser=<proxy username> [proxypassword=<proxy password>]]");
+        System.out.println("             [loglevel=<level>]");
+        System.out.println("             [logpropsfile=<path>]");
         System.out.println("             [#var1=<value1> [#var2=<value2>...]]");
         System.out.println("");
         System.out.println("   -h            - shows this help.");
@@ -183,6 +200,8 @@ public class CommandLine {
         System.out.println("   proxyport     - specify port for proxy server.");
         System.out.println("   proxyuser     - specify proxy server username.");
         System.out.println("   proxypassword - specify proxy server password.");
+        System.out.println("   loglevel      - specify level of logging for Log4J (trace,info,debug,warn,error,fatal).");
+        System.out.println("   logpropsfile  - file path to custom Log4J properties. If specified, loglevel is ignored.");
         System.out.println("   #varN, valueN - specify initial variables of the Web-Harvest context. To be recognized, ");
         System.out.println("                   each variable name must have prefix #. ");
     }
