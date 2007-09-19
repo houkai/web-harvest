@@ -43,6 +43,7 @@ import org.webharvest.runtime.variables.NodeVariable;
 import org.webharvest.runtime.templaters.BaseTemplater;
 import org.webharvest.runtime.RuntimeConfig;
 import org.webharvest.runtime.Scraper;
+import org.webharvest.runtime.ScraperContext;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -79,6 +80,30 @@ public class SystemUtilities {
      */
     public boolean isVariableDefined(String varName) {
         return scraper.getContext().get(varName) != null;
+    }
+
+    /**
+     * Adds or/replaces variable in scraper's context. If overwrite is false
+     * and variable with specified name already exists, it won't be updated. 
+     * @param varName
+     * @param varValue
+     * @param overwrite
+     */
+    public void defineVariable(String varName, Object varValue, boolean overwrite) {
+        ScraperContext context = scraper.getContext();
+        if (overwrite || context.get(varName) == null) {
+            AbstractVariable var = CommonUtil.createVariable(varValue);
+            context.put(varName, var);
+        }
+    }
+
+    /**
+     * Adds or/replaces variable in scraper's context.
+     * @param varName
+     * @param varValue
+     */
+    public void defineVariable(String varName, Object varValue) {
+        defineVariable(varName, varValue, true);
     }
 
     /**

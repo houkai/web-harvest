@@ -44,15 +44,21 @@ import org.webharvest.utils.CommonUtil;
 public class VarDefDef extends BaseElementDef {
 
     private String name;
+    private String overwrite;
 
     public VarDefDef(XmlNode xmlNode) {
     	super(xmlNode);
     	
         this.name = (String) xmlNode.get("name");
+        this.overwrite = (String) xmlNode.get("overwrite");
     }
 
     public String getName() {
     	return CommonUtil.adaptFilename(name);
+    }
+
+    public String getOverwrite() {
+        return overwrite;
     }
 
     public String getShortElementName() {

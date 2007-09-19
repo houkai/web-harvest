@@ -41,6 +41,7 @@ import org.webharvest.runtime.Scraper;
 import org.webharvest.runtime.ScraperContext;
 import org.webharvest.runtime.templaters.BaseTemplater;
 import org.webharvest.runtime.variables.AbstractVariable;
+import org.webharvest.utils.CommonUtil;
 
 /**
  * Variable definition read processor.
@@ -58,9 +59,13 @@ public class VarDefProcessor extends BaseProcessor {
         AbstractVariable var = new BodyProcessor(varDef).execute(scraper, context);
         
         String name = BaseTemplater.execute( varDef.getName(), scraper.getScriptEngine() );
-        this.setProperty("Name", name);
+        String overwrite = BaseTemplater.execute( varDef.getOverwrite(), scraper.getScriptEngine() );
+        boolean toOverwrite = overwrite == null || CommonUtil.isBooleanTrue(overwrite);
+        if (toOverwrite || context.get(name) == null) {
+            context.put(name, var);
+        }
 
-        context.put(name, var);
+        this.setProperty("Name", name);
 
         return var;
     }
