@@ -36,49 +36,18 @@
 */
 package org.webharvest.gui;
 
-import org.webharvest.utils.Constants;
-
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
+import javax.swing.text.html.HTMLEditorKit;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.io.IOException;
 
 /**
  * @author: Vladimir Nikic
  * Date: Apr 25, 2007
  */
-public class WelcomePanel extends JPanel {
-
-    private static final Color LINK_COLOR = new Color(47, 67, 96);
-
-    private static final Color BG_COLOR = new Color(210, 213, 226);
-
-    private static final Cursor HAND_CURSOR = new Cursor(Cursor.HAND_CURSOR);
-
-    /**
-     * Simple Command interface that is used intenally for links actions.
-     */
-
-    private interface WelcomeCommand {
-
-        public void execute();
-    }
-
-    /**
-     * Command for loading configuraion from URL.
-     */
-    private class OpenConfigFromUrlCommand implements WelcomeCommand {
-        private String url;
-
-        public OpenConfigFromUrlCommand(String url) {
-            this.url = url;
-        }
-
-        public void execute() {
-            ide.openConfigFromUrl(this.url);
-        }
-    }
+public class WelcomePanel extends JPanel implements HyperlinkListener {
 
     // parent IDE
     private Ide ide;
@@ -89,91 +58,40 @@ public class WelcomePanel extends JPanel {
      */
     public WelcomePanel(final Ide ide) {
         this.ide = ide;
-        this.setLayout( new BoxLayout(this, BoxLayout.PAGE_AXIS) );
 
-        this.setBorder( new EmptyBorder(10, 10, 10, 10) );
-        this.setOpaque(true);
-        
-        this.setBackground( BG_COLOR );
+        setLayout(new BorderLayout(0, 0));
+        JEditorPane htmlPane = new JEditorPane();
+        htmlPane.setEditable(false);
+        htmlPane.setContentType("text/html");
+        htmlPane.setEditorKit( new HTMLEditorKit() );
+        htmlPane.setBorder(null);
+        htmlPane.addHyperlinkListener(this);
+        try {
+            htmlPane.setPage( ResourceManager.getWelcomeUrl() );
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-        JLabel titleLabel = new JLabel("Welcome to the Web-Harvest", SwingConstants.LEFT);
-        titleLabel.setFont(new Font("Verdana", Font.PLAIN, 24));
-        this.add(titleLabel);
+        JScrollPane scrollPane = new JScrollPane(htmlPane);
+        scrollPane.setBorder(null);
+        this.add(scrollPane, BorderLayout.CENTER);
+    }
 
-        JLabel subtitleLabel = new JLabel("version " + Constants.WEB_HARVEST_VERSION, SwingConstants.LEFT);
-        subtitleLabel.setFont(new Font("Verdana", Font.PLAIN, 12));
-        this.add(subtitleLabel);
+    public void hyperlinkUpdate(HyperlinkEvent e) {
+        if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+            String url = e.getDescription().toString();
 
-        this.add(Box.createRigidArea( new Dimension(1, 30)) );
-
-        JLabel quickStartLabel = new JLabel("QUICK START", SwingConstants.LEFT);
-        quickStartLabel.setFont(new Font("Verdana", Font.BOLD, 14));
-        quickStartLabel.setForeground(LINK_COLOR);
-        this.add(quickStartLabel);
-
-        this.add(Box.createRigidArea( new Dimension(1, 15)) );
-
-        WelcomeCommand newCommand = new WelcomeCommand() {
-            public void execute() {
+            if ("#new".equalsIgnoreCase(url)) {
                 ide.addTab();
-            }
-        };
-
-        WelcomeCommand openCommand = new WelcomeCommand() {
-            public void execute() {
+            } else if ("#open".equalsIgnoreCase(url)) {
                 ide.openConfigFromFile();
-            }
-        };
-
-        WelcomeCommand settingsCommand = new WelcomeCommand() {
-            public void execute() {
+            } else if ("#settings".equalsIgnoreCase(url)) {
                 ide.defineSettings();
+            } else if (url.toLowerCase().startsWith("download:")) {
+                String exampleUrl = url.substring(9);
+                ide.openConfigFromUrl(exampleUrl);
             }
-        };
-
-        this.add( getLinkLabel("Create new configuration file", ResourceManager.NEW_ICON, newCommand) );
-        this.add(Box.createRigidArea( new Dimension(1, 5)) );
-        this.add( getLinkLabel("Open configuration file", ResourceManager.OPEN_ICON, openCommand) );
-        this.add(Box.createRigidArea( new Dimension(1, 5)) );
-        this.add( getLinkLabel("Modify execution settings", ResourceManager.SETTINGS_ICON, settingsCommand) );
-
-        this.add(Box.createRigidArea( new Dimension(1, 15)) );
-
-        this.add( getExampleLabel("Download and open example #1 - Bookmaker odds at expekt.com", new OpenConfigFromUrlCommand("http://web-harvest.sourceforge.net/examples/expekt.xml")) );
-        this.add(Box.createRigidArea( new Dimension(1, 5)) );
-        this.add( getExampleLabel("Download and open example #2 - Canon products at Yahoo Shopping", new OpenConfigFromUrlCommand("http://web-harvest.sourceforge.net/examples/canon.xml")) );
-        this.add(Box.createRigidArea( new Dimension(1, 5)) );
-        this.add( getExampleLabel("Download and open example #3 - Google images", new OpenConfigFromUrlCommand("http://web-harvest.sourceforge.net/examples/google_images.xml")) );
-        this.add(Box.createRigidArea( new Dimension(1, 5)) );
-        this.add( getExampleLabel("Download and open example #4 - The New York Times newspaper articles", new OpenConfigFromUrlCommand("http://web-harvest.sourceforge.net/examples/nytimes.xml")) );
-        this.add(Box.createRigidArea( new Dimension(1, 5)) );
-        this.add( getExampleLabel("Download and open example #5 - XQuery use in the Web-Harvest", new OpenConfigFromUrlCommand("http://web-harvest.sourceforge.net/examples/xquery.xml")) );
-        this.add(Box.createRigidArea( new Dimension(1, 5)) );
-        this.add( getExampleLabel("Download and open example #6 - Simple web site crawler", new OpenConfigFromUrlCommand("http://web-harvest.sourceforge.net/examples/crawler.xml")) );
-    }
-
-    private JLabel getLinkLabel(final String text, final Icon icon, final WelcomeCommand command) {
-        JLabel label = new JLabel(text);
-
-        label.setIcon(icon);
-        label.setForeground(LINK_COLOR);
-        label.setFont(new Font("Verdana", Font.BOLD, 11));
-        label.setCursor(HAND_CURSOR);
-
-        label.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent e) {
-                if (command != null) {
-                    command.execute();
-                }
-            }
-        });
-        
-        return label;
-    }
-
-    private JLabel getExampleLabel(final String text, WelcomeCommand command) {
-        JLabel label = getLinkLabel(text, ResourceManager.DOWNLOAD_ICON, command);
-        return label;
+        }
     }
 
 }

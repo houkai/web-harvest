@@ -37,6 +37,7 @@
 package org.webharvest.gui;
 
 import javax.swing.*;
+import java.net.URL;
 
 /**
  * @author: Vladimir Nikic
@@ -82,6 +83,10 @@ public class ResourceManager {
 
     public static Icon getIcon(String path) {
         return new ImageIcon(clazz.getResource(path));
+    }
+
+    public static URL getWelcomeUrl() {
+        return clazz.getResource("resources/welcome.html");
     }
 
 }

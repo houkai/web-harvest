@@ -50,11 +50,6 @@
 		</xpath>
 	</var-def>
 	
-	<template>******* ${!"".equals(mainUrl.toString().trim())}</template>
-	<template>******* ${"".equals(mainUrl.toString().trim())}</template>
-	<template>******* ${mainUrl.toString().trim()}</template>
-	<template>******* ${mainUrl.toString()}</template>
-	
 	<case>
 		<if condition='${!"".equals(mainUrl.toString().trim())}'>
 			<var-def name="firstPage">
