@@ -77,7 +77,10 @@ public class Scraper {
 
     // stack of running functions
     private transient Stack runningFunctions = new Stack();
-    
+
+    // params that are proceeded to calling function
+    private transient Map functionParams = new HashMap();
+
     // stack of running http processors
     private transient Stack runningHttpProcessors = new Stack();
 
@@ -207,6 +210,18 @@ public class Scraper {
 
     public CallProcessor getRunningFunction() {
         return (CallProcessor) runningFunctions.peek();
+    }
+
+    public void clearFunctionParams() {
+        this.functionParams.clear();
+    }
+
+    public void addFunctionParam(String name, AbstractVariable value) {
+        this.functionParams.put(name, value);
+    }
+
+    public Map getFunctionParams() {
+        return functionParams;
     }
 
     public void removeRunningFunction() {

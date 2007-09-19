@@ -67,9 +67,6 @@ public class CallProcessor extends BaseProcessor {
     }
 
     public AbstractVariable execute(Scraper scraper, ScraperContext context) {
-        // adds this runtiome info to the running functions stack
-        scraper.addRunningFunction(this);
-
         String functionName = BaseTemplater.execute( callDef.getName(), scraper.getScriptEngine() );
         FunctionDef functionDef = scraper.getConfiguration().getFunctionDef(functionName);
 
@@ -78,10 +75,17 @@ public class CallProcessor extends BaseProcessor {
         if (functionDef == null) {
             throw new FunctionException("Function \"" + functionName + "\" is undefined!");
         }
-        
+
+        scraper.clearFunctionParams();
+
         // executes body of call processor
         new BodyProcessor(callDef).execute(scraper, context);
 
+        functionContext.putAll( scraper.getFunctionParams() );
+
+        // adds this runtime info to the running functions stack
+        scraper.addRunningFunction(this);
+        
         // executes body of function using new context
         new BodyProcessor(functionDef).execute(scraper, functionContext);
 
@@ -96,7 +100,7 @@ public class CallProcessor extends BaseProcessor {
     }
     
     public void addContextVariable(String name, AbstractVariable variable) {
-    	functionContext.put(name, variable);
+
     }
 
 
