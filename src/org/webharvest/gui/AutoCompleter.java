@@ -4,15 +4,12 @@ import org.webharvest.definition.DefinitionResolver;
 import org.webharvest.definition.ElementInfo;
 
 import javax.swing.*;
-import javax.swing.border.TitledBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.MenuKeyEvent;
-import javax.swing.event.MenuKeyListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -26,7 +23,7 @@ import java.util.Set;
  * @author: Vladimir Nikic
  * Date: May 24, 2007
  */
-public class AutoCompleter implements ActionListener {
+public class AutoCompleter {
 
     // editor context which decides about auto completion type  
     private static final int TAG_CONTEXT = 0;
@@ -38,16 +35,15 @@ public class AutoCompleter implements ActionListener {
 
     // popup window look & feel
     private static final Color BG_COLOR = new Color(235, 244, 254);
-    private static final Font POPUP_FONT = new Font( "Monospaced", Font.PLAIN, 11);
 
     /**
      * Class that provides listener for key events inside completer popup menu.
      */
-    private class CompleterPopupMenuListener implements MenuKeyListener {
-        public void menuKeyPressed(MenuKeyEvent e) {
+    private class CompleterKeyListener extends KeyAdapter {
+        public void keyPressed(KeyEvent e) {
             char ch = e.getKeyChar();
             int code = e.getKeyCode();
-            if ( (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') || ch == '-' || code == MenuKeyEvent.VK_BACK_SPACE ) {
+            if ( (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') || ch == '-' || code == KeyEvent.VK_BACK_SPACE ) {
                 Document document = xmlPane.getDocument();
                 int pos = xmlPane.getCaretPosition();
                 try {
@@ -64,18 +60,21 @@ public class AutoCompleter implements ActionListener {
                 }
                 popupMenu.setVisible(false);
                 autoComplete();
+            } else if (code == KeyEvent.VK_ENTER) {
+                popupMenu.setVisible(false);
+                doComplete();
             }
-        }
-
-        public void menuKeyReleased(MenuKeyEvent e) {
-        }
-
-        public void menuKeyTyped(MenuKeyEvent e) {
         }
     }
 
     // instance of popup menu used as auto completion popup window
     private JPopupMenu popupMenu = new JPopupMenu();
+
+    // auto-completer list model
+    private DefaultListModel model = new DefaultListModel();
+
+    // auto completer list
+    private JList list = new JList(model);
 
     // xml pane instance which this auto completer is bound to
     private XmlTextPane xmlPane;
@@ -89,46 +88,43 @@ public class AutoCompleter implements ActionListener {
     // allowed elements
     private Map elementInfos;
 
-    // instance of completer popup listener
-    private CompleterPopupMenuListener completerPopupMenuListener = new CompleterPopupMenuListener();
-
     /**
      * Constructor.
      * @param xmlPane
      */
     public AutoCompleter(final XmlTextPane xmlPane) {
         this.xmlPane = xmlPane;
+
+        this.list.setBackground(BG_COLOR);
+        this.list.setSelectionMode(ListSelectionModel .SINGLE_SELECTION);
+        this.list.addKeyListener(new CompleterKeyListener());
+        this.list.addMouseListener(new MouseAdapter() {
+            public void mousePressed(MouseEvent e) {
+                if ( e.getClickCount() > 1) {
+                    popupMenu.setVisible(false);
+                    doComplete();
+                }
+            }
+        });
+
         this.popupMenu.setBorder( new EmptyBorder(1, 1, 1, 1) );
         this.elementInfos = DefinitionResolver.getElementInfos();
-    }
-
-    private void addItem(final String name) {
-        JMenuItem menuItem = new JMenuItem(name);
-
-        menuItem.setBackground(BG_COLOR);
-        menuItem.addActionListener(this);
-
-        menuItem.addMenuKeyListener(this.completerPopupMenuListener);
-
-        this.popupMenu.add(menuItem);
     }
 
     private void defineTagsMenu(String prefix) {
         if (prefix != null) {
             prefix = prefix.toLowerCase();
         }
-        
-        this.popupMenu.removeAll();
+
+        this.model.clear();
 
         Iterator iterator = this.elementInfos.entrySet().iterator();
-        int count = 0;
         while (iterator.hasNext()) {
             Map.Entry entry = (Map.Entry) iterator.next();
             String key = (String) entry.getKey();
             if ( prefix == null || key.toLowerCase().startsWith(prefix) ) {
                 ElementInfo elementInfo = (ElementInfo) entry.getValue();
-                addItem( elementInfo.getName() );
-                count++;
+                model.addElement(elementInfo.getName());
             }
         }
 
@@ -136,14 +132,11 @@ public class AutoCompleter implements ActionListener {
         boolean addXmlComment = XML_COMMENT_NAME.toLowerCase().startsWith("<" + prefix);
 
         if (addCData || addXmlComment) {
-            if (count > 0) {
-                this.popupMenu.addSeparator();
-            }
             if (addCData) {
-                addItem(CDATA_NAME);
+                model.addElement(CDATA_NAME);
             }
             if (addXmlComment) {
-                addItem(XML_COMMENT_NAME);
+                model.addElement(XML_COMMENT_NAME);
             }
         }
     }
@@ -152,7 +145,7 @@ public class AutoCompleter implements ActionListener {
         elementName = elementName.toLowerCase();
         prefix = prefix.toLowerCase();
 
-        this.popupMenu.removeAll();
+        this.model.clear();
 
         ElementInfo elementInfo = DefinitionResolver.getElementInfo(elementName);
         if (elementInfo != null) {
@@ -162,7 +155,7 @@ public class AutoCompleter implements ActionListener {
             while (iterator.hasNext()) {
                 String att = (String) iterator.next();
                 if ( att != null && att.toLowerCase().startsWith(prefix) ) {
-                    addItem(att);
+                    model.addElement(att);
                 }
             }
         }
@@ -200,8 +193,17 @@ public class AutoCompleter implements ActionListener {
             }
 
             Rectangle position = this.xmlPane.modelToView(offset);
-            if (this.popupMenu.getComponentCount() > 0) {
+            if (this.model.getSize() > 0) {
+                this.popupMenu.removeAll();
+
+                this.list.setVisibleRowCount(Math.min(12, model.getSize()));
+                JScrollPane scrollPane = new JScrollPane(list);
+                scrollPane.setBorder(null);
+
+                this.popupMenu.add(scrollPane);
                 this.popupMenu.show( this.xmlPane, (int)position.getX(), (int)(position.getY() + position.getHeight()) );
+                this.list.grabFocus();
+                this.list.setSelectedIndex(0);
             }
         } catch (BadLocationException e) {
             e.printStackTrace();
@@ -266,20 +268,19 @@ public class AutoCompleter implements ActionListener {
 
     /**
      * Action for auto complete items
-     * @param e
      */
-    public void actionPerformed(ActionEvent e) {
-        JMenuItem menuItem = (JMenuItem) e.getSource();
-        String name = menuItem.getText();
-
-        try {
-            if (this.context == TAG_CONTEXT) {
-                completeTag(name);
-            } else {
-                completeAttribute(name);
+    public void doComplete() {
+        String selectedValue = (String) list.getSelectedValue();
+        if (selectedValue != null) {
+            try {
+                if (this.context == TAG_CONTEXT) {
+                    completeTag(selectedValue);
+                } else {
+                    completeAttribute(selectedValue);
+                }
+            } catch(BadLocationException e1) {
+                e1.printStackTrace();
             }
-        } catch(BadLocationException e1) {
-            e1.printStackTrace();
         }
     }
 
