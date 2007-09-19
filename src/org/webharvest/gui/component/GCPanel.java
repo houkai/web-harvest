@@ -113,6 +113,7 @@ public class GCPanel extends JPanel {
             }
         });
         gcButton.setFocusable(false);
+        gcButton.setToolTipText("Run garbage collector");
         add(gcButton);
     }
 

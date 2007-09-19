@@ -503,6 +503,7 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
 
         // Build the CONFIGURATION menu.
         menu = new JMenu("Config");
+        menu.setMnemonic('C');
         defineMenuItem(menu, "New", ResourceManager.NEW_ICON, KeyEvent.VK_N, COMMAND_NEW, KeyStroke.getKeyStroke( KeyEvent.VK_N, ActionEvent.CTRL_MASK));
         defineMenuItem(menu, "Open", ResourceManager.OPEN_ICON, KeyEvent.VK_O, COMMAND_OPEN, KeyStroke.getKeyStroke( KeyEvent.VK_O, ActionEvent.CTRL_MASK));
         defineMenuItem(menu, "Save", ResourceManager.SAVE_ICON,  KeyEvent.VK_S, COMMAND_SAVE, KeyStroke.getKeyStroke( KeyEvent.VK_S, ActionEvent.CTRL_MASK));
@@ -516,6 +517,7 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
 
         // Build the EDIT menu.
         menu = new JMenu("Edit");
+        menu.setMnemonic('E');
         defineMenuItem(menu, "Undo", ResourceManager.UNDO_ICON, KeyEvent.VK_U, COMMAND_UNDO, KeyStroke.getKeyStroke( KeyEvent.VK_Z, ActionEvent.CTRL_MASK));
         defineMenuItem(menu, "Redo", ResourceManager.REDO_ICON, KeyEvent.VK_R, COMMAND_REDO, KeyStroke.getKeyStroke( KeyEvent.VK_Y, ActionEvent.CTRL_MASK));
         menu.addSeparator();
@@ -548,6 +550,7 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
 
         // Build the VIEW menu.
         menu = new JMenu("View");
+        menu.setMnemonic('V');
         defineMenuItem(menu, "Synchronize tree", ResourceManager.REFRESH_ICON, KeyEvent.VK_R, COMMAND_REFRESH, KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0));
         menu.addSeparator();
         defineCheckboxMenuItem(menu, "Hierarchy", null, KeyEvent.VK_H, COMMAND_VIEW_HIERARCHY, null, false);
@@ -558,17 +561,19 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
 
         // Build the EXECUTION menu.
         menu = new JMenu("Execution");
+        menu.setMnemonic('x');
         defineMenuItem(menu, "Run", ResourceManager.RUN_ICON, KeyEvent.VK_R, COMMAND_RUN, KeyStroke.getKeyStroke(KeyEvent.VK_F9, 0));
         defineMenuItem(menu, "Pause", ResourceManager.PAUSE_ICON, KeyEvent.VK_R, COMMAND_PAUSE, null);
         defineMenuItem(menu, "Stop", ResourceManager.STOP_ICON, KeyEvent.VK_S, COMMAND_STOP, null);
         menu.addSeparator();
-        defineMenuItem(menu, "Define Run Parameters", ResourceManager.RUN_PARAMS_ICON, KeyEvent.VK_P, COMMAND_RUNPARAMS, KeyStroke.getKeyStroke(KeyEvent.VK_F12, 0));
+        defineMenuItem(menu, "Define Run Parameters", ResourceManager.RUN_PARAMS_ICON, KeyEvent.VK_P, COMMAND_RUNPARAMS, KeyStroke.getKeyStroke(KeyEvent.VK_F11, 0));
         menu.addSeparator();
-        defineMenuItem(menu, "Settings...", ResourceManager.SETTINGS_ICON, KeyEvent.VK_T, COMMAND_SETTINGS, null);
+        defineMenuItem(menu, "Settings...", ResourceManager.SETTINGS_ICON, KeyEvent.VK_T, COMMAND_SETTINGS, KeyStroke.getKeyStroke(KeyEvent.VK_F12, 0));
         menuBar.add(menu);
 
         // Build the HELP menu.
         menu = new JMenu("Help");
+        menu.setMnemonic('H');
         defineMenuItem(menu, "Help", ResourceManager.HELP_ICON, KeyEvent.VK_H, COMMAND_UNDERDEVELOPMENT, null);
         menu.addSeparator();
         defineMenuItem(menu, "Program Homepage", ResourceManager.HOMEPAGE_ICON, KeyEvent.VK_H, COMMAND_HOMEPAGE, null);
