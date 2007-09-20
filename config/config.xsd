@@ -303,6 +303,7 @@
 			<xs:element name="exit">
 				<xs:complexType>
 					<xs:attribute name="condition"/>
+					<xs:attribute name="message"/>
 					<xs:attribute name="id"/>
 				</xs:complexType>
 			</xs:element>
