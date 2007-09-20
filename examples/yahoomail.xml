@@ -10,6 +10,9 @@
 		numOfPages (integer)
 -->
 
+	<exit condition='${!sys.isVariableDefined("username")}' message="No username provided!" />
+	<exit condition='${!sys.isVariableDefined("password")}' message="No password provided!" />
+
 	<var-def name="onlyUnread" overwrite="false">false</var-def>
 	<var-def name="numOfPages" overwrite="false">10</var-def>
 

@@ -550,6 +550,8 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
         }
 
         int status = scraper.getStatus();
+        final String message = scraper.getMessage();
+        
         if (status == Scraper.STATUS_FINISHED) {
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
@@ -561,6 +563,13 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
                     DialogHelper.showWarningMessage("Configuration \"" + configDocument.getName() + "\" aborted by user!");
+                    ide.setTabIcon(ConfigPanel.this, ResourceManager.SMALL_FINISHED_ICON);
+                }
+            });
+        } else if ( status == Scraper.STATUS_EXIT && message != null && !"".equals(message.trim()) ) {
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    DialogHelper.showWarningMessage("Configuration exited: " + message);
                     ide.setTabIcon(ConfigPanel.this, ResourceManager.SMALL_FINISHED_ICON);
                 }
             });

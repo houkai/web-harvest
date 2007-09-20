@@ -83,7 +83,7 @@ abstract public class BaseProcessor {
     public AbstractVariable run(Scraper scraper, ScraperContext context) {
         int scraperStatus = scraper.getStatus();
 
-        if (scraperStatus == Scraper.STATUS_STOPPED) {
+        if (scraperStatus == Scraper.STATUS_STOPPED || scraperStatus == Scraper.STATUS_EXIT) {
             return EmptyVariable.INSTANCE;
         }
 

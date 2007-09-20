@@ -96,7 +96,7 @@ public class DefinitionResolver {
         elementInfos.put( "try", new ElementInfo("try", TryDef.class, "!body,!catch", "id") );
         elementInfos.put( "catch", new ElementInfo("catch", BaseElementDef.class, null, "id") );
         elementInfos.put( "script", new ElementInfo("script", ScriptDef.class, null, "id,language,return") );
-        elementInfos.put( "exit", new ElementInfo("exit", ExitDef.class, "", "id,condition") );
+        elementInfos.put( "exit", new ElementInfo("exit", ExitDef.class, "", "id,condition,message") );
     }
 
     /**

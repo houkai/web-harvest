@@ -63,6 +63,7 @@ public class Scraper {
     public static final int STATUS_FINISHED = 3;
     public static final int STATUS_STOPPED = 4;
     public static final int STATUS_ERROR = 5;
+    public static final int STATUS_EXIT = 6;
 
     private Logger logger = Logger.getLogger("" + System.currentTimeMillis());
     private ScraperConfiguration configuration;
@@ -99,6 +100,8 @@ public class Scraper {
     private List scraperRuntimeListeners = new LinkedList();
 
     private int status = STATUS_READY;
+
+    private String message = null;
 
     /**
      * Constructor.
@@ -326,6 +329,15 @@ public class Scraper {
         setStatus(STATUS_STOPPED);
     }
 
+    public void exitExecution(String message) {
+        setStatus(STATUS_EXIT);
+        this.message = message;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
     public void pauseExecution() {
         if (this.status == STATUS_RUNNING) {
             setStatus(STATUS_PAUSED);
@@ -392,5 +404,5 @@ public class Scraper {
             engine.dispose();
         }
     }
-    
+
 }

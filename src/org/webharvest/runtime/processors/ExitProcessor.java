@@ -24,15 +24,18 @@ public class ExitProcessor extends BaseProcessor {
     }
 
     public AbstractVariable execute(Scraper scraper, ScraperContext context) {
-        AbstractVariable body = getBodyTextContent(exitDef, scraper, context);
-
         String condition = BaseTemplater.execute( exitDef.getCondition(), scraper.getScriptEngine());
         if ( condition == null || "".equals(condition) ) {
             condition = "true";
         }
 
         if (CommonUtil.isBooleanTrue(condition)) {
-            scraper.stopExecution();
+            String message = BaseTemplater.execute( exitDef.getMessage(), scraper.getScriptEngine());
+            if (message == null) {
+                message = "";
+            }
+            scraper.exitExecution(message);
+            scraper.getLogger().info("Configuration exited: " + message);
         }
 
         return new EmptyVariable();
