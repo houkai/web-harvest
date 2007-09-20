@@ -41,6 +41,12 @@ public class AboutWindow extends JWindow implements HyperlinkListener {
                 AboutWindow.this.setVisible(false);
             }
         });
+        htmlPane.addKeyListener(new KeyAdapter() {
+            public void keyPressed(KeyEvent e) {
+                setVisible(false);
+            }
+        });
+
         try {
             htmlPane.setPage( ResourceManager.getAboutUrl() );
         } catch (IOException e) {
@@ -49,19 +55,6 @@ public class AboutWindow extends JWindow implements HyperlinkListener {
         contentPane.add(htmlPane, BorderLayout.CENTER);
 
         this.pack();
-    }
-
-    protected JRootPane createRootPane() {
-        KeyStroke stroke = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
-        JRootPane rootPane = new JRootPane();
-        ActionListener actionListener = new ActionListener() {
-            public void actionPerformed(ActionEvent actionEvent) {
-                setVisible(false);
-            }
-        };
-        rootPane.registerKeyboardAction(actionListener, stroke, JComponent.WHEN_IN_FOCUSED_WINDOW);
-
-        return rootPane;
     }
 
     public Dimension getPreferredSize() {
