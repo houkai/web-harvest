@@ -89,4 +89,8 @@ public class ResourceManager {
         return clazz.getResource("resources/welcome.html");
     }
 
+    public static URL getAboutUrl() {
+        return clazz.getResource("resources/about.html");
+    }
+
 }

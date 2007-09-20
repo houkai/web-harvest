@@ -52,6 +52,7 @@ import javax.xml.transform.stream.StreamResult;
 import java.io.*;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.net.URL;
 import java.util.*;
 
 /**
@@ -477,6 +478,24 @@ public class CommonUtil {
         } else {
             return new NodeVariable(value);
         }
+    }
+
+    /**
+     * Reads content from specified URL
+     * @param url
+     * @throws IOException
+     * @return Read content as string.
+     */
+    public static String readStringFromUrl(URL url) throws IOException {
+        StringBuffer buffer = new StringBuffer();
+    	BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
+    	String inputLine;
+        while ((inputLine = in.readLine()) != null) {
+            buffer.append(inputLine);
+        }
+        in.close();
+
+        return buffer.toString();
     }
 
 }

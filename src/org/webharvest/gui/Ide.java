@@ -42,11 +42,9 @@ package org.webharvest.gui;
  */
 
 import org.webharvest.runtime.Scraper;
-import org.webharvest.utils.Constants;
 import org.webharvest.gui.component.GCPanel;
 
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
@@ -114,6 +112,9 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
 
     // find/replace dialog box
     private FindReplaceDialog findReplaceDialog;
+
+    // about dialog
+    private AboutWindow aboutWindow = new AboutWindow(this);
 
     // working settings
     Settings settings = new Settings();
@@ -723,7 +724,8 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
         } else if ( COMMAND_SETTINGS.equals(cmd) ) {
             defineSettings();
         } else if ( COMMAND_ABOUT.equals(cmd) ) {
-            JOptionPane.showMessageDialog(this, "Web-Harvest version " + Constants.WEB_HARVEST_VERSION, "Status", JOptionPane.INFORMATION_MESSAGE);
+//            JOptionPane.showMessageDialog(this, "Web-Harvest version " + Constants.WEB_HARVEST_VERSION, "Status", JOptionPane.INFORMATION_MESSAGE);
+            this.aboutWindow.open();
         } else if ( COMMAND_HOMEPAGE.equals(cmd) ) {
             openURLInBrowser("http://web-harvest.sourceforge.net");
         } else if ( COMMAND_EXIT.equals(cmd) ) {
@@ -839,7 +841,7 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
      * Opens specified URL in default system's browser.
      * @param url
      */
-    private void openURLInBrowser(String url) {
+    public void openURLInBrowser(String url) {
         String osName = System.getProperty("os.name");
         try {
             if (osName.startsWith("Mac OS")) {

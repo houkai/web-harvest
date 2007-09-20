@@ -36,6 +36,9 @@ public class AutoCompleter {
     // popup window look & feel
     private static final Color BG_COLOR = new Color(235, 244, 254);
 
+    // popup font
+    private static final Font POPUP_FONT = new Font("Monospaced", Font.PLAIN, 12);
+
     /**
      * Class that provides listener for key events inside completer popup menu.
      */
@@ -71,7 +74,11 @@ public class AutoCompleter {
     private JPopupMenu popupMenu = new JPopupMenu();
 
     // auto-completer list model
-    private DefaultListModel model = new DefaultListModel();
+    private DefaultListModel model = new DefaultListModel() {
+        public void addElement(Object obj) {
+            super.addElement(" " + obj + " ");
+        }
+    };
 
     // auto completer list
     private JList list = new JList(model);
@@ -96,6 +103,7 @@ public class AutoCompleter {
         this.xmlPane = xmlPane;
 
         this.list.setBackground(BG_COLOR);
+        this.list.setFont(POPUP_FONT);
         this.list.setSelectionMode(ListSelectionModel .SINGLE_SELECTION);
         this.list.addKeyListener(new CompleterKeyListener());
         this.list.addMouseListener(new MouseAdapter() {
@@ -272,6 +280,7 @@ public class AutoCompleter {
     public void doComplete() {
         String selectedValue = (String) list.getSelectedValue();
         if (selectedValue != null) {
+            selectedValue = selectedValue.trim();
             try {
                 if (this.context == TAG_CONTEXT) {
                     completeTag(selectedValue);
