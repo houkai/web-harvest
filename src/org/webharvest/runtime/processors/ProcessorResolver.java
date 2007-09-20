@@ -92,6 +92,8 @@ public class ProcessorResolver {
 	    	return new TryProcessor( (TryDef)elementDef );
 	    } else if (elementDef instanceof ScriptDef) {
 	    	return new ScriptProcessor( (ScriptDef)elementDef );
+	    } else if (elementDef instanceof ExitDef) {
+	    	return new ExitProcessor( (ExitDef)elementDef );
 	    }
 
         return null;
