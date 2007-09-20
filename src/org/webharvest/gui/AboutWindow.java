@@ -1,15 +1,15 @@
 package org.webharvest.gui;
 
-import org.webharvest.utils.CommonUtil;
-
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import javax.swing.text.html.HTMLEditorKit;
-import javax.swing.text.BadLocationException;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
 
 public class AboutWindow extends JWindow implements HyperlinkListener {
@@ -37,7 +37,7 @@ public class AboutWindow extends JWindow implements HyperlinkListener {
         htmlPane.setBorder(new LineBorder(Color.gray));
         htmlPane.addHyperlinkListener(this);
         htmlPane.addMouseListener(new MouseAdapter() {
-            public void mousePressed(MouseEvent e) {
+            public void mouseClicked(MouseEvent e) {
                 AboutWindow.this.setVisible(false);
             }
         });
@@ -46,7 +46,6 @@ public class AboutWindow extends JWindow implements HyperlinkListener {
                 setVisible(false);
             }
         });
-
         try {
             htmlPane.setPage( ResourceManager.getAboutUrl() );
         } catch (IOException e) {

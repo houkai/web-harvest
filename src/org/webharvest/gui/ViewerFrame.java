@@ -329,6 +329,7 @@ public class ViewerFrame extends JFrame implements DropDownButtonListener, Actio
 
         // image view
         this.imagePanel = new JPanel(new BorderLayout());
+        this.imagePanel.setBackground(Color.white);
         this.imageLabel = new JLabel("", JLabel.CENTER);
         this.imagePanel.add(imageLabel, BorderLayout.CENTER);
         this.cardPanel.add( new JScrollPane(this.imagePanel), String.valueOf(IMAGE_VIEW) );

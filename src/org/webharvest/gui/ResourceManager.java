@@ -93,4 +93,14 @@ public class ResourceManager {
         return clazz.getResource("resources/about.html");
     }
 
+    public static String getResourcesRootURL() {
+        URL url = clazz.getResource("");
+        String urlString = url != null ? url.toString() : "";
+        if ( !urlString.endsWith("/") && !urlString.endsWith("\\") ) {
+            urlString += "/"; 
+        }
+
+        return urlString;
+    }
+
 }
