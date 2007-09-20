@@ -12,8 +12,6 @@
 	<var-def name="tags" overwrite="false">art</var-def>
 	<var-def name="num" overwrite="false">1</var-def>
 	
-	<template>http://www.flickr.com/photos/tags/${tag}/</template>
-	
     <loop index="i" item="url">
     	<list>
 		    <var-def name="imagelinks">    
@@ -28,7 +26,7 @@
 		<body>
 			<empty>
 				<file action="write" path='flickr/${tags.toString().replaceAll(" ", "")}/${i}.jpg' type="binary">
-					<http url='${url.toString().replace("_m.jpg", ".jpg?v=0")}'/>
+					<http url='${url.toString().replaceFirst("_m.jpg", ".jpg?v=0")}'/>
 				</file>
 			</empty>
 		</body>

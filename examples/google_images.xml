@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<!--
+	Expects following initial variable: 
+		search - search expression
+-->
+
 <config charset="UTF-8">
 
     <include path="functions.xml"/>
 
     <!-- defines search keyword and start URL -->
-    <var-def name="search">platon</var-def>
+    <var-def name="search" overwrite="false">platon</var-def>
+    
     <var-def name="url">
         <xpath expression="//noscript//a/@href[1]">
             <html-to-xml>

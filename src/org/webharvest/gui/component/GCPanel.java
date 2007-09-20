@@ -89,6 +89,8 @@ public class GCPanel extends JPanel {
 
         public void paint(Graphics g) {
             Color color = g.getColor();
+            g.setColor(Color.white);
+            g.fillRect(0, 0, getWidth(), getHeight());
             g.setColor(new Color(160, 176, 228));
             int width = (int) (getWidth() * getPercentOfUsedMemory());
             g.fillRect(0, 0, width, getHeight());

@@ -115,7 +115,7 @@ public class HttpProcessor extends BaseProcessor {
         this.setProperty("URL", url);
         this.setProperty("Method", method);
         this.setProperty("Charset", charset);
-        this.setProperty("Content length", contentLength + "B");
+        this.setProperty("Content length", String.valueOf(contentLength));
         this.setProperty("Status code", new Integer(res.getStatusCode()));
         this.setProperty("Status text", res.getStatusText());
 

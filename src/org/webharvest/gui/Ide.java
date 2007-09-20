@@ -609,7 +609,7 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
         setCommandEnabled(COMMAND_RUN, configPanel != null && configPanel.getScraperStatus() != Scraper.STATUS_RUNNING);
         setCommandEnabled(COMMAND_PAUSE, configPanel != null && configPanel.getScraperStatus() == Scraper.STATUS_RUNNING);
         setCommandEnabled(COMMAND_STOP, configPanel != null && configPanel.getScraperStatus() == Scraper.STATUS_RUNNING);
-        setCommandEnabled(COMMAND_RUNPARAMS, configPanel != null && configPanel.getScraperStatus() != Scraper.STATUS_RUNNING);
+        setCommandEnabled(COMMAND_RUNPARAMS, configPanel != null);
 
         setCommandEnabled(COMMAND_UNDO, configPanel != null);
         setCommandEnabled(COMMAND_REDO, configPanel != null); 
