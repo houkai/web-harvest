@@ -80,6 +80,11 @@ public class ResourceManager {
     public static final Icon SMALL_FINISHED_ICON = getIcon("resources/icons/small_finished.gif");
     public static final Icon SMALL_VIEW_ICON = getIcon("resources/icons/small_view.gif");
     public static final Icon SMALL_TRASHCAN_ICON = getIcon("resources/icons/trashcan.gif");
+    public static final Icon TEXTTYPE_ICON = getIcon("resources/icons/text_type.gif");
+    public static final Icon XMLTYPE_ICON = getIcon("resources/icons/xml_type.gif");
+    public static final Icon HTMLTYPE_ICON = getIcon("resources/icons/html_type.gif");
+    public static final Icon IMAGETYPE_ICON = getIcon("resources/icons/image_type.gif");
+    public static final Icon LISTTYPE_ICON = getIcon("resources/icons/list_type.gif");
 
     public static Icon getIcon(String path) {
         return new ImageIcon(clazz.getResource(path));

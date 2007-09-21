@@ -173,11 +173,11 @@ public class ViewerFrame extends JFrame implements DropDownButtonListener, Actio
         toolBar.addSeparator(new Dimension(10, 0));
 
         DropDownButton viewTypeButton = new DropDownButton();
-        viewTypeButton.addMenuItem( new JMenuItem("Text  ") );
-        viewTypeButton.addMenuItem( new JMenuItem("XML  ") );
-        viewTypeButton.addMenuItem( new JMenuItem("HTML  ") );
-        viewTypeButton.addMenuItem( new JMenuItem("Image  ") );
-        viewTypeButton.addMenuItem( new JMenuItem("List  ") );
+        viewTypeButton.addMenuItem( new JMenuItem("Text  ", ResourceManager.TEXTTYPE_ICON) );
+        viewTypeButton.addMenuItem( new JMenuItem("XML  ", ResourceManager.XMLTYPE_ICON) );
+        viewTypeButton.addMenuItem( new JMenuItem("HTML  ", ResourceManager.HTMLTYPE_ICON) );
+        viewTypeButton.addMenuItem( new JMenuItem("Image  ", ResourceManager.IMAGETYPE_ICON) );
+        viewTypeButton.addMenuItem( new JMenuItem("List  ", ResourceManager.LISTTYPE_ICON) );
         viewTypeButton.changeSelectedTo(viewIndex);
         viewTypeButton.addListener(this);
         toolBar.add( new JLabel(" View as: ") );
