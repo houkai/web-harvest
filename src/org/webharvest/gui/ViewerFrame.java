@@ -36,30 +36,28 @@
 */
 package org.webharvest.gui;
 
-import org.bounce.text.ScrollableEditorPanel;
+import net.sf.saxon.trans.XPathException;
 import org.webharvest.gui.component.DropDownButton;
 import org.webharvest.gui.component.DropDownButtonListener;
 import org.webharvest.gui.component.ProportionalSplitPane;
+import org.webharvest.runtime.RuntimeConfig;
 import org.webharvest.runtime.variables.AbstractVariable;
 import org.webharvest.runtime.variables.ListVariable;
-import org.webharvest.runtime.RuntimeConfig;
-import org.webharvest.utils.Constants;
+import org.webharvest.utils.CommonUtil;
 import org.webharvest.utils.XmlUtil;
 import org.webharvest.utils.XmlValidator;
-import org.webharvest.utils.CommonUtil;
 import org.xml.sax.InputSource;
 
 import javax.swing.*;
-import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.JTextComponent;
+import javax.swing.text.html.HTMLEditorKit;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.StringReader;
-import java.util.*;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import net.sf.saxon.trans.XPathException;
 
 /**
  * @author: Vladimir Nikic
@@ -316,7 +314,6 @@ public class ViewerFrame extends JFrame implements DropDownButtonListener, Actio
         splitPane.setTopComponent( new XmlEditorScrollPane(xmlPane, false) );
         splitPane.setBottomComponent(xpathPanel);
         splitPane.setDividerLocation(0.75d);
-        splitPane.setDividerSize(Constants.SPLITTER_WIDTH);
 
         this.cardPanel.add(splitPane , String.valueOf(XML_VIEW) );
 

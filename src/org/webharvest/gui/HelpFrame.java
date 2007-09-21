@@ -34,21 +34,55 @@
     nikic_vladimir@yahoo.com. Please include the word "Web-Harvest" in the
     subject line.
 */
-package org.webharvest.utils;
+package org.webharvest.gui;
 
-public class Constants {
+import org.webharvest.gui.component.ProportionalSplitPane;
 
-    public static final String WEB_HARVEST_VERSION = "1.0";
-    public static final String WEB_HARVEST_DATE = "10th October, 2007";
+import javax.swing.*;
+import javax.swing.text.html.HTMLEditorKit;
+import java.awt.*;
 
-    public static final String WELCOME_ADDITION_URL = "http://web-harvest.sourceforge.net/welcome_add.xml";
+/**
+ * Frame that contains Web-Harvest help.
+ * @author: Vladimir Nikic
+ * Date: May 8, 2007
+ */
+public class HelpFrame extends JFrame {
 
-    public static final int DEFAULT_MAX_LOOPS = 1000000000;
+    private static final Dimension HELP_FRAME_DIMENSION = new Dimension(640, 480);
 
-    public static final String VALUE_PROPERTY_NAME = "[Value]";
-    public static final String EXECUTION_TIME_PROPERTY_NAME = "[Execution Time]";
+    /**
+     * Constructor - creates layout.
+     */
+    public HelpFrame() {
+        setTitle("Web-Harvest Help");
+        setIconImage( ((ImageIcon) ResourceManager.HELP_ICON).getImage() );
 
-    // size of splitter pane dividers
-    public static final int SPLITTER_WIDTH = 3;
+        JPanel treePanel = new JPanel();
+        treePanel.setBackground(Color.white);
+        
+        JEditorPane htmlPane = new JEditorPane();
+        htmlPane.setEditable(false);
+        htmlPane.setContentType("text/html");
+        htmlPane.setEditorKit( new HTMLEditorKit() );
+        htmlPane.setBorder(null);
+
+        JSplitPane splitPane = new ProportionalSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+        splitPane.setResizeWeight(1.0d);
+        splitPane.setBorder(null);
+        splitPane.setLeftComponent( new JScrollPane(treePanel) );
+        splitPane.setRightComponent(new JScrollPane(htmlPane));
+        splitPane.setDividerLocation(0.3d);
+
+        Container contentPane = getContentPane();
+        contentPane.setLayout(new BorderLayout());
+        contentPane.add(splitPane, BorderLayout.CENTER);
+
+        pack();
+    }
+
+    public Dimension getPreferredSize() {
+        return HELP_FRAME_DIMENSION;
+    }
 
 }

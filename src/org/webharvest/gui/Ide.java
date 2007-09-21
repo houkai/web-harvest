@@ -122,6 +122,8 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
     // popup menu for XML editor panes
     private JPopupMenu editorPopupMenu;
 
+    private HelpFrame helpFrame;
+
     /**
      * Constructor.
      */
@@ -869,8 +871,14 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
         }
     }
 
+    /**
+     * Opens help window.
+     */
     public void showHelp() {
-        JOptionPane.showMessageDialog(this, "Under development!", "Info", JOptionPane.INFORMATION_MESSAGE);
+        if (helpFrame == null) {
+            helpFrame = new HelpFrame();
+        }
+        helpFrame.setVisible(true);
     }
 
 }
