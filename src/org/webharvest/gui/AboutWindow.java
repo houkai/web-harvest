@@ -1,20 +1,25 @@
 package org.webharvest.gui;
 
+import org.webharvest.utils.CommonUtil;
+import org.webharvest.utils.Constants;
+
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 import javax.swing.text.html.HTMLEditorKit;
+import javax.swing.text.html.HTMLDocument;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
+import java.net.URL;
 
 public class AboutWindow extends JWindow implements HyperlinkListener {
 
-    private static final Dimension WINDOW_DIMENSION = new Dimension(300, 200);
+    private static final Dimension WINDOW_DIMENSION = new Dimension(350, 280);
 
     // Ide instance where this dialog belongs.
     private Ide ide;
@@ -34,7 +39,7 @@ public class AboutWindow extends JWindow implements HyperlinkListener {
         htmlPane.setEditable(false);
         htmlPane.setContentType("text/html");
         htmlPane.setEditorKit( new HTMLEditorKit() );
-        htmlPane.setBorder(new LineBorder(Color.gray));
+        htmlPane.setBorder(new LineBorder(Color.black));
         htmlPane.addHyperlinkListener(this);
         htmlPane.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
@@ -46,11 +51,20 @@ public class AboutWindow extends JWindow implements HyperlinkListener {
                 setVisible(false);
             }
         });
+
         try {
-            htmlPane.setPage( ResourceManager.getAboutUrl() );
+            URL aboutUrl = ResourceManager.getAboutUrl();
+            String content = CommonUtil.readStringFromUrl(aboutUrl);
+            content = content.replaceAll("#program.version#", Constants.WEB_HARVEST_VERSION);
+            content = content.replaceAll("#program.date#", Constants.WEB_HARVEST_DATE);
+            content = content.replaceAll("#java.version#", System.getProperty("java.version"));
+            content = content.replaceAll("#java.vendor#", System.getProperty("java.vendor"));
+            ((HTMLDocument)htmlPane.getDocument()).setBase(ResourceManager.getAboutUrl());
+            htmlPane.setText(content);
         } catch (IOException e) {
             e.printStackTrace();
         }
+
         contentPane.add(htmlPane, BorderLayout.CENTER);
 
         this.pack();

@@ -86,7 +86,7 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
     private static final String COMMAND_SETTINGS = "settings";
     private static final String COMMAND_ABOUT = "about";
     private static final String COMMAND_HOMEPAGE = "homepage";
-    private static final String COMMAND_UNDERDEVELOPMENT = "underdevelopment";
+    private static final String COMMAND_HELP = "help";
 
     {
         try {
@@ -575,7 +575,7 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
         // Build the HELP menu.
         menu = new JMenu("Help");
         menu.setMnemonic('H');
-        defineMenuItem(menu, "Help", ResourceManager.HELP_ICON, KeyEvent.VK_H, COMMAND_UNDERDEVELOPMENT, null);
+        defineMenuItem(menu, "Help", ResourceManager.HELP_ICON, KeyEvent.VK_H, COMMAND_HELP, KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0));
         menu.addSeparator();
         defineMenuItem(menu, "Program Homepage", ResourceManager.HOMEPAGE_ICON, KeyEvent.VK_H, COMMAND_HOMEPAGE, null);
         menu.addSeparator();
@@ -730,8 +730,8 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
             openURLInBrowser("http://web-harvest.sourceforge.net");
         } else if ( COMMAND_EXIT.equals(cmd) ) {
             exitApplication();
-        } else if ( COMMAND_UNDERDEVELOPMENT.equals(cmd) ) {
-            JOptionPane.showMessageDialog(this, "Under development!", "Info", JOptionPane.INFORMATION_MESSAGE);
+        } else if ( COMMAND_HELP.equals(cmd) ) {
+            showHelp();
         } else if ( COMMAND_UNDO.equals(cmd) ) {
             ConfigPanel activeConfigPanel = getActiveConfigPanel();
             if (activeConfigPanel != null) {
@@ -867,6 +867,10 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
         } catch (Exception e) {
             DialogHelper.showErrorMessage( "Error attempting to launch web browser" + ":\n" + e.getLocalizedMessage() );
         }
+    }
+
+    public void showHelp() {
+        JOptionPane.showMessageDialog(this, "Under development!", "Info", JOptionPane.INFORMATION_MESSAGE);
     }
 
 }

@@ -36,12 +36,29 @@
 */
 package org.webharvest.gui;
 
+import org.webharvest.utils.CommonUtil;
+import org.webharvest.utils.Constants;
+import org.webharvest.definition.XmlParser;
+import org.webharvest.definition.XmlNode;
+import org.xml.sax.InputSource;
+
 import javax.swing.*;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
+import javax.swing.event.DocumentListener;
+import javax.swing.event.DocumentEvent;
 import javax.swing.text.html.HTMLEditorKit;
+import javax.swing.text.html.HTMLDocument;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
 import java.awt.*;
 import java.io.IOException;
+import java.io.StringReader;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeEvent;
+import java.net.URL;
+import java.net.MalformedURLException;
+import java.util.Iterator;
 
 /**
  * @author: Vladimir Nikic
@@ -51,6 +68,7 @@ public class WelcomePanel extends JPanel implements HyperlinkListener {
 
     // parent IDE
     private Ide ide;
+    private JEditorPane htmlPane;
 
     /**
      * Constructor.
@@ -60,14 +78,19 @@ public class WelcomePanel extends JPanel implements HyperlinkListener {
         this.ide = ide;
 
         setLayout(new BorderLayout(0, 0));
-        JEditorPane htmlPane = new JEditorPane();
+        htmlPane = new JEditorPane();
         htmlPane.setEditable(false);
         htmlPane.setContentType("text/html");
         htmlPane.setEditorKit( new HTMLEditorKit() );
         htmlPane.setBorder(null);
         htmlPane.addHyperlinkListener(this);
+
         try {
-            htmlPane.setPage( ResourceManager.getWelcomeUrl() );
+            URL welcomeUrl = ResourceManager.getWelcomeUrl();
+            String content = CommonUtil.readStringFromUrl(welcomeUrl);
+            content = content.replaceAll("#program.version#", Constants.WEB_HARVEST_VERSION);
+            ((HTMLDocument)htmlPane.getDocument()).setBase(ResourceManager.getWelcomeUrl());
+            htmlPane.setText(content);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -75,6 +98,33 @@ public class WelcomePanel extends JPanel implements HyperlinkListener {
         JScrollPane scrollPane = new JScrollPane(htmlPane);
         scrollPane.setBorder(null);
         this.add(scrollPane, BorderLayout.CENTER);
+
+        new Thread() {
+            public void run() {
+                downloadAddition();
+            }
+        }.start();
+    }
+
+    private synchronized void downloadAddition() {
+        try {
+            String content = CommonUtil.readStringFromUrl( new URL(Constants.WELCOME_ADDITION_URL) );
+            XmlNode node = XmlParser.parse(new InputSource(new StringReader(content)));
+            String startValue = (String) node.get("start[0]._value");
+            String endValue = (String) node.get("end[0]._value");
+            if ( (startValue != null && !"".equals(startValue.trim())) || (endValue != null && !"".equals(endValue.trim())) ) {
+                URL welcomeUrl = ResourceManager.getWelcomeUrl();
+                String htmlPaneContent = CommonUtil.readStringFromUrl(welcomeUrl);
+                htmlPaneContent = htmlPaneContent.replaceAll("#program.version#", Constants.WEB_HARVEST_VERSION);
+                htmlPaneContent = htmlPaneContent.replaceAll("<!--start-->", startValue);
+                htmlPaneContent = htmlPaneContent.replaceAll("<!--end-->", endValue);
+                ((HTMLDocument)htmlPane.getDocument()).setBase(ResourceManager.getWelcomeUrl());
+                htmlPane.setText(htmlPaneContent);
+            }
+        } catch (Exception e) {
+            System.out.println("Error reading welcome addon from the site: " + e.getMessage());
+        }
+
     }
 
     public void hyperlinkUpdate(HyperlinkEvent e) {
@@ -87,9 +137,13 @@ public class WelcomePanel extends JPanel implements HyperlinkListener {
                 ide.openConfigFromFile();
             } else if ("#settings".equalsIgnoreCase(url)) {
                 ide.defineSettings();
+            } else if ("#help".equalsIgnoreCase(url)) {
+                ide.showHelp();
             } else if (url.toLowerCase().startsWith("download:")) {
                 String exampleUrl = url.substring(9);
                 ide.openConfigFromUrl(exampleUrl);
+            } else {
+                ide.openURLInBrowser(url);
             }
         }
     }
