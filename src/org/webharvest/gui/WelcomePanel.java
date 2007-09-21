@@ -110,14 +110,39 @@ public class WelcomePanel extends JPanel implements HyperlinkListener {
         try {
             String content = CommonUtil.readStringFromUrl( new URL(Constants.WELCOME_ADDITION_URL) );
             XmlNode node = XmlParser.parse(new InputSource(new StringReader(content)));
+            String versionValue = (String) node.get("version[0].number");
+            String versionMessage = (String) node.get("version[0]._value");
             String startValue = (String) node.get("start[0]._value");
             String endValue = (String) node.get("end[0]._value");
-            if ( (startValue != null && !"".equals(startValue.trim())) || (endValue != null && !"".equals(endValue.trim())) ) {
+
+            boolean hasStart = startValue != null && !"".equals(startValue.trim());
+            boolean hasEnd = endValue != null && !"".equals(endValue.trim());
+            boolean hasVersion = versionValue != null && !"".equals(versionValue.trim());
+            boolean hasVersionMessage = versionMessage != null && !"".equals(versionMessage.trim());
+            boolean isThereNewVersion = false;
+            if (hasVersion && hasVersionMessage) {
+                try {
+                    double currVersion = Double.parseDouble(Constants.WEB_HARVEST_VERSION);
+                    double serverVersion = Double.parseDouble(versionValue);
+                    isThereNewVersion = serverVersion > currVersion;
+                } catch(NumberFormatException e) {
+                    isThereNewVersion = false;
+                }
+            }
+
+            if (hasStart || hasEnd || isThereNewVersion) {
                 URL welcomeUrl = ResourceManager.getWelcomeUrl();
                 String htmlPaneContent = CommonUtil.readStringFromUrl(welcomeUrl);
                 htmlPaneContent = htmlPaneContent.replaceAll("#program.version#", Constants.WEB_HARVEST_VERSION);
-                htmlPaneContent = htmlPaneContent.replaceAll("<!--start-->", startValue);
-                htmlPaneContent = htmlPaneContent.replaceAll("<!--end-->", endValue);
+                if (isThereNewVersion) {
+                    htmlPaneContent = htmlPaneContent.replaceAll("<!--version-->", versionMessage);
+                }
+                if (hasStart) {
+                    htmlPaneContent = htmlPaneContent.replaceAll("<!--start-->", startValue);
+                }
+                if (hasEnd) {
+                    htmlPaneContent = htmlPaneContent.replaceAll("<!--end-->", endValue);
+                }
                 ((HTMLDocument)htmlPane.getDocument()).setBase(ResourceManager.getWelcomeUrl());
                 htmlPane.setText(htmlPaneContent);
             }
