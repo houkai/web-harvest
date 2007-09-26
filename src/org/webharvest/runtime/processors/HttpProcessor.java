@@ -95,7 +95,9 @@ public class HttpProcessor extends BaseProcessor {
         String mimeType = res.getMimeType();
 
         long contentLength = res.getContentLength();
-        scraper.getLogger().info("Downloaded: " + url + ", mime type = " + mimeType + ", length = " + contentLength + "B.");
+        if ( scraper.getLogger().isInfoEnabled() ) {
+            scraper.getLogger().info("Downloaded: " + url + ", mime type = " + mimeType + ", length = " + contentLength + "B.");
+        }
 
         AbstractVariable result;
         

@@ -132,7 +132,9 @@ public class FileProcessor extends BaseProcessor {
         if ( Types.TYPE_BINARY.equalsIgnoreCase(type) ) {
             try {
                 byte[] data = CommonUtil.readBytesFromFile(new File(fullPath));
-                scraper.getLogger().info("Binary file read processor: " + data.length + " bytes read.");
+                if ( scraper.getLogger().isInfoEnabled() ) {
+                    scraper.getLogger().info("Binary file read processor: " + data.length + " bytes read.");
+                }
                 return new NodeVariable(data);
             } catch (IOException e) {
                 throw new FileException("Error reading file: " + fullPath, e);
@@ -140,7 +142,9 @@ public class FileProcessor extends BaseProcessor {
         } else {
             try {
                 String content = CommonUtil.readStringFromFile(new File(fullPath), charset);
-                scraper.getLogger().info( "Text file read processor: " + (content == null ? 0 : content.length()) + " characters read." );
+                if ( scraper.getLogger().isInfoEnabled() ) {
+                    scraper.getLogger().info( "Text file read processor: " + (content == null ? 0 : content.length()) + " characters read." );
+                }
                 return new NodeVariable(content);
             } catch (IOException e) {
                 throw new FileException("Error reading the file: " + fullPath, e);

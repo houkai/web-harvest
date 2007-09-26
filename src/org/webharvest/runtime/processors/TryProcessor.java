@@ -63,7 +63,9 @@ public class TryProcessor extends BaseProcessor {
 
             return result;
         } catch(BaseException e) {
-        	scraper.getLogger().info("Exception caught with try processor: " + e.getMessage());
+            if ( scraper.getLogger().isInfoEnabled() ) {
+                scraper.getLogger().info("Exception caught with try processor: " + e.getMessage());
+            }
             BaseElementDef catchValueDef = tryDef.getCatchValueDef();
             AbstractVariable result = new BodyProcessor(catchValueDef).run(scraper, context);
             debug(catchValueDef, scraper, result);

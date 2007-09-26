@@ -184,10 +184,12 @@ public class Scraper {
             listener.onExecutionEnd(this);
         }
 
-        if (this.status == STATUS_FINISHED) {
-            logger.info("Configuration executed in " + (System.currentTimeMillis() - startTime) + "ms.");
-        } else if (this.status == STATUS_STOPPED) {
-            logger.info("Configuration stopped!");
+        if ( logger.isInfoEnabled() ) {
+            if (this.status == STATUS_FINISHED) {
+                logger.info("Configuration executed in " + (System.currentTimeMillis() - startTime) + "ms.");
+            } else if (this.status == STATUS_STOPPED) {
+                logger.info("Configuration stopped!");
+            }
         }
     }
     

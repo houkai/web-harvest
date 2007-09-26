@@ -91,7 +91,9 @@ abstract public class BaseProcessor {
             SimpleDateFormat dateFormatter = new SimpleDateFormat("HH:mm:ss.SSS");
             try {
                 synchronized(scraper) {
-                    scraper.getLogger().info("Execution paused [" + dateFormatter.format(new Date()) + "].");
+                    if ( scraper.getLogger().isInfoEnabled() ) {
+                        scraper.getLogger().info("Execution paused [" + dateFormatter.format(new Date()) + "].");
+                    }
                     scraper.wait();
                 }
             } catch (InterruptedException e) {
@@ -99,7 +101,9 @@ abstract public class BaseProcessor {
             }
 
             scraper.continueExecution();
-            scraper.getLogger().info("Execution continued [" + dateFormatter.format(new Date()) + "].");
+            if ( scraper.getLogger().isInfoEnabled() ) {
+                scraper.getLogger().info("Execution continued [" + dateFormatter.format(new Date()) + "].");
+            }
         }
 
         long startTime = System.currentTimeMillis();
@@ -112,7 +116,9 @@ abstract public class BaseProcessor {
 
         setProperty("ID", id);
 
-        scraper.getLogger().info(indent + CommonUtil.getClassName(this) + " starts processing..." + idDesc);
+        if ( scraper.getLogger().isInfoEnabled() ) {
+            scraper.getLogger().info(indent + CommonUtil.getClassName(this) + " starts processing..." + idDesc);
+        }
 
         scraper.increaseRunningLevel();
         scraper.setExecutingProcessor(this);
@@ -130,7 +136,9 @@ abstract public class BaseProcessor {
             writeDebugFile(result, id, scraper);
         }
 
-        scraper.getLogger().info(indent + CommonUtil.getClassName(this) + " processor executed in " + executionTime + "ms." + idDesc);
+        if ( scraper.getLogger().isInfoEnabled() ) {
+            scraper.getLogger().info(indent + CommonUtil.getClassName(this) + " processor executed in " + executionTime + "ms." + idDesc);
+        }
 
         return result;
     }

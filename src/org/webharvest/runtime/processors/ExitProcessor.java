@@ -35,7 +35,9 @@ public class ExitProcessor extends BaseProcessor {
                 message = "";
             }
             scraper.exitExecution(message);
-            scraper.getLogger().info("Configuration exited: " + message);
+            if ( scraper.getLogger().isInfoEnabled() ) {
+                scraper.getLogger().info("Configuration exited: " + message);
+            }
         }
 
         return new EmptyVariable();
