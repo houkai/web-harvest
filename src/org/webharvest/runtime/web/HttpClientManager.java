@@ -236,8 +236,9 @@ public class HttpClientManager {
             Iterator it = params.iterator();
             while (it.hasNext()) {
                 NameValuePair pair = (NameValuePair) it.next();
+                String value = pair.getValue();
                 try {
-                    urlParams += pair.getName() + "=" + URLEncoder.encode(pair.getValue(), charset) + "&";
+                    urlParams += pair.getName() + "=" + URLEncoder.encode(value == null ? "" : value, charset) + "&";
                 } catch (UnsupportedEncodingException e) {
                     throw new org.webharvest.exception.HttpException("Charset " + charset + " is not supported!", e);
                 }

@@ -103,6 +103,7 @@
 					<xs:attribute name="allowmultiwordattributes"/>
 					<xs:attribute name="allowhtmlinsideattributes"/>
 					<xs:attribute name="namespacesaware"/>
+					<xs:attribute name="prunetags"/>
 					<xs:attribute name="id"/>
 				</xs:complexType>
 			</xs:element>

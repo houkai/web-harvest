@@ -135,6 +135,11 @@ public class HtmlToXmlProcessor extends BaseProcessor {
             cleaner.setNamespacesAware(false);
         }
 
+        final String pruneTags = BaseTemplater.execute(htmlToXmlDef.getPrunetags(), scriptEngine);
+        if ( pruneTags != null) {
+            cleaner.setPruneTags(pruneTags);
+        }
+
         String outputType = BaseTemplater.execute(htmlToXmlDef.getOutputType(), scriptEngine);;
 
         try {

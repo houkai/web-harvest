@@ -439,7 +439,17 @@ public class CommonUtil {
     public static String fullUrl(String pageUrl, String link) {
     	if ( isFullUrl(link) ) {
     		return link;
-    	}
+    	} else if ( link != null && link.startsWith("?") ) {
+            int qindex = pageUrl.indexOf('?');
+            int len = pageUrl.length();
+            if (qindex < 0) {
+                return pageUrl + link;
+            } else if (qindex == len - 1) {
+                return pageUrl.substring(0, len - 1) + link;
+            } else {
+                return pageUrl + "&" + link.substring(1);
+            }
+        }
     	
     	boolean isLinkAbsolute = link.startsWith("/");
     	

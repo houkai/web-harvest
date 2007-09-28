@@ -55,6 +55,7 @@ public class HtmlToXmlDef extends BaseElementDef {
     private String allowMultiWordAttributes;
     private String allowHtmlInsideAttributes;
     private String namespacesAware;
+    private String prunetags;
 
     public HtmlToXmlDef(XmlNode xmlNode) {
         super(xmlNode);
@@ -73,6 +74,7 @@ public class HtmlToXmlDef extends BaseElementDef {
         this.allowMultiWordAttributes = (String) xmlNode.get("allowmultiwordattributes");
         this.allowHtmlInsideAttributes = (String) xmlNode.get("allowhtmlinsideattributes");
         this.namespacesAware = (String) xmlNode.get("namespacesaware");
+        this.prunetags = (String) xmlNode.get("prunetags");
     }
 
     public String getShortElementName() {
@@ -133,6 +135,10 @@ public class HtmlToXmlDef extends BaseElementDef {
 
     public String getNamespacesAware() {
         return namespacesAware;
+    }
+
+    public String getPrunetags() {
+        return prunetags;
     }
 
 }
