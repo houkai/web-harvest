@@ -99,20 +99,7 @@ public class XmlParser extends DefaultHandler {
     public void characters(char[] ch, int start, int length) throws SAXException {
         XmlNode currNode = getCurrentNode();
         if (currNode != null) {
-            String value = new String(ch, start, length).trim();
-            String text = currNode.getText();
-            if (text == null) {
-                text = value;
-            } else {
-                text += " " + value;
-            }
-            currNode.setText(text);
-            if (!"".equals(value)) {
-                StringTokenizer tokenizer = new StringTokenizer(value, "\n\r");
-                while (tokenizer.hasMoreTokens()) {
-                    currNode.addElement(tokenizer.nextToken());
-                }
-            }
+            currNode.addElement( new String(ch, start, length) );
         }
     }
     
@@ -134,6 +121,7 @@ public class XmlParser extends DefaultHandler {
 
     public void endElement(String uri, String localName, String qName) throws SAXException {
         if (elementStack.size() > 0) {
+            getCurrentNode().flushText();
             elementStack.pop();
         }
     }

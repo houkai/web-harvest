@@ -164,17 +164,6 @@ abstract public class BaseProcessor {
         }
     }
 
-    protected AbstractVariable runBodyTextContent(BaseElementDef elementDef, Scraper scraper, ScraperContext context) {
-        if (elementDef == null) {
-            return null;
-        } else if (elementDef.hasOperations()) {
-            AbstractVariable body = new BodyProcessor(elementDef).run(scraper, context);
-            return Appender.appendText(body);
-        } else {
-            return new NodeVariable(elementDef.getBodyText());
-        }
-    }
-
     protected AbstractVariable getBodyTextContent(BaseElementDef elementDef, Scraper scraper, ScraperContext context,
                                            boolean registerExecution, KeyValuePair properties[]) {
         if (elementDef == null) {
@@ -187,7 +176,7 @@ abstract public class BaseProcessor {
                 }
             }
             AbstractVariable body = registerExecution ?  bodyProcessor.run(scraper, context) :  bodyProcessor.execute(scraper, context);
-            return Appender.appendText(body);
+            return new NodeVariable( body == null ? "" : body.toString() );
         } else {
             return new NodeVariable(elementDef.getBodyText());
         }

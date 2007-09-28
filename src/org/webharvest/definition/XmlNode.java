@@ -39,7 +39,6 @@ package org.webharvest.definition;
 import org.apache.log4j.Logger;
 import org.xml.sax.InputSource;
 
-import java.io.InputStream;
 import java.util.*;
 
 public class XmlNode extends HashMap {
@@ -61,8 +60,11 @@ public class XmlNode extends HashMap {
 	// all subelements in the form of linear list
 	private List elementList = new ArrayList();
 
-	// text value
-	private String text;
+	// textBuff value
+	private StringBuffer textBuff = new StringBuffer();
+
+	// text buffer containing continuous text 
+	private transient StringBuffer tmpBuf = new StringBuffer();
 
     // location of element in the XML
     private int lineNumbwe;
@@ -124,10 +126,10 @@ public class XmlNode extends HashMap {
 	}
 
 	/**
-	 * @return Node text.
+	 * @return Node textBuff.
 	 */
 	public String getText() {
-		return text;
+		return textBuff == null ? null : textBuff.toString();
 	}
 
 	/**
@@ -192,7 +194,7 @@ public class XmlNode extends HashMap {
 		}
 
 		if (sKey.equalsIgnoreCase("_value")) {
-			return text;
+			return getText();
 		} else if (this.containsKey(key)) {
 			return super.get(key);
 		} else {
@@ -226,7 +228,9 @@ public class XmlNode extends HashMap {
 	 * @param elementNode
 	 */
 	public void addElement(XmlNode elementNode) {
-		String elementName = elementNode.getName();
+        flushText();
+        
+        String elementName = elementNode.getName();
 
 		if (!this.containsKey(elementName)) {
 			this.put(elementName, new ArrayList());
@@ -239,25 +243,35 @@ public class XmlNode extends HashMap {
 	}
 
     /**
-     * Adds new text to element list
+     * Adds new textBuff to element list
      * @param value
      */
     public void addElement(String value) {
-        elementList.add(value);
+        tmpBuf.append(value);
+    }
+
+    void flushText() {
+        String value = tmpBuf.toString();
+        if (!"".equals(value)) {
+            StringTokenizer tokenizer = new StringTokenizer(value, "\n\r");
+            while (tokenizer.hasMoreTokens()) {
+                String token = tokenizer.nextToken().trim();
+                if (token.length() != 0) {
+                    elementList.add(token);
+                    if (textBuff.length() > 0) {
+                        textBuff.append('\n');
+                    }
+                    textBuff.append(token);
+                }
+            }
+            tmpBuf.delete( 0, tmpBuf.length() );
+        }
     }
 
 
     public Object getElement(String name) {
         return super.get(name);
     }
-
-    /**
-	 * Sets node's text value.
-	 * @param text
-	 */
-	protected void setText(String text) {
-		this.text = text;
-	}
 
     public List getElementList() {
         return elementList;
@@ -275,7 +289,7 @@ public class XmlNode extends HashMap {
 		for (int i = 0; i < level; i++) {
 			System.out.print("     ");
 		}
-		System.out.print(name + ": " + attributes + ": TEXT = [" + text + "]\n");
+		System.out.print(name + ": " + attributes + ": TEXT = [" + textBuff + "]\n");
 
 		Iterator it = elementList.iterator();
 		while (it.hasNext()) {

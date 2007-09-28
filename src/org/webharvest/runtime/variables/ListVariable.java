@@ -76,7 +76,13 @@ public class ListVariable extends AbstractVariable {
             Iterator it = list.iterator();
             while (it.hasNext()) {
                 AbstractVariable var = (AbstractVariable) it.next();
-                buffer.append(var.toString());
+                String value = var.toString().trim();
+                if (value.length() != 0) {
+                    if (buffer.length() != 0) {
+                        buffer.append('\n');
+                    }
+                    buffer.append(value);
+                }
             }
 
             cachedStringRepresentation = buffer.toString();

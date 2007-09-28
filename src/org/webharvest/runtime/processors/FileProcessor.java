@@ -48,6 +48,7 @@ import org.webharvest.utils.CommonUtil;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Iterator;
 
 /**
  * File processor.
@@ -106,7 +107,7 @@ public class FileProcessor extends BaseProcessor {
 
             if ( Types.TYPE_BINARY.equalsIgnoreCase(type) ) {
                 AbstractVariable bodyListVar = new BodyProcessor(fileDef).execute(scraper, context);
-                result = Appender.appendBinary(bodyListVar);
+                result = appendBinary(bodyListVar);
                 data = result.toBinary();
             } else {
                 AbstractVariable body = getBodyTextContent(fileDef, scraper, context);
@@ -151,5 +152,32 @@ public class FileProcessor extends BaseProcessor {
             }
         }
     }
+
+    public NodeVariable appendBinary(AbstractVariable body) {
+        if (body == null) {
+            return new NodeVariable("");
+        }
+
+        byte[] result = null;
+
+        Iterator iterator = body.toList().iterator();
+        while (iterator.hasNext()) {
+            AbstractVariable currVariable =  (AbstractVariable) iterator.next();
+            byte bytes[] = currVariable.toBinary();
+            if (bytes != null) {
+                if (result == null) {
+                    result = bytes;
+                } else {
+                    byte[] newResult = new byte[result.length + bytes.length];
+                    System.arraycopy(result, 0, newResult, 0, result.length);
+                    System.arraycopy(bytes, 0, newResult, result.length, bytes.length);
+                    result = newResult;
+                }
+            }
+        }
+
+        return new NodeVariable(result);
+    }
+
 
 }
