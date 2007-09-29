@@ -50,11 +50,18 @@ import org.webharvest.runtime.web.HttpResponseWrapper;
 
 import java.io.UnsupportedEncodingException;
 import java.util.*;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
+import java.nio.charset.Charset;
+import java.nio.charset.IllegalCharsetNameException;
 
 /**
  * Http processor.
  */
 public class HttpProcessor extends BaseProcessor {
+
+    private static final String HTML_META_CHARSET_REGEX =
+        "(<meta\\s*http-equiv\\s*=\\s*(\"|')content-type(\"|')\\s*content\\s*=\\s*(\"|')text/html;\\s*charset\\s*=\\s*(.*?)(\"|')/?>)";
 
     private HttpDef httpDef;
     
@@ -103,28 +110,49 @@ public class HttpProcessor extends BaseProcessor {
         Variable result;
 
         String responseCharset = res.getCharset();
-        
+        byte[] responseBody = res.getBody();
+
         if (mimeType == null || mimeType.toLowerCase().indexOf("text") == 0) {
-            String text;
+            String text = "";
             try {
-                // if not explicitely dedfined charset in http processor, then prefere
-                // reponse's charset over default conffiguration's
-                if (specifiedCharset == null && responseCharset != null) {
-                    charset = responseCharset;
+                // resolvs charset in the following way:
+                //    1. if explicitely defined as charset attribute in http processor, then use it
+                //    2. if it is HTML document, reads first KB from response's body as ASCII stream
+                //       and tries to find meta tag with specified charset
+                //    3. use charset from response's header
+                //    4. uses default charset for the configuration
+                if (specifiedCharset == null) {
+                    if (responseCharset != null) {
+                        charset = responseCharset;
+                    }
+                    if ( "text/html".equalsIgnoreCase(res.getMimeType()) ) {
+                        String firstBodyKb = new String(responseBody, 0, Math.min(responseBody.length, 1024), "ASCII");
+                        Matcher matcher = Pattern.compile(HTML_META_CHARSET_REGEX, Pattern.CASE_INSENSITIVE).matcher(firstBodyKb);
+                        if (matcher.find()) {
+                            String foundCharset = matcher.group(5);
+                            try {
+                                if (Charset.isSupported(foundCharset)) {
+                                    charset = foundCharset;
+                                }
+                            } catch(IllegalCharsetNameException e) {
+                                // do nothing - charset will not be set here
+                            }
+                        }
+                    }
                 }
-                text = new String(res.getBody(), charset);
+                text = new String(responseBody, charset);
             } catch (UnsupportedEncodingException e) {
                 throw new HttpException("Charset " + charset + " is not supported!", e);
             }
             
             result =  new NodeVariable(text);
         } else {
-            result = new NodeVariable( res.getBody() );
+            result = new NodeVariable(responseBody);
         }
 
         this.setProperty("URL", url);
         this.setProperty("Method", method);
-        this.setProperty("Charset", res.getCharset());
+        this.setProperty("Charset", charset);
         this.setProperty("Content length", String.valueOf(contentLength));
         this.setProperty("Status code", new Integer(res.getStatusCode()));
         this.setProperty("Status text", res.getStatusText());
@@ -147,6 +175,17 @@ public class HttpProcessor extends BaseProcessor {
     
     protected void addHttpHeader(String name, String value) {
     	httpHeaderMap.put(name, value);
+    }
+
+    public static void main(String[] args) {
+        String s = "aaaaa<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">aaaaa";
+        String regex = "(<meta\\s*http-equiv\\s*=\\s*(\"|')content-type(\"|')\\s*content\\s*=\\s*(\"|')text/html;\\s*charset\\s*=\\s*(.*)(\"|')/?>)";
+
+        Matcher matcher = Pattern.compile(regex, Pattern.CASE_INSENSITIVE).matcher(s);
+        if (matcher.find()) {
+            String charset = matcher.group(5);
+            System.out.println("--->" + charset);
+        }
     }
 
 }
