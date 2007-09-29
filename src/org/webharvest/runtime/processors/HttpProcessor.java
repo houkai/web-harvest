@@ -72,10 +72,12 @@ public class HttpProcessor extends BaseProcessor {
         ScriptEngine scriptEngine = scraper.getScriptEngine();
         String url = BaseTemplater.execute( httpDef.getUrl(), scriptEngine);
         String method = BaseTemplater.execute( httpDef.getMethod(), scriptEngine);
-        String charset = BaseTemplater.execute( httpDef.getCharset(), scriptEngine);
+        String specifiedCharset = BaseTemplater.execute( httpDef.getCharset(), scriptEngine);
         String username = BaseTemplater.execute( httpDef.getUsername(), scriptEngine);
         String password = BaseTemplater.execute( httpDef.getPassword(), scriptEngine);
         String cookiePolicy = BaseTemplater.execute( httpDef.getCookiePolicy(), scriptEngine);
+
+        String charset = specifiedCharset;
 
         if (charset == null) {
             charset = scraper.getConfiguration().getCharset();
@@ -99,10 +101,17 @@ public class HttpProcessor extends BaseProcessor {
         }
 
         Variable result;
+
+        String responseCharset = res.getCharset();
         
         if (mimeType == null || mimeType.toLowerCase().indexOf("text") == 0) {
             String text;
             try {
+                // if not explicitely dedfined charset in http processor, then prefere
+                // reponse's charset over default conffiguration's
+                if (specifiedCharset == null && responseCharset != null) {
+                    charset = responseCharset;
+                }
                 text = new String(res.getBody(), charset);
             } catch (UnsupportedEncodingException e) {
                 throw new HttpException("Charset " + charset + " is not supported!", e);
@@ -115,7 +124,7 @@ public class HttpProcessor extends BaseProcessor {
 
         this.setProperty("URL", url);
         this.setProperty("Method", method);
-        this.setProperty("Charset", charset);
+        this.setProperty("Charset", res.getCharset());
         this.setProperty("Content length", String.valueOf(contentLength));
         this.setProperty("Status code", new Integer(res.getStatusCode()));
         this.setProperty("Status text", res.getStatusText());
