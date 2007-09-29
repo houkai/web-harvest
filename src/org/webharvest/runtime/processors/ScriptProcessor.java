@@ -42,7 +42,7 @@ import org.webharvest.runtime.ScraperContext;
 import org.webharvest.runtime.templaters.BaseTemplater;
 import org.webharvest.runtime.scripting.ScriptEngine;
 import org.webharvest.runtime.variables.EmptyVariable;
-import org.webharvest.runtime.variables.AbstractVariable;
+import org.webharvest.runtime.variables.Variable;
 import org.webharvest.utils.CommonUtil;
 
 /**
@@ -59,8 +59,8 @@ public class ScriptProcessor extends BaseProcessor {
         this.scriptDef = scriptDef;
     }
 
-    public AbstractVariable execute(Scraper scraper, ScraperContext context) {
-        AbstractVariable scriptText = getBodyTextContent(scriptDef, scraper, context);
+    public Variable execute(Scraper scraper, ScraperContext context) {
+        Variable scriptText = getBodyTextContent(scriptDef, scraper, context);
 
         String language = BaseTemplater.execute( scriptDef.getLanguage(), scraper.getScriptEngine());
         if (language != null) {

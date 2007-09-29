@@ -42,7 +42,7 @@ import java.util.List;
 /**
  * Node variable - Single node wrapper.
  */
-public class NodeVariable extends AbstractVariable {
+public class NodeVariable extends Variable {
 
     private Object data;
 

@@ -44,7 +44,7 @@ import org.webharvest.runtime.processors.CallProcessor;
 import org.webharvest.runtime.processors.HttpProcessor;
 import org.webharvest.runtime.processors.ProcessorResolver;
 import org.webharvest.runtime.scripting.ScriptEngine;
-import org.webharvest.runtime.variables.AbstractVariable;
+import org.webharvest.runtime.variables.Variable;
 import org.webharvest.runtime.variables.NodeVariable;
 import org.webharvest.runtime.web.HttpClientManager;
 import org.webharvest.utils.CommonUtil;
@@ -145,7 +145,7 @@ public class Scraper {
         }
     }
 
-    public AbstractVariable execute(List ops) {
+    public Variable execute(List ops) {
         this.setStatus(STATUS_RUNNING);
 
         // inform al listeners that execution is just about to start
@@ -221,7 +221,7 @@ public class Scraper {
         this.functionParams.clear();
     }
 
-    public void addFunctionParam(String name, AbstractVariable value) {
+    public void addFunctionParam(String name, Variable value) {
         this.functionParams.put(name, value);
     }
 

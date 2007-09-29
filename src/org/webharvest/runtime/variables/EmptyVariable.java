@@ -42,7 +42,7 @@ import java.util.List;
 /**
  * Empty variable.
  */
-public class EmptyVariable extends AbstractVariable {
+public class EmptyVariable extends Variable {
 
     public static final EmptyVariable INSTANCE = new EmptyVariable();
 

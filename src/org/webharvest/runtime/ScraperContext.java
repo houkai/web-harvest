@@ -36,8 +36,7 @@
 */
 package org.webharvest.runtime;
 
-import org.webharvest.runtime.variables.AbstractVariable;
-import org.webharvest.runtime.web.HttpClientManager;
+import org.webharvest.runtime.variables.Variable;
 import org.webharvest.utils.Catalog;
 import org.webharvest.utils.CommonUtil;
 import org.webharvest.utils.SystemUtilities;
@@ -57,12 +56,12 @@ public class ScraperContext extends Catalog {
         this.put("http", scraper.getHttpClientManager().getHttpInfo());
     }
 	
-	public AbstractVariable getVar(String name) {
-		return (AbstractVariable) this.get(name);
+	public Variable getVar(String name) {
+		return (Variable) this.get(name);
     }
 
     public Object setVar(Object key, Object value) {
-        AbstractVariable var = CommonUtil.createVariable(value);
+        Variable var = CommonUtil.createVariable(value);
         return super.put( key, var);
     }
 

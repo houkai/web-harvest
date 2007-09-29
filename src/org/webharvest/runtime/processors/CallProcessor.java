@@ -44,7 +44,7 @@ import org.webharvest.runtime.Scraper;
 import org.webharvest.runtime.ScraperContext;
 import org.webharvest.runtime.scripting.ScriptEngine;
 import org.webharvest.runtime.templaters.BaseTemplater;
-import org.webharvest.runtime.variables.AbstractVariable;
+import org.webharvest.runtime.variables.Variable;
 import org.webharvest.runtime.variables.NodeVariable;
 
 /**
@@ -57,7 +57,7 @@ public class CallProcessor extends BaseProcessor {
     ScraperContext functionContext;
     ScriptEngine scriptEngine;
 
-    private AbstractVariable functionResult = new NodeVariable("");
+    private Variable functionResult = new NodeVariable("");
 
     public CallProcessor(CallDef callDef, ScraperConfiguration configuration, Scraper scraper) {
         super(callDef);
@@ -66,7 +66,7 @@ public class CallProcessor extends BaseProcessor {
         this.callDef = callDef;
     }
 
-    public AbstractVariable execute(Scraper scraper, ScraperContext context) {
+    public Variable execute(Scraper scraper, ScraperContext context) {
         String functionName = BaseTemplater.execute( callDef.getName(), scraper.getScriptEngine() );
         FunctionDef functionDef = scraper.getConfiguration().getFunctionDef(functionName);
 
@@ -95,11 +95,11 @@ public class CallProcessor extends BaseProcessor {
         return functionResult;
     }
 
-    public void setFunctionResult(AbstractVariable result) {
+    public void setFunctionResult(Variable result) {
         this.functionResult = result;
     }
     
-    public void addContextVariable(String name, AbstractVariable variable) {
+    public void addContextVariable(String name, Variable variable) {
 
     }
 

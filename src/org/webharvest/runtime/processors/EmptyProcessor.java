@@ -40,7 +40,7 @@ import org.webharvest.definition.EmptyDef;
 import org.webharvest.runtime.Scraper;
 import org.webharvest.runtime.ScraperContext;
 import org.webharvest.runtime.variables.EmptyVariable;
-import org.webharvest.runtime.variables.AbstractVariable;
+import org.webharvest.runtime.variables.Variable;
 
 /**
  * Empty processor = executes body and returns empty variable.
@@ -54,7 +54,7 @@ public class EmptyProcessor extends BaseProcessor {
         this.emptyDef = emptyDef;
     }
 
-    public AbstractVariable execute(Scraper scraper, ScraperContext context) {
+    public Variable execute(Scraper scraper, ScraperContext context) {
     	new BodyProcessor(emptyDef).execute(scraper, context);
 
 		return new EmptyVariable();

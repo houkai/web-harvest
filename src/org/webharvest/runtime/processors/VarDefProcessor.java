@@ -40,7 +40,7 @@ import org.webharvest.definition.VarDefDef;
 import org.webharvest.runtime.Scraper;
 import org.webharvest.runtime.ScraperContext;
 import org.webharvest.runtime.templaters.BaseTemplater;
-import org.webharvest.runtime.variables.AbstractVariable;
+import org.webharvest.runtime.variables.Variable;
 import org.webharvest.utils.CommonUtil;
 
 /**
@@ -55,8 +55,8 @@ public class VarDefProcessor extends BaseProcessor {
         this.varDef = varDef;
     }
 
-    public AbstractVariable execute(Scraper scraper, ScraperContext context) {
-        AbstractVariable var = new BodyProcessor(varDef).execute(scraper, context);
+    public Variable execute(Scraper scraper, ScraperContext context) {
+        Variable var = new BodyProcessor(varDef).execute(scraper, context);
         
         String name = BaseTemplater.execute( varDef.getName(), scraper.getScriptEngine() );
         String overwrite = BaseTemplater.execute( varDef.getOverwrite(), scraper.getScriptEngine() );

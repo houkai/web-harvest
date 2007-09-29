@@ -51,7 +51,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.LinkedHashMap;
 import java.text.SimpleDateFormat;
 
@@ -61,7 +60,7 @@ import java.text.SimpleDateFormat;
  */
 abstract public class BaseProcessor {
 
-    abstract public AbstractVariable execute(Scraper scraper, ScraperContext context);
+    abstract public Variable execute(Scraper scraper, ScraperContext context);
 
     protected BaseElementDef elementDef;
     private Map properties = new LinkedHashMap();
@@ -80,7 +79,7 @@ abstract public class BaseProcessor {
     /**
      * Wrapper for the execute method. Adds controling and logging logic.
      */
-    public AbstractVariable run(Scraper scraper, ScraperContext context) {
+    public Variable run(Scraper scraper, ScraperContext context) {
         int scraperStatus = scraper.getStatus();
 
         if (scraperStatus == Scraper.STATUS_STOPPED || scraperStatus == Scraper.STATUS_EXIT) {
@@ -122,7 +121,7 @@ abstract public class BaseProcessor {
 
         scraper.increaseRunningLevel();
         scraper.setExecutingProcessor(this);
-        AbstractVariable result = execute(scraper, context);
+        Variable result = execute(scraper, context);
         long executionTime = System.currentTimeMillis() - startTime;
 
         setProperty(Constants.EXECUTION_TIME_PROPERTY_NAME, new Long(executionTime));
@@ -154,7 +153,7 @@ abstract public class BaseProcessor {
         }
     }
 
-    protected void debug(BaseElementDef elementDef, Scraper scraper, AbstractVariable variable) {
+    protected void debug(BaseElementDef elementDef, Scraper scraper, Variable variable) {
         String id = (elementDef != null) ? BaseTemplater.execute( elementDef.getId(), scraper.getScriptEngine() ) : null;
 
         if (scraper.isDebugMode() && id != null) {
@@ -164,7 +163,7 @@ abstract public class BaseProcessor {
         }
     }
 
-    protected AbstractVariable getBodyTextContent(BaseElementDef elementDef, Scraper scraper, ScraperContext context,
+    protected Variable getBodyTextContent(BaseElementDef elementDef, Scraper scraper, ScraperContext context,
                                            boolean registerExecution, KeyValuePair properties[]) {
         if (elementDef == null) {
             return null;
@@ -175,18 +174,18 @@ abstract public class BaseProcessor {
                     bodyProcessor.setProperty(properties[i].getKey(), properties[i].getValue());
                 }
             }
-            AbstractVariable body = registerExecution ?  bodyProcessor.run(scraper, context) :  bodyProcessor.execute(scraper, context);
+            Variable body = registerExecution ?  bodyProcessor.run(scraper, context) :  bodyProcessor.execute(scraper, context);
             return new NodeVariable( body == null ? "" : body.toString() );
         } else {
             return new NodeVariable(elementDef.getBodyText());
         }
     }
 
-    protected AbstractVariable getBodyTextContent(BaseElementDef elementDef, Scraper scraper, ScraperContext context, boolean registerExecution) {
+    protected Variable getBodyTextContent(BaseElementDef elementDef, Scraper scraper, ScraperContext context, boolean registerExecution) {
         return getBodyTextContent(elementDef, scraper, context, registerExecution, null);
     }
 
-    protected AbstractVariable getBodyTextContent(BaseElementDef elementDef, Scraper scraper, ScraperContext context) {
+    protected Variable getBodyTextContent(BaseElementDef elementDef, Scraper scraper, ScraperContext context) {
         return getBodyTextContent(elementDef, scraper, context, false);
     }
 
@@ -194,7 +193,7 @@ abstract public class BaseProcessor {
         return elementDef;
     }
 
-    private void writeDebugFile(AbstractVariable var, String processorId, Scraper scraper) {
+    private void writeDebugFile(Variable var, String processorId, Scraper scraper) {
         byte[] data = var == null ? new byte[] {} : var.toString().getBytes();
 
         String workingDir = scraper.getWorkingDir();

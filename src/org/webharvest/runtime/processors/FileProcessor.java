@@ -62,7 +62,7 @@ public class FileProcessor extends BaseProcessor {
         this.fileDef = fileDef;
     }
 
-    public AbstractVariable execute(Scraper scraper, ScraperContext context) {
+    public Variable execute(Scraper scraper, ScraperContext context) {
         String workingDir = scraper.getWorkingDir();
 
         ScriptEngine scriptEngine = scraper.getScriptEngine();
@@ -95,8 +95,8 @@ public class FileProcessor extends BaseProcessor {
      * Writing content to the specified file.
      * If parameter "append" is true, then append content, otherwise write
      */
-    private AbstractVariable executeFileWrite(boolean append, Scraper scraper, ScraperContext context, String fullPath, String type, String charset) {
-        AbstractVariable result;
+    private Variable executeFileWrite(boolean append, Scraper scraper, ScraperContext context, String fullPath, String type, String charset) {
+        Variable result;
         
         try {
         	// ensure that target directory exists
@@ -106,11 +106,11 @@ public class FileProcessor extends BaseProcessor {
             byte[] data;
 
             if ( Types.TYPE_BINARY.equalsIgnoreCase(type) ) {
-                AbstractVariable bodyListVar = new BodyProcessor(fileDef).execute(scraper, context);
+                Variable bodyListVar = new BodyProcessor(fileDef).execute(scraper, context);
                 result = appendBinary(bodyListVar);
                 data = result.toBinary();
             } else {
-                AbstractVariable body = getBodyTextContent(fileDef, scraper, context);
+                Variable body = getBodyTextContent(fileDef, scraper, context);
                 String content = body.toString();
                 data = content.getBytes(charset);
                 result = new NodeVariable(content);
@@ -129,7 +129,7 @@ public class FileProcessor extends BaseProcessor {
     /**
      * Reading the specified file.
      */
-    private AbstractVariable executeFileRead(String fullPath, String type, String charset, Scraper scraper) {
+    private Variable executeFileRead(String fullPath, String type, String charset, Scraper scraper) {
         if ( Types.TYPE_BINARY.equalsIgnoreCase(type) ) {
             try {
                 byte[] data = CommonUtil.readBytesFromFile(new File(fullPath));
@@ -153,7 +153,7 @@ public class FileProcessor extends BaseProcessor {
         }
     }
 
-    public NodeVariable appendBinary(AbstractVariable body) {
+    public NodeVariable appendBinary(Variable body) {
         if (body == null) {
             return new NodeVariable("");
         }
@@ -162,7 +162,7 @@ public class FileProcessor extends BaseProcessor {
 
         Iterator iterator = body.toList().iterator();
         while (iterator.hasNext()) {
-            AbstractVariable currVariable =  (AbstractVariable) iterator.next();
+            Variable currVariable =  (Variable) iterator.next();
             byte bytes[] = currVariable.toBinary();
             if (bytes != null) {
                 if (result == null) {

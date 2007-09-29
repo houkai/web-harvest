@@ -43,7 +43,7 @@ import org.webharvest.runtime.Scraper;
 import org.webharvest.runtime.ScraperContext;
 import org.webharvest.runtime.templaters.BaseTemplater;
 import org.webharvest.runtime.variables.EmptyVariable;
-import org.webharvest.runtime.variables.AbstractVariable;
+import org.webharvest.runtime.variables.Variable;
 import org.webharvest.utils.CommonUtil;
 
 import java.io.File;
@@ -64,7 +64,7 @@ public class IncludeProcessor extends BaseProcessor {
         this.includeDef = includeDef;
     }
 
-    public AbstractVariable execute(Scraper scraper, ScraperContext context) {
+    public Variable execute(Scraper scraper, ScraperContext context) {
         boolean isUrl = false;
         
         String path = BaseTemplater.execute( includeDef.getPath(), scraper.getScriptEngine() );

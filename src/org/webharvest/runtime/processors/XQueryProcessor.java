@@ -37,8 +37,6 @@
 package org.webharvest.runtime.processors;
 
 import net.sf.saxon.Configuration;
-import net.sf.saxon.om.Item;
-import net.sf.saxon.om.SequenceIterator;
 import net.sf.saxon.query.DynamicQueryContext;
 import net.sf.saxon.query.StaticQueryContext;
 import net.sf.saxon.query.XQueryExpression;
@@ -51,9 +49,8 @@ import org.webharvest.runtime.Scraper;
 import org.webharvest.runtime.ScraperContext;
 import org.webharvest.runtime.RuntimeConfig;
 import org.webharvest.runtime.templaters.BaseTemplater;
-import org.webharvest.runtime.variables.AbstractVariable;
+import org.webharvest.runtime.variables.Variable;
 import org.webharvest.runtime.variables.ListVariable;
-import org.webharvest.runtime.variables.NodeVariable;
 import org.webharvest.utils.CommonUtil;
 import org.webharvest.utils.KeyValuePair;
 import org.webharvest.utils.XmlUtil;
@@ -95,9 +92,9 @@ public class XQueryProcessor extends BaseProcessor {
         this.xqueryDef = xqueryDef;
     }
 
-    public AbstractVariable execute(Scraper scraper, ScraperContext context) {
+    public Variable execute(Scraper scraper, ScraperContext context) {
         BaseElementDef xqueryElementDef = xqueryDef.getXqDef();
-        AbstractVariable xq = getBodyTextContent(xqueryElementDef, scraper, context, true);
+        Variable xq = getBodyTextContent(xqueryElementDef, scraper, context, true);
         debug(xqueryElementDef, scraper, xq);
 
         String xqExpression = xq.toString().trim();
@@ -135,14 +132,14 @@ public class XQueryProcessor extends BaseProcessor {
                     Iterator it = listVar.toList().iterator();
                     List paramList = new ArrayList(); 
                     while (it.hasNext()) {
-                        AbstractVariable currVar =  (AbstractVariable) it.next();
+                        Variable currVar =  (Variable) it.next();
                         paramList.add( castSimpleValue(externalParamType, currVar, sqc) );
                     }
 
                     dynamicContext.setParameter(externalParamName, paramList);
                 } else {
                     KeyValuePair props[] = {new KeyValuePair("Name", externalParamName), new KeyValuePair("Type", externalParamType)}; 
-                    AbstractVariable var = getBodyTextContent(externalParamDef, scraper, context, true, props);
+                    Variable var = getBodyTextContent(externalParamDef, scraper, context, true, props);
 
                     debug(externalParamDef, scraper, var);
                     
@@ -165,7 +162,7 @@ public class XQueryProcessor extends BaseProcessor {
      * @return
      * @throws XPathException
      */
-    private Object castSimpleValue(String type, AbstractVariable value, StaticQueryContext sqc) throws XPathException {
+    private Object castSimpleValue(String type, Variable value, StaticQueryContext sqc) throws XPathException {
         type = type.toLowerCase();
 
         if ( type.startsWith("node()") ) {

@@ -43,7 +43,7 @@ import org.webharvest.runtime.Scraper;
 import org.webharvest.runtime.ScraperContext;
 import org.webharvest.runtime.templaters.BaseTemplater;
 import org.webharvest.runtime.variables.EmptyVariable;
-import org.webharvest.runtime.variables.AbstractVariable;
+import org.webharvest.runtime.variables.Variable;
 import org.webharvest.utils.CommonUtil;
 
 /**
@@ -58,14 +58,14 @@ public class CaseProcessor extends BaseProcessor {
         this.caseDef = caseDef;
     }
 
-    public AbstractVariable execute(Scraper scraper, ScraperContext context) {
+    public Variable execute(Scraper scraper, ScraperContext context) {
         IfDef[] ifDefs = caseDef.getIfDefs();
         
         if (ifDefs != null) {
         	for (int i = 0; i < ifDefs.length; i++) {
         		String condition = BaseTemplater.execute( ifDefs[i].getCondition(), scraper.getScriptEngine() );
         		if ( CommonUtil.isBooleanTrue(condition) ) {
-        			AbstractVariable ifResult = new BodyProcessor(ifDefs[i]).run(scraper, context);
+        			Variable ifResult = new BodyProcessor(ifDefs[i]).run(scraper, context);
                     debug(ifDefs[i], scraper, ifResult);
                     return ifResult;
                 }
@@ -74,7 +74,7 @@ public class CaseProcessor extends BaseProcessor {
 
         BaseElementDef elseDef = caseDef.getElseDef();
         if (elseDef != null) {
-        	AbstractVariable elseResult = new BodyProcessor(elseDef).run(scraper, context);
+        	Variable elseResult = new BodyProcessor(elseDef).run(scraper, context);
             debug(elseDef, scraper, elseResult);
             return elseResult;
         }

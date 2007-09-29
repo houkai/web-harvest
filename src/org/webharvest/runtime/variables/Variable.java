@@ -41,7 +41,7 @@ import java.util.*;
 /**
  * Variables Interface.
  */
-public abstract class AbstractVariable {
+public abstract class Variable {
 
     abstract public byte[] toBinary();
 

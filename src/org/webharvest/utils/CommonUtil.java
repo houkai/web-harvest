@@ -43,7 +43,7 @@ import net.sf.saxon.trans.XPathException;
 import net.sf.saxon.type.Type;
 import org.webharvest.exception.VariableException;
 import org.webharvest.runtime.variables.EmptyVariable;
-import org.webharvest.runtime.variables.AbstractVariable;
+import org.webharvest.runtime.variables.Variable;
 import org.webharvest.runtime.variables.ListVariable;
 import org.webharvest.runtime.variables.NodeVariable;
 
@@ -238,6 +238,10 @@ public class CommonUtil {
                     } else {
                         result += encodeUrlParam(definition, charset) + "&";
                     }
+                }
+
+                if( result.endsWith("&") ) {
+                    result = result.substring(0, result.length() - 1);
                 }
 
                 return result;
@@ -474,9 +478,9 @@ public class CommonUtil {
      * that wraps specified object. 
      * @param value
      */
-    public static AbstractVariable createVariable(Object value) {
-        if (value instanceof AbstractVariable) {
-            return (AbstractVariable) value;
+    public static Variable createVariable(Object value) {
+        if (value instanceof Variable) {
+            return (Variable) value;
         } else if (value == null) {
             return new EmptyVariable();
         } else if (value instanceof Collection) {

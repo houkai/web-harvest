@@ -41,7 +41,7 @@ import org.webharvest.runtime.Scraper;
 import org.webharvest.runtime.ScraperContext;
 import org.webharvest.runtime.scripting.ScriptEngine;
 import org.webharvest.runtime.templaters.BaseTemplater;
-import org.webharvest.runtime.variables.AbstractVariable;
+import org.webharvest.runtime.variables.Variable;
 import org.webharvest.runtime.variables.NodeVariable;
 
 /**
@@ -57,8 +57,8 @@ public class TemplateProcessor extends BaseProcessor {
         this.templateDef = templateDef;
     }
 
-    public AbstractVariable execute(Scraper scraper, ScraperContext context) {
-        AbstractVariable body = getBodyTextContent(templateDef, scraper, context);
+    public Variable execute(Scraper scraper, ScraperContext context) {
+        Variable body = getBodyTextContent(templateDef, scraper, context);
 
         String language = BaseTemplater.execute( templateDef.getLanguage(), scraper.getScriptEngine());
         if (language != null) {

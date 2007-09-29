@@ -42,7 +42,7 @@ import org.webharvest.runtime.Scraper;
 import org.webharvest.runtime.ScraperContext;
 import org.webharvest.runtime.scripting.ScriptEngine;
 import org.webharvest.runtime.templaters.BaseTemplater;
-import org.webharvest.runtime.variables.AbstractVariable;
+import org.webharvest.runtime.variables.Variable;
 import org.webharvest.runtime.variables.ListVariable;
 import org.webharvest.runtime.variables.NodeVariable;
 import org.webharvest.utils.CommonUtil;
@@ -66,15 +66,15 @@ public class RegexpProcessor extends BaseProcessor {
         this.regexpDef = regexpDef;
     }
 
-    public AbstractVariable execute(Scraper scraper, ScraperContext context) {
+    public Variable execute(Scraper scraper, ScraperContext context) {
         ScriptEngine scriptEngine = scraper.getScriptEngine();
 
         BaseElementDef patternDef = regexpDef.getRegexpPatternDef();
-        AbstractVariable patternVar = getBodyTextContent(patternDef, scraper, context, true);
+        Variable patternVar = getBodyTextContent(patternDef, scraper, context, true);
         debug(patternDef, scraper, patternVar);
 
         BaseElementDef sourceDef = regexpDef.getRegexpSourceDef();
-        AbstractVariable source = new BodyProcessor(sourceDef).run(scraper, context);
+        Variable source = new BodyProcessor(sourceDef).run(scraper, context);
         debug(sourceDef, scraper, source);
         
         String replace = BaseTemplater.execute( regexpDef.getReplace(), scriptEngine);
@@ -97,7 +97,7 @@ public class RegexpProcessor extends BaseProcessor {
         List bodyList = source.toList();
         Iterator it = bodyList.iterator();
         while (it.hasNext()) {
-        	AbstractVariable currVar = (AbstractVariable) it.next();
+        	Variable currVar = (Variable) it.next();
         	String text = currVar.toString();
             
             Matcher matcher = pattern.matcher(text);
@@ -119,7 +119,7 @@ public class RegexpProcessor extends BaseProcessor {
             	}
 
                 BaseElementDef resultDef = regexpDef.getRegexpResultDef();
-                AbstractVariable result = getBodyTextContent(resultDef, scraper, context, true);
+                Variable result = getBodyTextContent(resultDef, scraper, context, true);
                 debug(resultDef, scraper, result);
                 
                 String currResult = (result == null) ? matcher.group(0) : result.toString();

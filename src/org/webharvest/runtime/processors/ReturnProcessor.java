@@ -40,7 +40,7 @@ import org.webharvest.definition.ReturnDef;
 import org.webharvest.runtime.Scraper;
 import org.webharvest.runtime.ScraperContext;
 import org.webharvest.runtime.variables.EmptyVariable;
-import org.webharvest.runtime.variables.AbstractVariable;
+import org.webharvest.runtime.variables.Variable;
 
 /**
  * Function's return value processor.
@@ -54,11 +54,11 @@ public class ReturnProcessor extends BaseProcessor {
         this.returnDef = returnDef;
     }
 
-    public AbstractVariable execute(Scraper scraper, ScraperContext context) {
+    public Variable execute(Scraper scraper, ScraperContext context) {
         CallProcessor callProcessor = scraper.getRunningFunction();
 
         if (callProcessor != null) {
-            AbstractVariable returnValue = new BodyProcessor(returnDef).execute(scraper, context);
+            Variable returnValue = new BodyProcessor(returnDef).execute(scraper, context);
             callProcessor.setFunctionResult( returnValue );
         }
 

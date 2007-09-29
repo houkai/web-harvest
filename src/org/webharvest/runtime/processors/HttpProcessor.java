@@ -43,11 +43,10 @@ import org.webharvest.runtime.Scraper;
 import org.webharvest.runtime.ScraperContext;
 import org.webharvest.runtime.scripting.ScriptEngine;
 import org.webharvest.runtime.templaters.BaseTemplater;
-import org.webharvest.runtime.variables.AbstractVariable;
+import org.webharvest.runtime.variables.Variable;
 import org.webharvest.runtime.variables.NodeVariable;
 import org.webharvest.runtime.web.HttpClientManager;
 import org.webharvest.runtime.web.HttpResponseWrapper;
-import org.webharvest.runtime.web.HttpInfo;
 
 import java.io.UnsupportedEncodingException;
 import java.util.*;
@@ -67,7 +66,7 @@ public class HttpProcessor extends BaseProcessor {
         this.httpDef = httpDef;
     }
 
-    public AbstractVariable execute(Scraper scraper, ScraperContext context) {
+    public Variable execute(Scraper scraper, ScraperContext context) {
     	scraper.setRunningHttpProcessor(this);
 
         ScriptEngine scriptEngine = scraper.getScriptEngine();
@@ -99,7 +98,7 @@ public class HttpProcessor extends BaseProcessor {
             scraper.getLogger().info("Downloaded: " + url + ", mime type = " + mimeType + ", length = " + contentLength + "B.");
         }
 
-        AbstractVariable result;
+        Variable result;
         
         if (mimeType == null || mimeType.toLowerCase().indexOf("text") == 0) {
             String text;

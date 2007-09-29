@@ -38,10 +38,8 @@ package org.webharvest.utils;
 
 import org.webharvest.exception.BaseException;
 import org.webharvest.exception.ScraperXPathException;
-import org.webharvest.runtime.variables.AbstractVariable;
+import org.webharvest.runtime.variables.Variable;
 import org.webharvest.runtime.variables.NodeVariable;
-import org.webharvest.runtime.templaters.BaseTemplater;
-import org.webharvest.runtime.RuntimeConfig;
 import org.webharvest.runtime.Scraper;
 import org.webharvest.runtime.ScraperContext;
 
@@ -56,13 +54,13 @@ import net.sf.saxon.trans.XPathException;
  */
 public class SystemUtilities {
 
-    public static final AbstractVariable lf = new NodeVariable("\n");
-    public static final AbstractVariable tab = new NodeVariable("\t");
-    public static final AbstractVariable cr = new NodeVariable("\r");
-    public static final AbstractVariable space = new NodeVariable(" ");
-    public static final AbstractVariable quot = new NodeVariable("\"");
-    public static final AbstractVariable apos = new NodeVariable("\'");
-    public static final AbstractVariable backspace = new NodeVariable("\b");
+    public static final Variable lf = new NodeVariable("\n");
+    public static final Variable tab = new NodeVariable("\t");
+    public static final Variable cr = new NodeVariable("\r");
+    public static final Variable space = new NodeVariable(" ");
+    public static final Variable quot = new NodeVariable("\"");
+    public static final Variable apos = new NodeVariable("\'");
+    public static final Variable backspace = new NodeVariable("\b");
     
     private Scraper scraper;
 
@@ -92,7 +90,7 @@ public class SystemUtilities {
     public void defineVariable(String varName, Object varValue, boolean overwrite) {
         ScraperContext context = scraper.getContext();
         if (overwrite || context.get(varName) == null) {
-            AbstractVariable var = CommonUtil.createVariable(varValue);
+            Variable var = CommonUtil.createVariable(varValue);
             context.put(varName, var);
         }
     }
@@ -164,7 +162,7 @@ public class SystemUtilities {
      * @param expression
      * @param xml
      */
-    public AbstractVariable xpath(Object expression, Object xml) {
+    public Variable xpath(Object expression, Object xml) {
         if (expression == null) {
             throw new ScraperXPathException("XPath expression is null!");
         }

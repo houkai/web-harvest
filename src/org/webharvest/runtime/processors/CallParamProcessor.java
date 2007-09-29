@@ -37,11 +37,10 @@
 package org.webharvest.runtime.processors;
 
 import org.webharvest.definition.CallParamDef;
-import org.webharvest.exception.HttpException;
 import org.webharvest.runtime.Scraper;
 import org.webharvest.runtime.ScraperContext;
 import org.webharvest.runtime.templaters.BaseTemplater;
-import org.webharvest.runtime.variables.AbstractVariable;
+import org.webharvest.runtime.variables.Variable;
 
 /**
  * Variable definition http param processor.
@@ -56,9 +55,9 @@ public class CallParamProcessor extends BaseProcessor {
         this.callParamDef = callParamDef;
     }
 
-    public AbstractVariable execute(Scraper scraper, ScraperContext context) {
+    public Variable execute(Scraper scraper, ScraperContext context) {
         String name = BaseTemplater.execute( callParamDef.getName(), scraper.getScriptEngine() );
-    	AbstractVariable variable =  new BodyProcessor(callParamDef).execute(scraper, context);
+    	Variable variable =  new BodyProcessor(callParamDef).execute(scraper, context);
 
         scraper.addFunctionParam(name, variable);
         this.setProperty("Name", name);

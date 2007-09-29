@@ -41,7 +41,7 @@ import org.webharvest.definition.TryDef;
 import org.webharvest.exception.BaseException;
 import org.webharvest.runtime.Scraper;
 import org.webharvest.runtime.ScraperContext;
-import org.webharvest.runtime.variables.AbstractVariable;
+import org.webharvest.runtime.variables.Variable;
 
 /**
  * OnError processor - sets .
@@ -55,10 +55,10 @@ public class TryProcessor extends BaseProcessor {
         this.tryDef = tryDef;
     }
 
-    public AbstractVariable execute(Scraper scraper, ScraperContext context) {
+    public Variable execute(Scraper scraper, ScraperContext context) {
         try {
             BaseElementDef tryBodyDef = tryDef.getTryBodyDef();
-            AbstractVariable result = new BodyProcessor(tryBodyDef).run(scraper, context);
+            Variable result = new BodyProcessor(tryBodyDef).run(scraper, context);
             debug(tryBodyDef, scraper, result);
 
             return result;
@@ -67,7 +67,7 @@ public class TryProcessor extends BaseProcessor {
                 scraper.getLogger().info("Exception caught with try processor: " + e.getMessage());
             }
             BaseElementDef catchValueDef = tryDef.getCatchValueDef();
-            AbstractVariable result = new BodyProcessor(catchValueDef).run(scraper, context);
+            Variable result = new BodyProcessor(catchValueDef).run(scraper, context);
             debug(catchValueDef, scraper, result);
 
             return result;

@@ -44,7 +44,7 @@ import java.util.List;
 /**
  * List variable - String wrapper.
  */
-public class ListVariable extends AbstractVariable {
+public class ListVariable extends Variable {
 
     private List list;
 
@@ -61,7 +61,7 @@ public class ListVariable extends AbstractVariable {
     		Iterator it = list.iterator();
     		while (it.hasNext()) {
                 Object object = it.next();
-                AbstractVariable var = object instanceof AbstractVariable ? (AbstractVariable) object : new NodeVariable(object);
+                Variable var = object instanceof Variable ? (Variable) object : new NodeVariable(object);
     			if ( !var.isEmpty() ) {
     				this.list.add(var);
     			}
@@ -75,7 +75,7 @@ public class ListVariable extends AbstractVariable {
 
             Iterator it = list.iterator();
             while (it.hasNext()) {
-                AbstractVariable var = (AbstractVariable) it.next();
+                Variable var = (Variable) it.next();
                 String value = var.toString().trim();
                 if (value.length() != 0) {
                     if (buffer.length() != 0) {
@@ -96,7 +96,7 @@ public class ListVariable extends AbstractVariable {
         
         Iterator it = list.iterator();
         while (it.hasNext()) {
-        	AbstractVariable currVar = (AbstractVariable) it.next();
+        	Variable currVar = (Variable) it.next();
         	byte[] curr = currVar.toBinary();
         	if (curr != null) {
         		if (result == null) {
@@ -120,7 +120,7 @@ public class ListVariable extends AbstractVariable {
     public boolean isEmpty() {
         Iterator it = list.iterator();
         while (it.hasNext()) {
-            AbstractVariable var =  (AbstractVariable) it.next();
+            Variable var =  (Variable) it.next();
             if (!var.isEmpty()) {
                 return false;
             }
@@ -129,7 +129,7 @@ public class ListVariable extends AbstractVariable {
         return true;
     }
 
-    public void addVariable(AbstractVariable variable) {
+    public void addVariable(Variable variable) {
         // in order string value needs to be recached
         cachedStringRepresentation = null;
 
@@ -151,7 +151,7 @@ public class ListVariable extends AbstractVariable {
     public boolean contains(Object item) {
     	Iterator it = list.iterator();
     	while (it.hasNext()) {
-    		AbstractVariable currVariable = (AbstractVariable) it.next();
+    		Variable currVariable = (Variable) it.next();
     		if ( currVariable != null && currVariable.toString().equals(item.toString()) ) {
     			return true;
     		}

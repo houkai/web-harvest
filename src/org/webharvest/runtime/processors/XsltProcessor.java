@@ -41,7 +41,7 @@ import org.webharvest.definition.XsltDef;
 import org.webharvest.exception.XsltException;
 import org.webharvest.runtime.Scraper;
 import org.webharvest.runtime.ScraperContext;
-import org.webharvest.runtime.variables.AbstractVariable;
+import org.webharvest.runtime.variables.Variable;
 import org.webharvest.runtime.variables.NodeVariable;
 
 import javax.xml.transform.*;
@@ -62,13 +62,13 @@ public class XsltProcessor extends BaseProcessor {
         this.xsltDef = xsltDef;
     }
 
-    public AbstractVariable execute(Scraper scraper, ScraperContext context) {
+    public Variable execute(Scraper scraper, ScraperContext context) {
         BaseElementDef xsltElementDef = xsltDef.getXmlDef();
-        AbstractVariable xmlStr = getBodyTextContent(xsltElementDef, scraper, context, true);
+        Variable xmlStr = getBodyTextContent(xsltElementDef, scraper, context, true);
         debug(xsltElementDef, scraper, xmlStr);
 
         BaseElementDef stylesheetElementDef = xsltDef.getStylesheetDef();
-        AbstractVariable stylesheetStr = getBodyTextContent(stylesheetElementDef, scraper, context, true);
+        Variable stylesheetStr = getBodyTextContent(stylesheetElementDef, scraper, context, true);
         debug(stylesheetElementDef, scraper, stylesheetStr);
     	
         try {

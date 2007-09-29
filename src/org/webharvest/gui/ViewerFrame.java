@@ -41,7 +41,7 @@ import org.webharvest.gui.component.DropDownButton;
 import org.webharvest.gui.component.DropDownButtonListener;
 import org.webharvest.gui.component.ProportionalSplitPane;
 import org.webharvest.runtime.RuntimeConfig;
-import org.webharvest.runtime.variables.AbstractVariable;
+import org.webharvest.runtime.variables.Variable;
 import org.webharvest.runtime.variables.ListVariable;
 import org.webharvest.utils.CommonUtil;
 import org.webharvest.utils.XmlUtil;
@@ -461,7 +461,7 @@ public class ViewerFrame extends JFrame implements DropDownButtonListener, Actio
                 break;
             case IMAGE_VIEW:
                 if (!this.refreshed[IMAGE_VIEW]) {
-                    if (value instanceof AbstractVariable) {
+                    if (value instanceof Variable) {
                         this.imageLabel.setIcon(createImgIcon());
                     } else {
                         this.imageLabel.setIcon(null);
@@ -473,8 +473,8 @@ public class ViewerFrame extends JFrame implements DropDownButtonListener, Actio
                 break;
             case LIST_VIEW:
                 if (!this.refreshed[LIST_VIEW]) {
-                    if (value instanceof AbstractVariable) {
-                        AbstractVariable var = (AbstractVariable) value;
+                    if (value instanceof Variable) {
+                        Variable var = (Variable) value;
                         java.util.List list = var.toList();
                         String html = "<table width=\"100%\">";
                         for (int i = 0; i < list.size(); i++) {
@@ -572,7 +572,7 @@ public class ViewerFrame extends JFrame implements DropDownButtonListener, Actio
     }
 
     private ImageIcon createImgIcon() {
-        AbstractVariable var = (AbstractVariable) value;
+        Variable var = (Variable) value;
         ImageIcon imageIcon = new ImageIcon(var.toBinary());
         Image img = imageIcon.getImage();
 

@@ -41,7 +41,7 @@ import org.webharvest.exception.VariableException;
 import org.webharvest.runtime.Scraper;
 import org.webharvest.runtime.ScraperContext;
 import org.webharvest.runtime.templaters.BaseTemplater;
-import org.webharvest.runtime.variables.AbstractVariable;
+import org.webharvest.runtime.variables.Variable;
 
 /**
  * Variable definition read processor.
@@ -55,11 +55,11 @@ public class VarProcessor extends BaseProcessor {
         this.varDef = varDef;
     }
 
-    public AbstractVariable execute(Scraper scraper, ScraperContext context) {
+    public Variable execute(Scraper scraper, ScraperContext context) {
         String name = BaseTemplater.execute( varDef.getName(), scraper.getScriptEngine() );
         this.setProperty("Name", name);
 
-        AbstractVariable var = context.getVar(name);
+        Variable var = context.getVar(name);
 
         if (var == null) {
             throw new VariableException("Variable '" + name + "' is not defined!");

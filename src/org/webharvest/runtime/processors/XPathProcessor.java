@@ -43,7 +43,7 @@ import org.webharvest.runtime.RuntimeConfig;
 import org.webharvest.runtime.Scraper;
 import org.webharvest.runtime.ScraperContext;
 import org.webharvest.runtime.templaters.BaseTemplater;
-import org.webharvest.runtime.variables.AbstractVariable;
+import org.webharvest.runtime.variables.Variable;
 import org.webharvest.utils.XmlUtil;
 
 /**
@@ -58,8 +58,8 @@ public class XPathProcessor extends BaseProcessor {
         this.xpathDef = xpathDef;
     }
 
-    public AbstractVariable execute(Scraper scraper, ScraperContext context) {
-        AbstractVariable xml = getBodyTextContent(xpathDef, scraper, context);
+    public Variable execute(Scraper scraper, ScraperContext context) {
+        Variable xml = getBodyTextContent(xpathDef, scraper, context);
         String expression = BaseTemplater.execute( xpathDef.getExpression(), scraper.getScriptEngine() );
         this.setProperty("Expression", expression);
 

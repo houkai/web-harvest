@@ -43,7 +43,7 @@ import org.webharvest.runtime.ScraperContext;
 import org.webharvest.runtime.scripting.ScriptEngine;
 import org.webharvest.runtime.templaters.BaseTemplater;
 import org.webharvest.runtime.variables.EmptyVariable;
-import org.webharvest.runtime.variables.AbstractVariable;
+import org.webharvest.runtime.variables.Variable;
 import org.webharvest.runtime.variables.ListVariable;
 import org.webharvest.runtime.variables.NodeVariable;
 import org.webharvest.utils.CommonUtil;
@@ -65,7 +65,7 @@ public class LoopProcessor extends BaseProcessor {
         this.loopDef = loopDef;
     }
 
-    public AbstractVariable execute(Scraper scraper, ScraperContext context) {
+    public Variable execute(Scraper scraper, ScraperContext context) {
         ScriptEngine scriptEngine = scraper.getScriptEngine();
         String item = BaseTemplater.execute( loopDef.getItem(), scriptEngine);
         String index = BaseTemplater.execute( loopDef.getIndex(), scriptEngine);
@@ -83,21 +83,21 @@ public class LoopProcessor extends BaseProcessor {
         }
 
         BaseElementDef loopValueDef = loopDef.getLoopValueDef();
-        AbstractVariable loopValue = new BodyProcessor(loopValueDef).run(scraper, context);
+        Variable loopValue = new BodyProcessor(loopValueDef).run(scraper, context);
         debug(loopValueDef, scraper, loopValue);
 
         List resultList = new ArrayList();
 
         List list = loopValue != null ? loopValue.toList() : null;
         if (list != null) {
-            AbstractVariable itemBeforeLoop = (AbstractVariable) context.get(item);
-            AbstractVariable indexBeforeLoop = (AbstractVariable) context.get(index);
+            Variable itemBeforeLoop = (Variable) context.get(item);
+            Variable indexBeforeLoop = (Variable) context.get(index);
 
             List filteredList = filter != null ? createFilteredList(list, filter) : list;
             Iterator it = filteredList.iterator();
 
             for (int i = 1; it.hasNext() && i <= maxLoops; i++) {
-                AbstractVariable currElement = (AbstractVariable) it.next();
+                Variable currElement = (Variable) it.next();
 
                 // define current value of item variable
                 if ( item != null && !"".equals(item) ) {
@@ -111,7 +111,7 @@ public class LoopProcessor extends BaseProcessor {
 
                 // execute the loop body
                 BaseElementDef bodyDef = loopDef.getLoopBodyDef();
-                AbstractVariable loopResult = bodyDef != null ? new BodyProcessor(bodyDef).run(scraper, context) : new EmptyVariable();
+                Variable loopResult = bodyDef != null ? new BodyProcessor(bodyDef).run(scraper, context) : new EmptyVariable();
                 debug(bodyDef, scraper, loopResult);
                 resultList.addAll( loopResult.toList() );
             }
@@ -145,7 +145,7 @@ public class LoopProcessor extends BaseProcessor {
         Iterator it = list.iterator();
         int index = 1;
         while (it.hasNext()) {
-            AbstractVariable curr = (AbstractVariable) it.next();
+            Variable curr = (Variable) it.next();
 
             if (filter.isInFilter(index)) {
                 if (filter.isUnique) {
