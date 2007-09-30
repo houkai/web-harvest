@@ -244,12 +244,14 @@ public class HttpClientManager {
                 }
             }
 
-            if (url.indexOf("?") < 0) {
-                url += "?" + urlParams;
-            } else if (url.endsWith("&")) {
-                url += urlParams;
-            } else {
-                url += "&" + urlParams;
+            if (!"".equals(urlParams)) {
+                if (url.indexOf("?") < 0) {
+                    url += "?" + urlParams;
+                } else if (url.endsWith("&")) {
+                    url += urlParams;
+                } else {
+                    url += "&" + urlParams;
+                }
             }
         }
 
