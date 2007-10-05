@@ -62,6 +62,11 @@ public class HttpClientManager {
 
     public static final String DEFAULT_USER_AGENT = "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.0.1) Gecko/20060111 Firefox/1.5.0.1";
 
+    static {
+        // registers default handling for https 
+        Protocol.registerProtocol("https", new Protocol("https", new EasySSLProtocolSocketFactory(), 443));
+    }
+
     private HttpClient client;
 
     private HttpInfo httpInfo;
@@ -76,9 +81,6 @@ public class HttpClientManager {
         HttpClientParams clientParams = new HttpClientParams();
         clientParams.setBooleanParameter("http.protocol.allow-circular-redirects", true);
         client.setParams(clientParams);
-        
-        // registers default handling for https 
-        Protocol.registerProtocol("https", new Protocol("https", new EasySSLProtocolSocketFactory(), 443));
     }
 
     public void setCookiePolicy(String cookiePolicy) {
