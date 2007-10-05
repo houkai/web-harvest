@@ -685,7 +685,11 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
                 	}
 
                     if ( settings.isProxyAuthEnabled() ) {
-                        httpClientManager.setHttpProxyCredentials( settings.getProxyUserename(), settings.getProxyPassword() );
+                        String ntlmHost = settings.isNtlmAuthEnabled() ?  settings.getNtlmHost() : null;
+                        String ntlmDomain = settings.isNtlmAuthEnabled() ?  settings.getNtlmDomain() : null;
+                        httpClientManager.setHttpProxyCredentials(
+                            settings.getProxyUserename(), settings.getProxyPassword(), ntlmHost, ntlmDomain
+                        );
                     }
                 }
 

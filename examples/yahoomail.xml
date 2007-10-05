@@ -14,7 +14,7 @@
 	<exit condition='${!sys.isVariableDefined("password")}' message="No password provided!" />
 
 	<var-def name="onlyUnread" overwrite="false">false</var-def>
-	<var-def name="numOfPages" overwrite="false">10</var-def>
+	<var-def name="numOfPages" overwrite="false">1</var-def>
 
 	<include path="functions.xml"/>
 
@@ -76,7 +76,7 @@
 	<case>
 		<if condition="${onlyUnread}">
 			<var-def name="inboxRelativeUrl">
-				<xpath expression="//a[data(.) = 'Unread']/@href">
+				<xpath expression="(//a[data(.) = 'Unread'])[1]/@href">
 					<html-to-xml>
 						<http url="${inboxUrl}"/>
 					</html-to-xml>
@@ -106,12 +106,12 @@
 	            declare variable $doc as node()* external;
 	        	<mails> {
 		         	for $row in $doc/mails/tr return
-			            <mail unread="{if($row/@class = "msgnew") then "true" else "false"}">
+			            <mail unread="{if($row//b) then "true" else "false"}">
 	                        <sender>{normalize-space(data($row/td[3]))}</sender>
 	                        <date>{normalize-space(data($row/td[4]))}</date>
 	                        <size>{normalize-space(data($row/td[5]))}</size>
 	                        <subject>{normalize-space(data($row/td[6]))}</subject>
-	                        <link>{normalize-space($row/td[6]//a/@href)}</link>
+	                        <link>{normalize-space(data($row/td[6]//a/@href))}</link>
 			            </mail>
 	            } </mails>
 	        ]]></xq-expression>

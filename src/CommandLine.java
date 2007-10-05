@@ -158,7 +158,9 @@ public class CommandLine {
             String proxyUser = (String) params.get("proxyuser");
             if ( proxyUser != null && !"".equals(proxyUser) ) {
                 String proxyPassword = (String) params.get("proxypassword");
-                scraper.getHttpClientManager().setHttpProxyCredentials(proxyUser, proxyPassword);
+                String proxyNTHost = (String) params.get("proxynthost");
+                String proxyNTDomain = (String) params.get("proxyntdomain");
+                scraper.getHttpClientManager().setHttpProxyCredentials(proxyUser, proxyPassword, proxyNTHost, proxyNTDomain);
             }
 
             // adds initial variables to the scraper's content, if any
@@ -188,6 +190,8 @@ public class CommandLine {
         System.out.println("   java -jar webharvestXX.jar [-h] config=<path> [workdir=<path>] [debug=yes|no]");
         System.out.println("             [proxyhost=<proxy server> [proxyport=<proxy server port>]]");
         System.out.println("             [proxyuser=<proxy username> [proxypassword=<proxy password>]]");
+        System.out.println("             [proxynthost=<NT host name>]");
+        System.out.println("             [proxyntdomain=<NT domain name>]");
         System.out.println("             [loglevel=<level>]");
         System.out.println("             [logpropsfile=<path>]");
         System.out.println("             [#var1=<value1> [#var2=<value2>...]]");
@@ -200,6 +204,8 @@ public class CommandLine {
         System.out.println("   proxyport     - specify port for proxy server.");
         System.out.println("   proxyuser     - specify proxy server username.");
         System.out.println("   proxypassword - specify proxy server password.");
+        System.out.println("   proxynthost   - NTLM authentication scheme - the host the request is originating from.");
+        System.out.println("   proxyntdomain - NTLM authentication scheme - the domain to authenticate within.");
         System.out.println("   loglevel      - specify level of logging for Log4J (trace,info,debug,warn,error,fatal).");
         System.out.println("   logpropsfile  - file path to custom Log4J properties. If specified, loglevel is ignored.");
         System.out.println("   #varN, valueN - specify initial variables of the Web-Harvest context. To be recognized, ");

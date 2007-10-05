@@ -118,11 +118,12 @@ public class HttpClientManager {
      * @param username
      * @param password
      */
-    public void setHttpProxyCredentials(String username, String password) {
-    	client.getState().setProxyCredentials(
-    			new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT),
-    			new UsernamePasswordCredentials(username, password)
-    	);
+    public void setHttpProxyCredentials(String username, String password, String host, String domain) {
+        Credentials credentials =
+                ( host == null || domain == null || "".equals(host.trim()) || "".equals(domain.trim()) ) ?
+                    new UsernamePasswordCredentials(username, password) :
+                    new NTCredentials(username, password, host, domain);
+        client.getState().setProxyCredentials( AuthScope.ANY, credentials);
     }
     
     public HttpResponseWrapper execute(

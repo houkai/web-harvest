@@ -53,6 +53,9 @@ public class Settings implements Serializable {
     private boolean isProxyAuthEnabled;
     private String proxyUserename;
     private String proxyPassword;
+    private boolean isNtlmAuthEnabled;
+    private String ntlmHost;
+    private String ntlmDomain;
 
     private boolean isShowHierarchyByDefault = true;
     private boolean isShowLogByDefault = true;
@@ -116,6 +119,30 @@ public class Settings implements Serializable {
 
     public void setProxyUserename(String proxyUserename) {
         this.proxyUserename = proxyUserename;
+    }
+
+    public boolean isNtlmAuthEnabled() {
+        return isNtlmAuthEnabled;
+    }
+
+    public void setNtlmAuthEnabled(boolean ntlmAuthEnabled) {
+        isNtlmAuthEnabled = ntlmAuthEnabled;
+    }
+
+    public String getNtlmDomain() {
+        return ntlmDomain;
+    }
+
+    public void setNtlmDomain(String ntlmDomain) {
+        this.ntlmDomain = ntlmDomain;
+    }
+
+    public String getNtlmHost() {
+        return ntlmHost;
+    }
+
+    public void setNtlmHost(String ntlmHost) {
+        this.ntlmHost = ntlmHost;
     }
 
     public String getWorkingPath() {
@@ -187,6 +214,9 @@ public class Settings implements Serializable {
         out.writeBoolean(isProxyAuthEnabled);
         writeString(out, proxyUserename);
         writeString(out, proxyPassword);
+        out.writeBoolean(isNtlmAuthEnabled);
+        writeString(out, ntlmHost);
+        writeString(out, ntlmDomain);
 
         out.writeBoolean(isShowHierarchyByDefault);
         out.writeBoolean(isShowLogByDefault);
@@ -209,6 +239,9 @@ public class Settings implements Serializable {
         isProxyAuthEnabled = in.readBoolean();
         proxyUserename = readString(in);
         proxyPassword = readString(in);
+        isNtlmAuthEnabled = in.readBoolean();
+        ntlmHost = readString(in);
+        ntlmDomain = readString(in);
 
         isShowHierarchyByDefault = in.readBoolean();
         isShowLogByDefault = in.readBoolean();

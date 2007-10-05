@@ -50,9 +50,9 @@
                         let $text := data($doc//div[@id="articleBody"])
                             return
                                 <article>
-                                    <title>{normalize-space($title)}</title>
-                                    <author>{normalize-space($author)}</author>
-                                    <text>{normalize-space($text)}</text>
+                                    <title>{data($title)}</title>
+                                    <author>{data($author)}</author>
+                                    <text>{data($text)}</text>
                                 </article>
                     ]]></xq-expression>
                 </xquery>

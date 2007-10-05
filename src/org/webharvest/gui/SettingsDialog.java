@@ -73,13 +73,18 @@ public class SettingsDialog extends JDialog implements ChangeListener {
     private JTextField proxyPortField;
     private JTextField proxyUsernameField;
     private JTextField proxyPasswordField;
+    private JTextField ntlmHostField;
+    private JTextField ntlmDomainField;
     private JCheckBox proxyEnabledCheckBox;
     private JCheckBox proxyAuthEnabledCheckBox;
-    
+    private JCheckBox ntlmEnabledCheckBox;
+
     private JLabel proxyUsernameLabel;
     private JLabel proxyPasswordLabel;
     private JLabel proxyPortLabel;
     private JLabel proxyServerLabel;
+    private JLabel ntlmHostLabel;
+    private JLabel ntlmDomainLabel;
 
     private JCheckBox showHierarchyByDefaultCheckBox;
     private JCheckBox showLogByDefaultCheckBox;
@@ -127,11 +132,15 @@ public class SettingsDialog extends JDialog implements ChangeListener {
         proxyPortField = new MyTextField();
         proxyUsernameField = new MyTextField();
         proxyPasswordField = new MyTextField();
+        ntlmHostField = new MyTextField();
+        ntlmDomainField = new MyTextField();
 
         proxyEnabledCheckBox = new JCheckBox("Proxy server enabled");
         proxyEnabledCheckBox.addChangeListener(this);
         proxyAuthEnabledCheckBox = new JCheckBox("Proxy authentication enabled");
         proxyAuthEnabledCheckBox.addChangeListener(this);
+        ntlmEnabledCheckBox = new JCheckBox("Use NTLM authentication scheme");
+        ntlmEnabledCheckBox.addChangeListener(this);
 
         constraints.gridx = 0;
         constraints.gridy = 0;
@@ -204,6 +213,28 @@ public class SettingsDialog extends JDialog implements ChangeListener {
         constraints.gridy = 6;
         generalPanel.add(proxyPasswordField, constraints );
 
+        constraints.gridx = 0;
+        constraints.gridy = 7;
+        generalPanel.add(ntlmEnabledCheckBox , constraints );
+
+        constraints.gridx = 0;
+        constraints.gridy = 8;
+        ntlmHostLabel = new JLabel("NT host");
+        generalPanel.add(ntlmHostLabel, constraints );
+
+        constraints.gridx = 1;
+        constraints.gridy = 8;
+        generalPanel.add(ntlmHostField, constraints );
+
+        constraints.gridx = 0;
+        constraints.gridy = 9;
+        ntlmDomainLabel = new JLabel("NT domain");
+        generalPanel.add(ntlmDomainLabel, constraints );
+
+        constraints.gridx = 1;
+        constraints.gridy = 9;
+        generalPanel.add(ntlmDomainField, constraints );
+
         JPanel buttonPanel = new JPanel( new FlowLayout(FlowLayout.CENTER) );
 
         JButton okButton = new JButton("  Ok  ");
@@ -257,6 +288,10 @@ public class SettingsDialog extends JDialog implements ChangeListener {
         proxyEnabledCheckBox.setSelected( settings.isProxyEnabled() );
         proxyAuthEnabledCheckBox.setSelected( settings.isProxyAuthEnabled() );
 
+        ntlmEnabledCheckBox.setSelected( settings.isNtlmAuthEnabled() );
+        ntlmHostField.setText( settings.getNtlmHost() );
+        ntlmDomainField.setText( settings.getNtlmDomain() );
+
         showHierarchyByDefaultCheckBox.setSelected( settings.isShowHierarchyByDefault() );
         showLogByDefaultCheckBox.setSelected( settings.isShowLogByDefault() );
         showLineNumbersByDefaultCheckBox.setSelected( settings.isShowLineNumbersByDefault() );
@@ -278,7 +313,7 @@ public class SettingsDialog extends JDialog implements ChangeListener {
 
         int port = -1;
         try {
-            Integer.parseInt( this.proxyPortField.getText() );
+            port = Integer.parseInt( this.proxyPortField.getText() );
         } catch (NumberFormatException e) {
         }
         settings.setProxyPort(port);
@@ -288,6 +323,10 @@ public class SettingsDialog extends JDialog implements ChangeListener {
 
         settings.setProxyEnabled( this.proxyEnabledCheckBox.isSelected() );
         settings.setProxyAuthEnabled( this.proxyAuthEnabledCheckBox.isSelected() );
+
+        settings.setNtlmAuthEnabled( this.ntlmEnabledCheckBox.isSelected() );
+        settings.setNtlmHost( this.ntlmHostField.getText() );
+        settings.setNtlmDomain( this.ntlmDomainField.getText() );
 
         settings.setShowHierarchyByDefault(this.showHierarchyByDefaultCheckBox.isSelected());
         settings.setShowLogByDefault(this.showLogByDefaultCheckBox.isSelected());
@@ -312,6 +351,7 @@ public class SettingsDialog extends JDialog implements ChangeListener {
     private void updateControls() {
         boolean isProxyEnabled = this.proxyEnabledCheckBox.isSelected();
         boolean isProxyAuthEnabled = this.proxyAuthEnabledCheckBox.isSelected();
+        boolean isNtlmAuthEnabled = this.ntlmEnabledCheckBox.isSelected();
 
         this.proxyServerLabel.setEnabled(isProxyEnabled);
         this.proxyServerField.setEnabled(isProxyEnabled);
@@ -324,6 +364,13 @@ public class SettingsDialog extends JDialog implements ChangeListener {
         this.proxyUsernameField.setEnabled( isProxyEnabled && isProxyAuthEnabled );
         this.proxyPasswordLabel.setEnabled( isProxyEnabled && isProxyAuthEnabled );
         this.proxyPasswordField.setEnabled( isProxyEnabled && isProxyAuthEnabled );
+
+        this.ntlmEnabledCheckBox.setEnabled(isProxyEnabled && isProxyAuthEnabled);
+
+        this.ntlmHostLabel.setEnabled( isProxyEnabled && isProxyAuthEnabled && isNtlmAuthEnabled );
+        this.ntlmHostField.setEnabled( isProxyEnabled && isProxyAuthEnabled && isNtlmAuthEnabled );
+        this.ntlmDomainLabel.setEnabled( isProxyEnabled && isProxyAuthEnabled && isNtlmAuthEnabled );
+        this.ntlmDomainField.setEnabled( isProxyEnabled && isProxyAuthEnabled && isNtlmAuthEnabled );
     }
 
     public void stateChanged(ChangeEvent e) {
