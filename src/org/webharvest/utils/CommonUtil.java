@@ -503,9 +503,9 @@ public class CommonUtil {
     public static String readStringFromUrl(URL url) throws IOException {
         StringBuffer buffer = new StringBuffer();
     	BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
-    	String inputLine;
-        while ((inputLine = in.readLine()) != null) {
-            buffer.append(inputLine);
+    	int ch;
+        while ( (ch = in.read()) != -1 ) {
+            buffer.append( (char)ch );
         }
         in.close();
 

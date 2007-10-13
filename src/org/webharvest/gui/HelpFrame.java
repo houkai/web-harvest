@@ -43,15 +43,15 @@ import org.webharvest.utils.CommonUtil;
 import org.xml.sax.InputSource;
 
 import javax.swing.*;
-import javax.swing.event.TreeSelectionListener;
-import javax.swing.event.TreeSelectionEvent;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.text.html.HTMLDocument;
 import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.tree.DefaultTreeModel;
 import java.awt.*;
-import java.io.IOException;
 import java.io.StringReader;
 import java.net.URL;
 
@@ -62,7 +62,7 @@ import java.net.URL;
  */
 public class HelpFrame extends JFrame implements TreeSelectionListener {
 
-    private static final Dimension HELP_FRAME_DIMENSION = new Dimension(640, 480);
+    private static final Dimension HELP_FRAME_DIMENSION = new Dimension(750, 500);
 
     private class TopicInfo {
         private String id;
@@ -98,8 +98,9 @@ public class HelpFrame extends JFrame implements TreeSelectionListener {
             String helpContent = CommonUtil.readStringFromUrl( ResourceManager.getHelpContentUrl() );
             XmlNode xmlNode = XmlParser.parse( new InputSource(new StringReader(helpContent)) );
             createNodes(topNode, xmlNode);
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
+            DialogHelper.showErrorMessage("Error reading help content!");
         }
 
         tree = new JTree(topNode);
@@ -143,7 +144,6 @@ public class HelpFrame extends JFrame implements TreeSelectionListener {
         contentPane.setLayout(new BorderLayout());
         contentPane.add(splitPane, BorderLayout.CENTER);
 
-
         pack();
     }
 
@@ -182,13 +182,21 @@ public class HelpFrame extends JFrame implements TreeSelectionListener {
 
         Object userObject =  node.getUserObject();
         if (userObject instanceof TopicInfo) {
-
             TopicInfo topicInfo = (TopicInfo) userObject;
-            URL helpFileUrl = ResourceManager.getHelpFileUrl(topicInfo.id);
             try {
-                this.htmlPane.setPage(helpFileUrl);
-            } catch (IOException e1) {
-                JOptionPane.showMessageDialog(this, "Cannot read help for \"" + topicInfo.title + "\"!", "Error", JOptionPane.ERROR_MESSAGE);
+                URL helpFileUrl = ResourceManager.getHelpFileUrl(topicInfo.id);
+                if (helpFileUrl == null) {
+                    throw new RuntimeException();
+                }
+                String content = CommonUtil.readStringFromUrl(helpFileUrl);
+                content = "<html><body style=\"font-family:Verdana,Tahoma;font-size:10px;\">" +
+                          "<h2>" + topicInfo.title + "</h2>" +
+                          content + "</body></html>";
+                ((HTMLDocument)htmlPane.getDocument()).setBase(helpFileUrl);
+                htmlPane.setText(content);
+                htmlPane.setCaretPosition(0);
+            } catch (Exception e1) {
+                htmlPane.setText("<div style='color:#FF0000;font-family:Verdana,Tahoma;font-size:10px;'>Cannot read help for \"" + topicInfo.title + "\"!</div>");
             }
         }
     }

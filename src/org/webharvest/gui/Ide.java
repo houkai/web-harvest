@@ -726,7 +726,6 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
         } else if ( COMMAND_SETTINGS.equals(cmd) ) {
             defineSettings();
         } else if ( COMMAND_ABOUT.equals(cmd) ) {
-//            JOptionPane.showMessageDialog(this, "Web-Harvest version " + Constants.WEB_HARVEST_VERSION, "Status", JOptionPane.INFORMATION_MESSAGE);
             this.aboutWindow.open();
         } else if ( COMMAND_HOMEPAGE.equals(cmd) ) {
             openURLInBrowser("http://web-harvest.sourceforge.net");
@@ -877,6 +876,7 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
     public void showHelp() {
         if (helpFrame == null) {
             helpFrame = new HelpFrame();
+            helpFrame.setLocationRelativeTo(this);
         }
         helpFrame.setVisible(true);
     }

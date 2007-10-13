@@ -1,17 +1,17 @@
-<html>
-    <head>
-    </head>
-    <body>
         <div>
             This is the root element of every configuration file.
         </div>
+
         <h3>Syntax</h3>
+
         <div>
 <pre>&lt;config charset="charset_value" scriptlang="default_script_lang"&gt;
     configuration body
 &lt;/config&gt;</pre>
         </div>
+
         <h3>Attributes</h3>
+
         <table border="1">
             <tr>
                 <th style="border: 1px solid #CCCCCC;">Name</th>
@@ -43,8 +43,19 @@
                     scripting engine within the same Web-Harvest configuration, that way
                     giving possibility to even mix different scripting languages.
                 </td>
-
             </tr>
         </table>
-    </body>
-</html>
+
+        <h3>Example</h3>
+
+        <div>
+<pre>&lt;config charset="ISO-8859-1" scriptlang="groovy"&gt;
+    &lt;file action="write" path="squares.txt"&gt;
+        &lt;script return="${[1, 2, 3, 4, 5].collect(square)}"&gt;
+            &lt;![CDATA[
+                square = { it * it }
+            ]]&gt;
+        &lt;/script&gt;
+    &lt;/file&gt;
+&lt;/config&gt;</pre>
+        </div>
