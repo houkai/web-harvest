@@ -85,6 +85,8 @@ public class ResourceManager {
     public static final Icon HTMLTYPE_ICON = getIcon("resources/icons/html_type.gif");
     public static final Icon IMAGETYPE_ICON = getIcon("resources/icons/image_type.gif");
     public static final Icon LISTTYPE_ICON = getIcon("resources/icons/list_type.gif");
+    public static final Icon HELPDIR_ICON = getIcon("resources/icons/helpdir.gif");
+    public static final Icon HELPTOPIC_ICON = getIcon("resources/icons/helptopic.gif");
 
     public static Icon getIcon(String path) {
         return new ImageIcon(clazz.getResource(path));
@@ -96,6 +98,14 @@ public class ResourceManager {
 
     public static URL getAboutUrl() {
         return clazz.getResource("resources/about.html");
+    }
+
+    public static URL getHelpContentUrl() {
+        return clazz.getResource("resources/help.xml");
+    }
+
+    public static URL getHelpFileUrl(String helpId) {
+        return clazz.getResource("resources/help/" + helpId + ".html");
     }
 
     public static String getResourcesRootURL() {

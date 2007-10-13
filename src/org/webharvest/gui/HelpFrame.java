@@ -36,20 +36,54 @@
 */
 package org.webharvest.gui;
 
+import org.webharvest.definition.XmlNode;
+import org.webharvest.definition.XmlParser;
 import org.webharvest.gui.component.ProportionalSplitPane;
+import org.webharvest.utils.CommonUtil;
+import org.xml.sax.InputSource;
 
 import javax.swing.*;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.border.EmptyBorder;
 import javax.swing.text.html.HTMLEditorKit;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.DefaultTreeCellRenderer;
 import java.awt.*;
+import java.io.IOException;
+import java.io.StringReader;
+import java.net.URL;
 
 /**
  * Frame that contains Web-Harvest help.
  * @author: Vladimir Nikic
  * Date: May 8, 2007
  */
-public class HelpFrame extends JFrame {
+public class HelpFrame extends JFrame implements TreeSelectionListener {
 
     private static final Dimension HELP_FRAME_DIMENSION = new Dimension(640, 480);
+
+    private class TopicInfo {
+        private String id;
+        private String title;
+        private int subtopicCount;
+
+        public TopicInfo(String id, String title, int subtopicCount) {
+            this.id = id;
+            this.title = title;
+            this.subtopicCount = subtopicCount;
+        }
+
+        public String toString() {
+            return title;
+        }
+    }
+
+    private JEditorPane htmlPane;
+    private JTree tree;
+    private DefaultMutableTreeNode topNode;
+    private DefaultTreeModel treeModel;
 
     /**
      * Constructor - creates layout.
@@ -58,19 +92,50 @@ public class HelpFrame extends JFrame {
         setTitle("Web-Harvest Help");
         setIconImage( ((ImageIcon) ResourceManager.HELP_ICON).getImage() );
 
-        JPanel treePanel = new JPanel();
-        treePanel.setBackground(Color.white);
-        
-        JEditorPane htmlPane = new JEditorPane();
+        this.topNode = new DefaultMutableTreeNode();
+        this.treeModel = new DefaultTreeModel(this.topNode);
+        try {
+            String helpContent = CommonUtil.readStringFromUrl( ResourceManager.getHelpContentUrl() );
+            XmlNode xmlNode = XmlParser.parse( new InputSource(new StringReader(helpContent)) );
+            createNodes(topNode, xmlNode);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        tree = new JTree(topNode);
+        tree.setRootVisible(false);
+        tree.setShowsRootHandles(true);
+        tree.setBorder( new EmptyBorder(5, 5, 5, 5) );
+        tree.setCellRenderer(new DefaultTreeCellRenderer() {
+            public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel, boolean expanded, boolean leaf, int row, boolean hasFocus) {
+                DefaultTreeCellRenderer renderer = (DefaultTreeCellRenderer) super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
+                if (value instanceof DefaultMutableTreeNode) {
+                    DefaultMutableTreeNode defaultMutableTreeNode = (DefaultMutableTreeNode) value;
+                    Object userObject =  defaultMutableTreeNode.getUserObject();
+                    if (userObject instanceof TopicInfo) {
+                        TopicInfo topicInfo = (TopicInfo) userObject;
+                        renderer.setIcon( topicInfo.subtopicCount == 0 ? ResourceManager.HELPTOPIC_ICON : ResourceManager.HELPDIR_ICON );
+                    }
+                }
+                return renderer;
+            }
+        });
+        tree.addTreeSelectionListener(this);
+
+        htmlPane = new JEditorPane();
         htmlPane.setEditable(false);
         htmlPane.setContentType("text/html");
         htmlPane.setEditorKit( new HTMLEditorKit() );
-        htmlPane.setBorder(null);
+        htmlPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 
         JSplitPane splitPane = new ProportionalSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-        splitPane.setResizeWeight(1.0d);
+        splitPane.setResizeWeight(0.0d);
         splitPane.setBorder(null);
-        splitPane.setLeftComponent( new JScrollPane(treePanel) );
+
+        JScrollPane treeScrollPane = new JScrollPane(tree);
+        treeScrollPane.getViewport().setBackground(Color.white);
+        treeScrollPane.setBackground(Color.white);
+        splitPane.setLeftComponent(treeScrollPane);
         splitPane.setRightComponent(new JScrollPane(htmlPane));
         splitPane.setDividerLocation(0.3d);
 
@@ -78,11 +143,54 @@ public class HelpFrame extends JFrame {
         contentPane.setLayout(new BorderLayout());
         contentPane.add(splitPane, BorderLayout.CENTER);
 
+
         pack();
     }
 
+    private void createNodes(DefaultMutableTreeNode root, XmlNode xmlNode) {
+        if (xmlNode != null) {
+            Object topicsObject = xmlNode.getElement("topic");
+            if (topicsObject instanceof java.util.List) {
+                java.util.List subtopics = (java.util.List) topicsObject;
+                for (int i = 0; i < subtopics.size(); i++) {
+                    XmlNode xmlSubNode = (XmlNode) subtopics.get(i);
+
+                    String id = xmlSubNode.getAttribute("id");
+                    String title = xmlSubNode.getAttribute("title");
+                    Object subs = xmlSubNode.getElement("topic");
+                    int subtopicCount = subs instanceof java.util.List ? ((java.util.List)subs).size() : 0;
+
+                    TopicInfo topicInfo = new TopicInfo(id, title, subtopicCount);
+                    DefaultMutableTreeNode node = new DefaultMutableTreeNode(topicInfo);
+                    this.treeModel.insertNodeInto(node, root, root.getChildCount());
+                    createNodes(node, xmlSubNode);
+                }
+            }
+        }
+    }
+
+
     public Dimension getPreferredSize() {
         return HELP_FRAME_DIMENSION;
+    }
+
+    public void valueChanged(TreeSelectionEvent e) {
+        DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
+        if (node == null) {
+            return;
+        }
+
+        Object userObject =  node.getUserObject();
+        if (userObject instanceof TopicInfo) {
+
+            TopicInfo topicInfo = (TopicInfo) userObject;
+            URL helpFileUrl = ResourceManager.getHelpFileUrl(topicInfo.id);
+            try {
+                this.htmlPane.setPage(helpFileUrl);
+            } catch (IOException e1) {
+                JOptionPane.showMessageDialog(this, "Cannot read help for \"" + topicInfo.title + "\"!", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
     }
 
 }

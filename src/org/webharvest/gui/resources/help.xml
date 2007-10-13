@@ -1,8 +1,34 @@
 <help>
-    <topic id="1" title="About Web-Harvest">
-        <content><![CDATA[
-        ]]></content>
-        <topic>
-        </topic>
+    <topic id="webharvest" title="Web-Harvest">
+        <topic id="intro" title="Introduction"/>
+        <topic id="concept" title="Basic Concept"/>
+        <topic id="gui" title="Using IDE"/>
+    </topic>
+
+    <topic id="ref" title="Processors Reference">
+        <topic id="config" title="config"/>
+        <topic id="empty" title="empty"/>
+        <topic id="text" title="text"/>
+        <topic id="var-def" title="var-def"/>
+        <topic id="var" title="var"/>
+        <topic id="file" title="file"/>
+        <topic id="http" title="http"/>
+        <topic id="http-param" title="http-param"/>
+        <topic id="http-header" title="http-header"/>
+        <topic id="html-to-xml" title="html-to-xml"/>
+        <topic id="reg-exp" title="reg-exp"/>
+        <topic id="xpath" title="xpath"/>
+        <topic id="xquery" title="xquery"/>
+        <topic id="xslt" title="xslt"/>
+        <topic id="script" title="script"/>
+        <topic id="template" title="template"/>
+        <topic id="case" title="case"/>
+        <topic id="loop" title="loop"/>
+        <topic id="while" title="while"/>
+        <topic id="function" title="function"/>
+        <topic id="return" title="return"/>
+        <topic id="call" title="call"/>
+        <topic id="include" title="include"/>
+        <topic id="try" title="try and catch"/>
     </topic>
 </help>
