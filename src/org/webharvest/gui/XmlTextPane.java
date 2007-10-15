@@ -233,6 +233,24 @@ public class XmlTextPane extends JEditorPane {
         kit.setStyle( XMLStyleConstants.CDATA, new Color(0, 0, 0), Font.PLAIN);
         kit.setStyle( XMLStyleConstants.SPECIAL, new Color(0, 0, 0), Font.PLAIN);
 
+//        kit.setStyle( XMLStyleConstants.ELEMENT_NAME, new Color( 0, 0, 128), Font.BOLD);
+//        kit.setStyle( XMLStyleConstants.ELEMENT_VALUE, Color.black, Font.BOLD);
+//        kit.setStyle( XMLStyleConstants.ELEMENT_PREFIX, new Color( 0, 0, 128), Font.PLAIN);
+//
+//        kit.setStyle( XMLStyleConstants.ATTRIBUTE_NAME, Color.blue, Font.BOLD);
+//        kit.setStyle( XMLStyleConstants.ATTRIBUTE_VALUE, new Color( 0, 128, 0), Font.BOLD);
+//        kit.setStyle( XMLStyleConstants.ATTRIBUTE_PREFIX, Color.blue, Font.PLAIN);
+//
+//        kit.setStyle( XMLStyleConstants.NAMESPACE_NAME, new Color( 102, 102, 102), Font.PLAIN);
+//        kit.setStyle( XMLStyleConstants.NAMESPACE_VALUE, new Color( 0, 51, 51), Font.PLAIN);
+//        kit.setStyle( XMLStyleConstants.NAMESPACE_PREFIX, new Color( 0, 102, 102), Font.PLAIN);
+//
+//        kit.setStyle( XMLStyleConstants.ENTITY, new Color( 102, 102, 102), Font.PLAIN);
+//        kit.setStyle( XMLStyleConstants.COMMENT, Color.gray, Font.PLAIN);
+//        kit.setStyle( XMLStyleConstants.CDATA, Color.black, Font.PLAIN);
+//        kit.setStyle( XMLStyleConstants.SPECIAL, Color.black, Font.BOLD);
+
+
         this.setEditorKit(kit);
 
         this.setFont( new Font( "Monospaced", Font.PLAIN, 12));
