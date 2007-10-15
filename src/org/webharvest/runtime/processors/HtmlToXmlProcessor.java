@@ -140,7 +140,7 @@ public class HtmlToXmlProcessor extends BaseProcessor {
             cleaner.setPruneTags(pruneTags);
         }
 
-        String outputType = BaseTemplater.execute(htmlToXmlDef.getOutputType(), scriptEngine);;
+        String outputType = BaseTemplater.execute(htmlToXmlDef.getOutputType(), scriptEngine);
 
         try {
             cleaner.clean();
