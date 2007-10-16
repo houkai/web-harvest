@@ -67,6 +67,7 @@ public class ResourceManager {
     public static final Icon SETTINGS_ICON = getIcon("resources/icons/settings.gif");
     public static final Icon RUN_PARAMS_ICON = getIcon("resources/icons/runparams.gif");
     public static final Icon HELP_ICON = getIcon("resources/icons/help.gif");
+    public static final Icon HELP32_ICON = getIcon("resources/icons/help32.gif");
     public static final Icon HOMEPAGE_ICON = getIcon("resources/icons/homepage.gif");
     public static final Icon DOWNLOAD_ICON = getIcon("resources/icons/download.gif");
     public static final Icon VIEW_ICON = getIcon("resources/icons/view.gif");

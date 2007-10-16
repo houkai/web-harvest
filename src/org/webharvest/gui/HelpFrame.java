@@ -90,7 +90,7 @@ public class HelpFrame extends JFrame implements TreeSelectionListener {
      */
     public HelpFrame() {
         setTitle("Web-Harvest Help");
-        setIconImage( ((ImageIcon) ResourceManager.HELP_ICON).getImage() );
+        setIconImage( ((ImageIcon) ResourceManager.HELP32_ICON).getImage() );
 
         this.topNode = new DefaultMutableTreeNode();
         this.treeModel = new DefaultTreeModel(this.topNode);
@@ -184,6 +184,11 @@ public class HelpFrame extends JFrame implements TreeSelectionListener {
         if (userObject instanceof TopicInfo) {
             TopicInfo topicInfo = (TopicInfo) userObject;
             try {
+                if (topicInfo.subtopicCount > 0) {
+                    htmlPane.setText("<div style='font-family:Verdana,Tahoma;font-size:10px;'>Please choose a topic</div>");
+                    return;
+                }
+
                 URL helpFileUrl = ResourceManager.getHelpFileUrl(topicInfo.id);
                 if (helpFileUrl == null) {
                     throw new RuntimeException();
