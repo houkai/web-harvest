@@ -15,14 +15,14 @@
             <topic id="config" title="config"/>
             <topic id="empty" title="empty"/>
             <topic id="text" title="text"/>
-            <topic id="var-def" title="var-def"/>
+            <topic id="vardef" title="var-def"/>
             <topic id="var" title="var"/>
             <topic id="file" title="file"/>
-            <topic id="http" title="http"/>
-            <topic id="http-param" title="http-param"/>
-            <topic id="http-header" title="http-header"/>
-            <topic id="html-to-xml" title="html-to-xml"/>
-            <topic id="reg-exp" title="reg-exp"/>
+            <topic id="httpproc" title="http"/>
+            <topic id="httpparam" title="http-param"/>
+            <topic id="httpheader" title="http-header"/>
+            <topic id="htmltoxml" title="html-to-xml"/>
+            <topic id="regexp" title="reg-exp"/>
             <topic id="xpath" title="xpath"/>
             <topic id="xquery" title="xquery"/>
             <topic id="xslt" title="xslt"/>
