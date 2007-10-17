@@ -36,6 +36,7 @@
             <topic id="call" title="call"/>
             <topic id="include" title="include"/>
             <topic id="try" title="try and catch"/>
+            <topic id="exit" title="exit"/>
         </topic>
     </topic>
 </help>
