@@ -50,6 +50,7 @@ public class HtmlToXmlDef extends BaseElementDef {
     private String treatUnknownTagsAsContent;
     private String omitDeprecatedTags;
     private String treatDeprecatedTagsAsContent;
+    private String omitXmlDecl;
     private String omitComments;
     private String omitHtmlEnvelope;
     private String allowMultiWordAttributes;
@@ -69,6 +70,7 @@ public class HtmlToXmlDef extends BaseElementDef {
         this.treatUnknownTagsAsContent = (String) xmlNode.get("treatunknowntagsascontent");
         this.omitDeprecatedTags = (String) xmlNode.get("omitdeprtags");
         this.treatDeprecatedTagsAsContent = (String) xmlNode.get("treatdeprtagsascontent");
+        this.omitXmlDecl = (String) xmlNode.get("omitxmldecl");
         this.omitComments = (String) xmlNode.get("omitcomments");
         this.omitHtmlEnvelope = (String) xmlNode.get("omithtmlenvelope");
         this.allowMultiWordAttributes = (String) xmlNode.get("allowmultiwordattributes");
@@ -115,6 +117,10 @@ public class HtmlToXmlDef extends BaseElementDef {
 
     public String getTreatDeprecatedTagsAsContent() {
         return treatDeprecatedTagsAsContent;
+    }
+
+    public String getOmitXmlDecl() {
+        return omitXmlDecl;
     }
 
     public String getOmitComments() {

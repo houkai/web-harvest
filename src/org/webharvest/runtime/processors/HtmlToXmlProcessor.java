@@ -108,6 +108,11 @@ public class HtmlToXmlProcessor extends BaseProcessor {
             cleaner.setTreatDeprecatedTagsAsContent( CommonUtil.isBooleanTrue(treatDeprTagsAsContent) );
         }
 
+        final String omitXmlDecl = BaseTemplater.execute(htmlToXmlDef.getOmitXmlDecl(), scriptEngine);
+        if ( omitXmlDecl != null) {
+            cleaner.setOmitXmlDeclaration( CommonUtil.isBooleanTrue(omitXmlDecl) );
+        }
+
         final String omitComments = BaseTemplater.execute(htmlToXmlDef.getOmitComments(), scriptEngine);
         if ( omitComments != null) {
             cleaner.setOmitComments( CommonUtil.isBooleanTrue(omitComments) );

@@ -57,7 +57,7 @@ public class DefinitionResolver {
     static {
         String htmlToXmlAtts = "id,outputtype,advancedxmlescape,usecdata,specialentities,unicodechars," +
                                "omitunknowntags,treatunknowntagsascontent,omitdeprtags,treatdeprtagsascontent," +
-                               "omitcomments,omithtmlenvelope,allowmultiwordattributes," +
+                               "omitxmldecl,omitcomments,omithtmlenvelope,allowmultiwordattributes," +
                                "allowhtmlinsideattributes,namespacesaware,prunetags";
         elementInfos.put( "config", new ElementInfo("config", BaseElementDef.class, null, "charset,scriptlang,id") );
         elementInfos.put( "empty", new ElementInfo("empty", EmptyDef.class, null, "id") );
