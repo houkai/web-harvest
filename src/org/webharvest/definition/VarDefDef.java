@@ -54,7 +54,7 @@ public class VarDefDef extends BaseElementDef {
     }
 
     public String getName() {
-    	return CommonUtil.adaptFilename(name);
+    	return name;
     }
 
     public String getOverwrite() {

@@ -48,7 +48,7 @@ public class Catalog extends HashMap {
     }
 
     private String getStringKey(Object key) {
-        return (key == null) ? null : ((String)key).trim();
+        return (key == null) ? null : key.toString().trim();
     }
 
     public Object put(Object key, Object value) {

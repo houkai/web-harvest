@@ -62,7 +62,7 @@ public class ScraperContext extends Catalog {
 
     public Object setVar(Object key, Object value) {
         Variable var = CommonUtil.createVariable(value);
-        return super.put( key, var);
+        return super.put(key, var);
     }
 
     public void dispose() {

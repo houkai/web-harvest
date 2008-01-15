@@ -58,11 +58,11 @@ import java.net.MalformedURLException;
  */
 public class CommandLine {
 	
-	private static Map getArgValue(String[] args) {
+	private static Map getArgValue(String[] args, boolean caseSensitive) {
         Map params = new HashMap();
         for (int i = 0; i < args.length; i++) {
 			String curr = args[i];
-            String argName = curr.toLowerCase();
+            String argName = caseSensitive ? curr : curr.toLowerCase();
             String argValue = "";
 
 			int eqIndex = curr.indexOf('=');
@@ -71,11 +71,15 @@ public class CommandLine {
 				argValue = curr.substring(eqIndex+1).trim();
             }
 
-            params.put(argName.toLowerCase(), argValue);
+            params.put(caseSensitive ? argName : argName.toLowerCase(), argValue);
         }
 		
 		return params; 
 	}
+
+    private static Map getArgValue(String[] args) {
+        return getArgValue(args, false);
+    }
 	
     public static void main(String[] args) throws IOException {
         Map params = getArgValue(args);
@@ -164,7 +168,8 @@ public class CommandLine {
             }
 
             // adds initial variables to the scraper's content, if any
-            Iterator iterator = params.entrySet().iterator();
+            Map caseSensitiveParams = getArgValue(args, true);
+            Iterator iterator = caseSensitiveParams.entrySet().iterator();
             while (iterator.hasNext()) {
                 Map.Entry entry = (Map.Entry) iterator.next();
                 String key = (String) entry.getKey();
