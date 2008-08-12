@@ -47,6 +47,7 @@ public class Settings implements Serializable {
     private static final String CONFIG_FILE_PATH = System.getProperty("java.io.tmpdir") + "/webharvest.config";
 
     private String workingPath = System.getProperty("java.io.tmpdir");
+    private String fileCharset = "UTF-8";
     private boolean isProxyEnabled;
     private String proxyServer;
     private int proxyPort = -1;
@@ -153,6 +154,14 @@ public class Settings implements Serializable {
         this.workingPath = workingPath;
     }
 
+    public String getFileCharset() {
+        return fileCharset;
+    }
+
+    public void setFileCharset(String fileCharset) {
+        this.fileCharset = fileCharset;
+    }
+
     public boolean isDynamicConfigLocate() {
         return this.isDynamicConfigLocate;
     }
@@ -194,10 +203,14 @@ public class Settings implements Serializable {
         }
     }
 
-    private String readString(ObjectInputStream in) throws IOException {
-        byte[] bytes = new byte[in.readInt()];
-        in.read(bytes);
-        return new String(bytes);
+    private String readString(ObjectInputStream in, String defaultValue) throws IOException {
+        try {
+            byte[] bytes = new byte[in.readInt()];
+            in.read(bytes);
+            return new String(bytes);
+        } catch (IOException e) {
+            return defaultValue;
+        }
     }
 
     /**
@@ -223,6 +236,7 @@ public class Settings implements Serializable {
         out.writeBoolean(isShowLineNumbersByDefault);
         out.writeBoolean(isDynamicConfigLocate);
 
+        writeString(out, fileCharset);        
     }
 
     /**
@@ -231,22 +245,24 @@ public class Settings implements Serializable {
      * @throws IOException
      */
     private void readObject(ObjectInputStream in) throws IOException {
-        workingPath = readString(in);
+        workingPath = readString(in, workingPath);
 
         isProxyEnabled = in.readBoolean();
-        proxyServer = readString(in);
+        proxyServer = readString(in, proxyServer);
         proxyPort = in.readInt();
         isProxyAuthEnabled = in.readBoolean();
-        proxyUserename = readString(in);
-        proxyPassword = readString(in);
+        proxyUserename = readString(in, proxyUserename);
+        proxyPassword = readString(in, proxyPassword);
         isNtlmAuthEnabled = in.readBoolean();
-        ntlmHost = readString(in);
-        ntlmDomain = readString(in);
+        ntlmHost = readString(in, ntlmHost);
+        ntlmDomain = readString(in, ntlmDomain);
 
         isShowHierarchyByDefault = in.readBoolean();
         isShowLogByDefault = in.readBoolean();
         isShowLineNumbersByDefault = in.readBoolean();
         isDynamicConfigLocate = in.readBoolean();
+
+        fileCharset = readString(in, fileCharset);        
     }
 
     private void readFromFile() throws IOException {

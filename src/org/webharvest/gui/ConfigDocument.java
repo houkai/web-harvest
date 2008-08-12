@@ -75,7 +75,8 @@ public class ConfigDocument implements DocumentListener {
     void load(File file) throws IOException {
         this.file = file;
         this.name = file.getName();
-        load( new FileReader(file) );
+        String fileCharset = ide.getSettings().getFileCharset();
+        load( new InputStreamReader(new FileInputStream(file), fileCharset) );
     }
 
     void load(URL url) throws IOException {
@@ -112,7 +113,7 @@ public class ConfigDocument implements DocumentListener {
                 if (fileChooser.getFileFilter() instanceof XmlFileFilter) {
                     if ( !file.getName().toLowerCase().endsWith(".xml") ) {
                         file = new File( file.getAbsolutePath() + ".xml" );
-                    };
+                    }
                 }
 
                 if ( isSaveAs && file != null && file.exists() ) {
@@ -131,7 +132,8 @@ public class ConfigDocument implements DocumentListener {
 
         if (file != null) {
             try {
-                CommonUtil.saveStringToFile(file, configPanel.getXml(), "UTF-8");
+                String charset = ide.getSettings().getFileCharset();
+                CommonUtil.saveStringToFile(file, configPanel.getXml(), charset);
                 this.name = file.getName();
                 updateDocumentChanged(false);
                 updateGUI();

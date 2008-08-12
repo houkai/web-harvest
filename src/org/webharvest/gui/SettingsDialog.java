@@ -47,6 +47,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.*;
 
 public class SettingsDialog extends JDialog implements ChangeListener {
 
@@ -67,8 +69,9 @@ public class SettingsDialog extends JDialog implements ChangeListener {
     // Ide instance where this dialog belongs.
     private Ide ide;
 
-    // settiongs fields
+    // settings fields
     private JTextField workingPathField;
+    private JComboBox fileCharsetComboBox;
     private JTextField proxyServerField;
     private JTextField proxyPortField;
     private JTextField proxyUsernameField;
@@ -128,6 +131,10 @@ public class SettingsDialog extends JDialog implements ChangeListener {
 
         workingPathField = new MyTextField();
 
+        Map charsetsMap = Charset.availableCharsets();
+        Vector allSupportedCharsets = new Vector(charsetsMap.keySet());
+        fileCharsetComboBox = new JComboBox(allSupportedCharsets);
+
         proxyServerField = new MyTextField();
         proxyPortField = new MyTextField();
         proxyUsernameField = new MyTextField();
@@ -171,68 +178,77 @@ public class SettingsDialog extends JDialog implements ChangeListener {
 
         constraints.gridx = 0;
         constraints.gridy = 1;
-        generalPanel.add(proxyEnabledCheckBox , constraints );
+        generalPanel.add( new JLabel("File encoding"), constraints );
+
+        constraints.gridx = 1;
+        constraints.gridy = 1;
+        generalPanel.add(fileCharsetComboBox, constraints );
+
 
         constraints.gridx = 0;
         constraints.gridy = 2;
+        generalPanel.add(proxyEnabledCheckBox , constraints );
+
+        constraints.gridx = 0;
+        constraints.gridy = 3;
         proxyServerLabel = new JLabel("Proxy server");
         generalPanel.add(proxyServerLabel, constraints );
 
         constraints.gridx = 1;
-        constraints.gridy = 2;
+        constraints.gridy = 3;
         generalPanel.add(proxyServerField, constraints );
 
         constraints.gridx = 0;
-        constraints.gridy = 3;
+        constraints.gridy = 4;
         proxyPortLabel = new JLabel("Proxy port (blank is default)");
         generalPanel.add(proxyPortLabel, constraints );
 
         constraints.gridx = 1;
-        constraints.gridy = 3;
+        constraints.gridy = 4;
         generalPanel.add(proxyPortField, constraints );
 
         constraints.gridx = 0;
-        constraints.gridy = 4;
+        constraints.gridy = 5;
         generalPanel.add(proxyAuthEnabledCheckBox , constraints );
 
         constraints.gridx = 0;
-        constraints.gridy = 5;
+        constraints.gridy = 6;
         proxyUsernameLabel = new JLabel("Proxy username");
         generalPanel.add(proxyUsernameLabel, constraints );
 
         constraints.gridx = 1;
-        constraints.gridy = 5;
+        constraints.gridy = 6;
         generalPanel.add(proxyUsernameField, constraints );
 
         constraints.gridx = 0;
-        constraints.gridy = 6;
+        constraints.gridy = 7;
         proxyPasswordLabel = new JLabel("Proxy password");
         generalPanel.add(proxyPasswordLabel, constraints );
 
         constraints.gridx = 1;
-        constraints.gridy = 6;
+        constraints.gridy = 7;
         generalPanel.add(proxyPasswordField, constraints );
 
         constraints.gridx = 0;
-        constraints.gridy = 7;
+        constraints.gridy = 8;
         generalPanel.add(ntlmEnabledCheckBox , constraints );
 
         constraints.gridx = 0;
-        constraints.gridy = 8;
+        constraints.gridy = 9;
         ntlmHostLabel = new JLabel("NT host");
         generalPanel.add(ntlmHostLabel, constraints );
 
         constraints.gridx = 1;
-        constraints.gridy = 8;
+        constraints.gridy = 9;
         generalPanel.add(ntlmHostField, constraints );
 
         constraints.gridx = 0;
-        constraints.gridy = 9;
+        constraints.gridy = 10;
         ntlmDomainLabel = new JLabel("NT domain");
         generalPanel.add(ntlmDomainLabel, constraints );
 
         constraints.gridx = 1;
-        constraints.gridy = 9;
+        constraints.gridy = 10;
         generalPanel.add(ntlmDomainField, constraints );
 
         JPanel buttonPanel = new JPanel( new FlowLayout(FlowLayout.CENTER) );
@@ -281,6 +297,7 @@ public class SettingsDialog extends JDialog implements ChangeListener {
         Settings settings = ide.getSettings();
 
         workingPathField.setText( settings.getWorkingPath() );
+        fileCharsetComboBox.setSelectedItem( settings.getFileCharset() );
         proxyServerField.setText( settings.getProxyServer() );
         proxyPortField.setText( settings.getProxyPort() > 0 ? "" + settings.getProxyPort() : "" );
         proxyUsernameField.setText( settings.getProxyUserename() );
@@ -309,6 +326,7 @@ public class SettingsDialog extends JDialog implements ChangeListener {
         Settings settings = this.ide.getSettings();
 
         settings.setWorkingPath( this.workingPathField.getText() );
+        settings.setFileCharset( this.fileCharsetComboBox.getSelectedItem().toString() );
         settings.setProxyServer( this.proxyServerField.getText() );
 
         int port = -1;
@@ -397,6 +415,10 @@ public class SettingsDialog extends JDialog implements ChangeListener {
 
 
         return rootPane;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(Charset.availableCharsets());
     }
     
 }
