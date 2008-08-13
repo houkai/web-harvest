@@ -545,7 +545,8 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
     }
 
     public void onExecutionEnd(Scraper scraper) {
-        if ( ide.getSettings().isDynamicConfigLocate() ) {
+        final Settings settings = ide.getSettings();
+        if ( settings.isDynamicConfigLocate() ) {
             this.xmlPane.setEditable(true);
         }
 
@@ -556,7 +557,9 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
                     ide.setTabIcon(ConfigPanel.this, ResourceManager.SMALL_FINISHED_ICON);
-                    DialogHelper.showInfoMessage("Configuration \"" + configDocument.getName() + "\" finished execution.");
+                    if (settings.isShowFinishDialog()) {
+                        DialogHelper.showInfoMessage("Configuration \"" + configDocument.getName() + "\" finished execution.");
+                    }
                 }
             });
         } else if (status == Scraper.STATUS_STOPPED) {
@@ -614,7 +617,8 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
     }
 
     public void onExecutionError(Scraper scraper, Exception e) {
-        if ( ide.getSettings().isDynamicConfigLocate() ) {
+        final Settings settings = ide.getSettings();
+        if ( settings.isDynamicConfigLocate() ) {
             this.xmlPane.setEditable(true);
         }
 
@@ -627,12 +631,14 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
             this.scraper.getLogger().error(errorMessage + "\n" + writer.getBuffer().toString());
         }
 
-        DialogHelper.showErrorMessage(errorMessage);
-
+        if (settings.isShowFinishDialog()) {
+            DialogHelper.showErrorMessage(errorMessage);
+        }
+        
         this.ide.setTabIcon(this, ResourceManager.SMALL_ERROR_ICON);
         this.ide.updateGUI();
 
-        // releases scraper in order help garbage collector
+        // releases scraper in order to help garbage collector
         releaseScraper();
     }
 

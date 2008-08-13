@@ -93,6 +93,7 @@ public class SettingsDialog extends JDialog implements ChangeListener {
     private JCheckBox showLogByDefaultCheckBox;
     private JCheckBox showLineNumbersByDefaultCheckBox;
     private JCheckBox dynamicConfigLocateCheckBox;
+    private JCheckBox showFinishDialogCheckBox;
 
     private final JFileChooser pathChooser = new JFileChooser();
 
@@ -276,11 +277,13 @@ public class SettingsDialog extends JDialog implements ChangeListener {
         this.showLogByDefaultCheckBox = new JCheckBox("Show log panel by default");
         this.showLineNumbersByDefaultCheckBox = new JCheckBox("Show line numbers by default");
         this.dynamicConfigLocateCheckBox = new JCheckBox("Dynamically locate processors in runtime");
+        this.showFinishDialogCheckBox = new JCheckBox("Show info/error dialog when execution finishes");
 
         viewPanel.add(this.showHierarchyByDefaultCheckBox);
         viewPanel.add(this.showLogByDefaultCheckBox);
         viewPanel.add(this.showLineNumbersByDefaultCheckBox);
         viewPanel.add(this.dynamicConfigLocateCheckBox);
+        viewPanel.add(this.showFinishDialogCheckBox);
 
         tabbedPane.addTab("General", null, generalPanel, null);
         tabbedPane.addTab("View", null, viewPanel, null);
@@ -313,6 +316,7 @@ public class SettingsDialog extends JDialog implements ChangeListener {
         showLogByDefaultCheckBox.setSelected( settings.isShowLogByDefault() );
         showLineNumbersByDefaultCheckBox.setSelected( settings.isShowLineNumbersByDefault() );
         dynamicConfigLocateCheckBox.setSelected( settings.isDynamicConfigLocate() );
+        showFinishDialogCheckBox.setSelected( settings.isShowFinishDialog() );
     }
 
     public void setVisible(boolean b) {
@@ -350,6 +354,7 @@ public class SettingsDialog extends JDialog implements ChangeListener {
         settings.setShowLogByDefault(this.showLogByDefaultCheckBox.isSelected());
         settings.setShowLineNumbersByDefault(this.showLineNumbersByDefaultCheckBox.isSelected());
         settings.setDynamicConfigLocate(this.dynamicConfigLocateCheckBox.isSelected());
+        settings.setShowFinishDialog(this.showFinishDialogCheckBox.isSelected());
 
         try {
             settings.writeToFile();
