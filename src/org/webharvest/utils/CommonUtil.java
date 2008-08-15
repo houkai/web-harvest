@@ -110,6 +110,10 @@ public class CommonUtil {
         return filePath == null ? null : filePath.replace('\\', '/');
     }
 
+    public static boolean isEmpty(String s) {
+        return s == null || "".equals(s);
+    }
+
     /**
      * Checks if specified file path is absolute. Criteria for recogning absolute file paths is
      * that i starts with /, \, or X: where X is some letter.

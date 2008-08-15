@@ -42,30 +42,172 @@ package org.webharvest.gui;
  */
 
 import org.bounce.text.xml.XMLEditorKit;
-import org.bounce.text.xml.XMLDocument;
 import org.bounce.text.xml.XMLStyleConstants;
-
-import java.awt.*;
-import java.awt.event.MouseEvent;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-import java.io.*;
-import java.net.URL;
-import java.util.StringTokenizer;
+import org.webharvest.utils.CommonUtil;
 
 import javax.swing.*;
-import javax.swing.event.DocumentListener;
-import javax.swing.event.DocumentEvent;
 import javax.swing.event.UndoableEditListener;
-import javax.swing.undo.UndoManager;
 import javax.swing.text.*;
+import javax.swing.undo.UndoManager;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 
 public class XmlTextPane extends JEditorPane {
 
     /**
+     * Action which occures on Ctrl-D key pressed inside the editor.
+     * It implements duplicating od current line if there is no selection, or
+     * duplication of selected text if selection is not empty.
+     */
+    private class DuplicateAction {
+        public void execute() {
+            if (!isEditable() || !isEnabled()) {
+                return;
+            }
+
+            try {
+                final int position = getCaretPosition();
+                final Document document = getDocument();
+                final String selectedText = getSelectedText();
+                if ( selectedText != null && !CommonUtil.isEmpty(selectedText) ) {
+                    final int selectionEnd = getSelectionEnd();
+                    document.insertString(selectionEnd, selectedText, null);
+                    select(selectionEnd, selectionEnd + selectedText.length());
+                } else {
+                    final int docLen = document.getLength();
+                    int fromIndex = Math.max( 0, getText(0, position).lastIndexOf('\n') );
+                    int toIndex = getText(fromIndex + 1, docLen - position).indexOf('\n');
+                    toIndex = toIndex < 0 ? docLen : fromIndex + toIndex;
+                    String textToDuplicate = getText(fromIndex, toIndex - fromIndex + 1);
+                    if (!textToDuplicate.startsWith("\n")) {
+                        textToDuplicate = "\n" + textToDuplicate;
+                    }
+                    if (textToDuplicate.endsWith("\n")) {
+                        textToDuplicate = textToDuplicate.substring(0, textToDuplicate.length() - 1);
+                    }
+                    document.insertString(Math.min(docLen, toIndex + 1), textToDuplicate, null);
+                    setCaretPosition(position + textToDuplicate.length());
+                }
+            } catch (BadLocationException e1) {
+                e1.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * Action which occures on Ctrl-/ key pressed inside the editor.
+     * It implements commenting/uncommenting current line, or selected
+     * text, depending on whether selection exists or not.
+     */
+    private class CommentAction {
+        public void execute() {
+            if (!isEditable() || !isEnabled()) {
+                return;
+            }
+            final int position = getCaretPosition();
+            final Document document = getDocument();
+            final String selectedText = getSelectedText();
+
+            try {
+                if ( selectedText != null && !CommonUtil.isEmpty(selectedText) ) {
+                    String trimmed = selectedText.trim();
+                    if ( trimmed.startsWith("<!--") && trimmed.endsWith("-->") ) {
+                        StringBuffer buffer = new StringBuffer(selectedText);
+                        int pos = buffer.indexOf("<!--");
+                        buffer.delete(pos, pos + 4);
+                        pos = buffer.lastIndexOf("-->");                           
+                        buffer.delete(pos, pos + 3);
+                        replaceSelection( buffer.toString() );
+                    } else {
+                        String newSelection = "<!--" + selectedText + "-->";
+                        replaceSelection(newSelection);
+                    }
+                } else {
+                    final int docLen = document.getLength();
+                    int fromIndex = Math.max( 0, getText(0, position).lastIndexOf('\n') );
+                    int toIndex = getText(fromIndex + 1, docLen - position).indexOf('\n');
+                    toIndex = toIndex < 0 ? docLen : fromIndex + toIndex;
+                    String textToComment = getText(fromIndex, toIndex - fromIndex + 1);
+
+                    if (textToComment.startsWith("\n")) {
+                        textToComment = textToComment.substring(1);
+                        fromIndex++;
+                    }
+                    if (textToComment.endsWith("\n")) {
+                        textToComment = textToComment.substring(0, textToComment.length() - 1);
+                        toIndex--;
+                    }
+                    String trimmed = textToComment.trim();
+                    if ( trimmed.startsWith("<!--") && trimmed.endsWith("-->") ) {
+                        int pos = textToComment.lastIndexOf("-->");
+                        document.remove(fromIndex + pos, 3);
+                        pos = textToComment.indexOf("<!--");
+                        document.remove(fromIndex + pos, 4);
+                    } else {
+                        document.insertString(Math.min(toIndex + 1, docLen), "-->", null);
+                        document.insertString(fromIndex, "<!--", null);
+                    }
+                }
+            } catch (BadLocationException e1) {
+                e1.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * Action which occures on Ctrl-Y key pressed inside the editor.
+     * It implements deleting current line.
+     */
+    private class DeleteLineAction extends TextAction {
+        public DeleteLineAction() {
+            super("delete-line");
+        }
+
+        public void actionPerformed(ActionEvent e) {
+            JTextComponent textComponent = getTextComponent(e);
+            if ( !textComponent.isEditable() || !textComponent.isEnabled() ) {
+                return;
+            }
+
+            try {
+                final int position = getCaretPosition();
+                final Document document = getDocument();
+                int docLen = document.getLength();
+
+                if (docLen == 0) {
+                    return;
+                }
+
+                int fromIndex = Math.max( 0, getText(0, position).lastIndexOf('\n') );
+                int toIndex = getText(fromIndex + 1, docLen - fromIndex - 1).indexOf('\n');
+                toIndex = toIndex < 0 ? docLen : fromIndex + toIndex + 1;
+                String text = getText(fromIndex, toIndex - fromIndex);
+                if ( text.startsWith("\n") || toIndex >= docLen) {
+                    document.remove(fromIndex, toIndex - fromIndex);
+                } else {
+                    document.remove(fromIndex, toIndex - fromIndex + 1);
+                }
+
+                int newPosition = 0;
+                if (fromIndex > 0) {
+                    newPosition = fromIndex + 1;
+                }
+                docLen = document.getLength();
+                if (newPosition > docLen) {
+                    newPosition = getText().lastIndexOf('\n') + 1;
+                }
+                setCaretPosition(newPosition);
+            } catch (BadLocationException e1) {
+                e1.printStackTrace();
+            }
+        }
+    }
+
+    /**
      * Action which occures on TAB key pressed inside the editor. It implements clever
      * block indenting - when selection contains more than one line of text, the whole
-     * block is indented one tab place to the right. 
+     * block is indented one tab place to the right.
      */
     private class TabAction extends TextAction {
         public TabAction() {
@@ -208,8 +350,11 @@ public class XmlTextPane extends JEditorPane {
 
     private UndoManager undoManager = new UndoManager();
 
+    private DeleteLineAction deleteLineAction = new DeleteLineAction();
     private TabAction tabAction = new TabAction();
     private ShiftTabAction shiftTabAction = new ShiftTabAction();
+    private DuplicateAction duplicateAction = new DuplicateAction();
+    private CommentAction commentAction = new CommentAction();
 
     public XmlTextPane() {
         XMLEditorKit kit = new XMLEditorKit(true);
@@ -256,6 +401,7 @@ public class XmlTextPane extends JEditorPane {
         this.setFont( new Font( "Monospaced", Font.PLAIN, 12));
 
         this.registerKeyboardAction(shiftTabAction, KeyStroke.getKeyStroke( KeyEvent.VK_TAB, ActionEvent.SHIFT_MASK), JComponent.WHEN_FOCUSED);
+        this.registerKeyboardAction(deleteLineAction, KeyStroke.getKeyStroke( KeyEvent.VK_Y, ActionEvent.CTRL_MASK), JComponent.WHEN_FOCUSED);
         this.getActionMap().put(tabAction.getValue(Action.NAME), tabAction);
 
     }
@@ -287,6 +433,14 @@ public class XmlTextPane extends JEditorPane {
     public boolean hasSelection() {
         String selectedText = this.getSelectedText();
         return selectedText != null && !"".equals(selectedText);
+    }
+
+    public void duplicate() {
+        duplicateAction.execute();
+    }
+
+    public void comment() {
+        commentAction.execute();
     }
 
 }
