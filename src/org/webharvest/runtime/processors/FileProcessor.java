@@ -84,9 +84,9 @@ public class FileProcessor extends BaseProcessor {
         this.setProperty("File Path", filePath);
         this.setProperty("Type", type);
         this.setProperty("Charset", charset);
-        this.setProperty("List Files", Boolean.valueOf(listFiles));
-        this.setProperty("List Directories", Boolean.valueOf(listDirs));
-        this.setProperty("List Recursive", Boolean.valueOf(listRecursive));
+        this.setProperty("List Files", Boolean.valueOf(isListFiles));
+        this.setProperty("List Directories", Boolean.valueOf(isListDirs));
+        this.setProperty("List Recursive", Boolean.valueOf(isListRecursive));
 
         String fullPath = CommonUtil.getAbsoluteFilename(workingDir, filePath);
 
