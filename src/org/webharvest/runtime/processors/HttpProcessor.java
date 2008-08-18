@@ -112,7 +112,10 @@ public class HttpProcessor extends BaseProcessor {
         String responseCharset = res.getCharset();
         byte[] responseBody = res.getBody();
 
-        if ( mimeType == null || mimeType.toLowerCase().startsWith("text") || mimeType.toLowerCase().startsWith("application/xml") ) {
+        if ( mimeType == null ||
+             mimeType.toLowerCase().startsWith("text") ||
+             mimeType.toLowerCase().startsWith("application/xml") ||
+             mimeType.indexOf("javascript") >= 0   ) {
             String text = "";
             try {
                 // resolvs charset in the following way:
