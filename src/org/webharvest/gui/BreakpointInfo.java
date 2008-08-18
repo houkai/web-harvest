@@ -19,4 +19,8 @@ public class BreakpointInfo {
         this.lineNumber = lineNumber;
     }
 
+    public void updateForAmount(int amount) {
+        lineNumber += amount;
+    }
+
 }

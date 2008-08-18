@@ -1,6 +1,7 @@
 package org.webharvest.gui;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * Collection of breakpoints sorted by line number.
@@ -51,6 +52,39 @@ public class BreakpointCollection extends ArrayList {
                 return;
             } else if (currLineNumber > lineNumber) {
                 return;
+            }
+        }
+    }
+
+    /**
+     * Removes breakpoints in specified range of lines.
+     * @param from Range start
+     * @param to Range end
+     */
+    public void removeBreakpointsInRange(int from, int to) {
+        Iterator iterator = iterator();
+        while (iterator.hasNext()) {
+            BreakpointInfo breakpoint = (BreakpointInfo) iterator.next();
+            int currLineNumber = breakpoint.getLineNumber();
+            if (currLineNumber >= from && currLineNumber <= to) {
+                iterator.remove();
+            } else if (currLineNumber > to) {
+                return;
+            }
+        }
+    }
+
+    /**
+     * Updates breakpoints from specified line for specified amount.
+     * @param from Range start
+     */
+    public void updateBreakpoints(int from, int amount) {
+        final int size = this.size();
+        for (int i = 0; i < size; i++) {
+            BreakpointInfo breakpoint = (BreakpointInfo) this.get(i);
+            int currLineNumber = breakpoint.getLineNumber();
+            if (currLineNumber >= from) {
+                breakpoint.updateForAmount(amount);
             }
         }
     }

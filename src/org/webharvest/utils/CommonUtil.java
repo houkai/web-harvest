@@ -531,4 +531,31 @@ public class CommonUtil {
         return buffer.toString();
     }
 
+    /**
+     * Counts number of specified characters in give text.
+     * @param text Text to be parsed
+     * @param ch Character to be counted
+     * @param from Text offset
+     * @param to Text end
+     * @return Number of character occurences in given text.
+     */
+    public static int countChars(String text, char ch, int from, int to) {
+        int textLen = text.length();
+        if (from < 0) {
+            from = 0;
+        }
+        if (to >= textLen) {
+            to = textLen - 1;
+        }
+
+        int count = 0;
+        for (int i = from; i <= to; i++) {
+            if (text.charAt(i) == ch) {
+                count++;
+            }
+        }
+
+        return count;
+    }
+
 }

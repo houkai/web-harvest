@@ -34,6 +34,8 @@ public class ConfigDocument implements DocumentListener {
     private ConfigPanel configPanel;
     private XmlTextPane xmlPane;
 
+    private int lineCount = 0;
+
     /**
      * Constructor - initializes xml pane for this document.
      * @param configPanel
@@ -65,6 +67,14 @@ public class ConfigDocument implements DocumentListener {
         document.putProperty( XMLDocument.AUTO_INDENTATION_ATTRIBUTE, new Boolean(true) );
         document.putProperty( XMLDocument.TAG_COMPLETION_ATTRIBUTE, new Boolean(true) );
 
+        Document doc = xmlPane.getDocument();
+        int len = doc.getLength();
+        try {
+            this.lineCount = CommonUtil.countChars(doc.getText(0, len), '\n', 0, len - 1) + 1;
+        } catch (BadLocationException e) {
+            e.printStackTrace();
+        }
+
         updateGUI();
     }
 
@@ -95,8 +105,18 @@ public class ConfigDocument implements DocumentListener {
     public void insertUpdate(DocumentEvent e) {
         try {
             Document document = xmlPane.getDocument();
-            int lineCount = countLines( document.getText(0, document.getLength()), 0, e.getOffset() );
-            System.out.println("inserted: " + lineCount);
+            int docLen = document.getLength();
+            String text = document.getText(0, docLen);
+            int offset = e.getOffset();
+            int linesTo = CommonUtil.countChars(text, '\n', 0, offset - 1) + 1;
+            int linesFrom = CommonUtil.countChars(text, '\n', offset, docLen - 1);
+            int linesAdded = linesTo + linesFrom - lineCount;
+            lineCount = linesFrom + linesTo;
+
+            if (linesAdded > 0) {
+                BreakpointCollection breakpoints = xmlPane.getBreakpoints();
+                breakpoints.updateBreakpoints(linesTo, linesAdded);
+            }
         } catch (BadLocationException e1) {
             e1.printStackTrace();
         }
@@ -106,31 +126,23 @@ public class ConfigDocument implements DocumentListener {
     public void removeUpdate(DocumentEvent e) {
         try {
             Document document = xmlPane.getDocument();
-            int lineCount = countLines( document.getText(0, document.getLength()), 0, e.getOffset() + e.getLength() );
-            System.out.println("removed: " + lineCount);
+            int docLen = document.getLength();
+            String text = document.getText(0, docLen);
+            int offset = e.getOffset();
+            int linesTo = CommonUtil.countChars(text, '\n', 0, offset - 1) + 1;
+            int linesFrom = CommonUtil.countChars(text, '\n', offset, docLen - 1);
+            int linesRemoved = lineCount - linesTo - linesFrom;
+            lineCount = linesFrom + linesTo;
+
+            if (linesRemoved > 0) {
+                BreakpointCollection breakpoints = xmlPane.getBreakpoints();
+                breakpoints.removeBreakpointsInRange(linesTo, linesTo + linesRemoved);
+                breakpoints.updateBreakpoints(linesTo + linesRemoved + 1, -linesRemoved);
+            }
         } catch (BadLocationException e1) {
             e1.printStackTrace();
         }
         updateDocumentChanged(true);
-    }
-
-    private int countLines(String text, int from, int to) {
-        int textLen = text.length();
-        if (from < 0) {
-            from = 0;
-        }
-        if (to >= textLen) {
-            to = textLen - 1;
-        }
-
-        int count = 0;
-        for (int i = from; i <= to; i++) {
-            if (text.charAt(i) == '\n') {
-                count++;
-            }
-        }
-
-        return count;
     }
 
     /**
