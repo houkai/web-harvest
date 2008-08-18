@@ -29,11 +29,7 @@
 package org.bounce.text.xml;
 
 import javax.swing.JEditorPane;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Element;
-import javax.swing.text.GapContent;
-import javax.swing.text.PlainDocument;
+import javax.swing.text.*;
 
 /**
  * The XML Document is responsible for handling the user insertions and
@@ -213,6 +209,5 @@ public class XMLDocument extends PlainDocument {
             super.insertString( off, str, set);
         }
     }
-
 
 }

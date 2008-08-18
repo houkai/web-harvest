@@ -244,7 +244,7 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
 
         JScrollPane treeView = new JScrollPane(this.tree);
 
-        //Create the XML editor pane.
+        // Create the XML editor pane.
         this.xmlPane = new XmlTextPane();
         this.xmlPane.addCaretListener(this);
 

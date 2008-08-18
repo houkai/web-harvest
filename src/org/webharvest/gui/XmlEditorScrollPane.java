@@ -41,12 +41,14 @@ import org.bounce.text.ScrollableEditorPanel;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.geom.Rectangle2D;
 import java.util.Iterator;
 import java.util.ArrayList;
 
 /**
- * Scroll pane that contains XML editor and line numbers at left border
+ * Scroll pane that contains XML xmlTextPane and line numbers at left border
  */
 public class XmlEditorScrollPane extends JScrollPane {
 
@@ -74,10 +76,27 @@ public class XmlEditorScrollPane extends JScrollPane {
         private final Color RUNNING_MARKER_COLOR = new Color(0, 128, 0);
         private final Color ERROR_MARKER_COLOR = new Color(255, 0, 0);
 
-        private final Font font = editor.getFont();
+        private final Font font = xmlTextPane.getFont();
+
+        private LineNumberPanel() {
+            addMouseListener(new MouseAdapter() {
+                public void mouseClicked(MouseEvent e) {
+                    int y = e.getPoint().y;
+                    int lineHeight = getFontMetrics(font).getHeight();
+                    BreakpointCollection breakpoints = xmlTextPane.getBreakpoints();
+                    int lineNumber = y / lineHeight + 1;
+                    if ( breakpoints.isThereBreakpoint(lineNumber) ) {
+                        breakpoints.removeBreakpoint(lineNumber);
+                    } else {
+                        breakpoints.addBreakpoint(new BreakpointInfo(lineNumber));
+                    }
+                    repaintLineNumbers();
+                }
+            });
+        }
 
         public Dimension getPreferredSize() {
-            int editorHeight = editor.getHeight();
+            int editorHeight = xmlTextPane.getHeight();
             FontMetrics fm = getFontMetrics(font);
             int lineHeight = fm.getHeight();
             int maxHeight = calculateTextHeight();
@@ -87,12 +106,16 @@ public class XmlEditorScrollPane extends JScrollPane {
             String lastValue = String.valueOf(numOfLines);
             Rectangle2D rect = fm.getStringBounds(lastValue, getGraphics());
 
-            return new Dimension(20 + (int)rect.getWidth(), editorHeight);
+            int width = 22 + (int) rect.getWidth();
+            
+            return new Dimension(width, editorHeight);
         }
 
         public void paint(Graphics g) {
+            int width = getWidth();
+
             g.setColor(Color.white);
-            g.fillRect(0, 0, getWidth() - 1, getHeight() - 1);
+            g.fillRect(0, 0, width - 1, getHeight() - 1);
             g.setColor(NUMBER_COLOR);
 
             g.setFont(font);
@@ -110,24 +133,36 @@ public class XmlEditorScrollPane extends JScrollPane {
                 y += lineHeight;
             }
 
-            int right = getWidth() - 1;
+            BreakpointCollection breakpoints = xmlTextPane.getBreakpoints();
+            for (int i = 0; i < breakpoints.size(); i++) {
+                BreakpointInfo breakpoint = (BreakpointInfo) breakpoints.get(i);
+                y = breakpoint.getLineNumber() * lineHeight;
+                if (y < maxHeight) {
+                    g.drawImage(ResourceManager.BREAKPOINT_IMAGE, width - 14, y - 10, this);
+                }
+            }
+
+            int right = width - 1;
             g.setColor(BORDER_COLOR);
             g.drawLine(right, 0, right, getHeight() - 1);
 
             for (int i = 0; i < markers.size(); i++) {
                 LineMarker lineMarker = (LineMarker) markers.get(i);
+                int xpos = width - 12;
+                int ypos = lineHeight * lineMarker.line + 1;
+
                 switch(lineMarker.markerType) {
                     case DEFAULT_MARKER_TYPE:
                         g.setColor(DEFAULT_MARKER_COLOR);
-                        g.drawString(String.valueOf((char)0x25BA), this.getWidth() - 12, lineHeight * lineMarker.line);
+                        g.drawString(String.valueOf((char)0x25BA), xpos, ypos);
                         break;
                     case RUNNING_MARKER_TYPE:
                         g.setColor(RUNNING_MARKER_COLOR);
-                        g.drawString(String.valueOf((char)0x25BA), this.getWidth() - 12, lineHeight * lineMarker.line);
+                        g.drawString(String.valueOf((char)0x25BA), xpos, ypos);
                         break;
                     case ERROR_MARKER_TYPE:
                         g.setColor(ERROR_MARKER_COLOR);
-                        g.drawString(String.valueOf((char)0x25BA), this.getWidth() - 12, lineHeight * lineMarker.line);
+                        g.drawString(String.valueOf((char)0x25BA), xpos, ypos);
                         break;
                 }
             }
@@ -135,9 +170,9 @@ public class XmlEditorScrollPane extends JScrollPane {
 
         private int calculateTextHeight() {
             int maxHeight = 0;
-            int lastOffset = editor.getDocument().getEndPosition().getOffset();
+            int lastOffset = xmlTextPane.getDocument().getEndPosition().getOffset();
             try {
-                maxHeight = (int) (editor.modelToView(lastOffset).getMaxY());
+                maxHeight = (int) (xmlTextPane.modelToView(lastOffset).getMaxY());
             } catch (Exception e) {
                 maxHeight = 0;
             }
@@ -146,7 +181,7 @@ public class XmlEditorScrollPane extends JScrollPane {
     }
 
     private LineNumberPanel lineNumberPanel;
-    private JEditorPane editor = null;
+    private XmlTextPane xmlTextPane = null;
     private boolean showLineNumbers;
 
     // list of all markers
@@ -157,9 +192,9 @@ public class XmlEditorScrollPane extends JScrollPane {
      * @param showLineNumbers
      * @param editor
      */
-    public XmlEditorScrollPane(JEditorPane editor, boolean showLineNumbers) {
+    public XmlEditorScrollPane(XmlTextPane editor, boolean showLineNumbers) {
         super( new ScrollableEditorPanel(editor) );
-        this.editor = editor;
+        this.xmlTextPane = editor;
         this.lineNumberPanel = new LineNumberPanel();
         this.showLineNumbers = showLineNumbers;
         this.setRowHeaderView(showLineNumbers ? this.lineNumberPanel : null);
@@ -189,7 +224,7 @@ public class XmlEditorScrollPane extends JScrollPane {
     }
 
     /**
-     * Adds new editor marker specified by type and line number
+     * Adds new xmlTextPane marker specified by type and line number
      * @param markerType
      * @param line
      */
@@ -201,7 +236,7 @@ public class XmlEditorScrollPane extends JScrollPane {
     }
 
     /**
-     * Clears list of all editor markers.
+     * Clears list of all xmlTextPane markers.
      */
     public void clearAllMarkers() {
         this.markers.clear();

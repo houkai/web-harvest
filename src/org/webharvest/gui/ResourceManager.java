@@ -38,6 +38,7 @@ package org.webharvest.gui;
 
 import javax.swing.*;
 import java.net.URL;
+import java.awt.*;
 
 /**
  * @author: Vladimir Nikic
@@ -89,6 +90,8 @@ public class ResourceManager {
     public static final Icon HELPDIR_ICON = getIcon("resources/icons/helpdir.gif");
     public static final Icon HELPTOPIC_ICON = getIcon("resources/icons/helptopic.gif");
 
+    public static Image BREAKPOINT_IMAGE = getImage("resources/icons/breakpoint.gif");
+
     public static Icon getIcon(String path) {
         return new ImageIcon(clazz.getResource(path));
     }
@@ -117,6 +120,10 @@ public class ResourceManager {
         }
 
         return urlString;
+    }
+
+    public static Image getImage(String path) {
+        return Toolkit.getDefaultToolkit().getImage(clazz.getResource(path));
     }
 
 }

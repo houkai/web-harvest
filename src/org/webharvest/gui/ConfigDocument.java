@@ -7,6 +7,7 @@ import javax.swing.event.DocumentListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.*;
 import javax.swing.text.PlainDocument;
+import javax.swing.text.Document;
 import java.io.*;
 import java.awt.*;
 import java.net.URL;
@@ -58,11 +59,12 @@ public class ConfigDocument implements DocumentListener {
     private void load(Reader reader) throws IOException {
         xmlPane.read(reader, null);
 
-        xmlPane.getDocument().addDocumentListener(this);
-        xmlPane.getDocument().addUndoableEditListener( xmlPane.getUndoManager() );
-        xmlPane.getDocument().putProperty( PlainDocument.tabSizeAttribute, new Integer(4) );
-        xmlPane.getDocument().putProperty( XMLDocument.AUTO_INDENTATION_ATTRIBUTE, new Boolean(true) );
-        xmlPane.getDocument().putProperty( XMLDocument.TAG_COMPLETION_ATTRIBUTE, new Boolean(true) );
+        final Document document = xmlPane.getDocument();
+        document.addDocumentListener(this);
+        document.addUndoableEditListener( xmlPane.getUndoManager() );
+        document.putProperty( PlainDocument.tabSizeAttribute, new Integer(4) );
+        document.putProperty( XMLDocument.AUTO_INDENTATION_ATTRIBUTE, new Boolean(true) );
+        document.putProperty( XMLDocument.TAG_COMPLETION_ATTRIBUTE, new Boolean(true) );
 
         updateGUI();
     }

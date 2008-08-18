@@ -57,7 +57,7 @@ public class XmlTextPane extends JEditorPane {
 
     /**
      * Action which occures on Ctrl-D key pressed inside the editor.
-     * It implements duplicating od current line if there is no selection, or
+     * It implements duplicating od current line if there is no selection, or aezaa
      * duplication of selected text if selection is not empty.
      */
     private class DuplicateAction {
@@ -356,6 +356,8 @@ public class XmlTextPane extends JEditorPane {
     private DuplicateAction duplicateAction = new DuplicateAction();
     private CommentAction commentAction = new CommentAction();
 
+    private BreakpointCollection breakpoints = new BreakpointCollection();
+
     public XmlTextPane() {
         XMLEditorKit kit = new XMLEditorKit(true);
 
@@ -378,24 +380,6 @@ public class XmlTextPane extends JEditorPane {
         kit.setStyle( XMLStyleConstants.CDATA, new Color(0, 0, 0), Font.PLAIN);
         kit.setStyle( XMLStyleConstants.SPECIAL, new Color(0, 0, 0), Font.PLAIN);
 
-//        kit.setStyle( XMLStyleConstants.ELEMENT_NAME, new Color( 0, 0, 128), Font.BOLD);
-//        kit.setStyle( XMLStyleConstants.ELEMENT_VALUE, Color.black, Font.BOLD);
-//        kit.setStyle( XMLStyleConstants.ELEMENT_PREFIX, new Color( 0, 0, 128), Font.PLAIN);
-//
-//        kit.setStyle( XMLStyleConstants.ATTRIBUTE_NAME, Color.blue, Font.BOLD);
-//        kit.setStyle( XMLStyleConstants.ATTRIBUTE_VALUE, new Color( 0, 128, 0), Font.BOLD);
-//        kit.setStyle( XMLStyleConstants.ATTRIBUTE_PREFIX, Color.blue, Font.PLAIN);
-//
-//        kit.setStyle( XMLStyleConstants.NAMESPACE_NAME, new Color( 102, 102, 102), Font.PLAIN);
-//        kit.setStyle( XMLStyleConstants.NAMESPACE_VALUE, new Color( 0, 51, 51), Font.PLAIN);
-//        kit.setStyle( XMLStyleConstants.NAMESPACE_PREFIX, new Color( 0, 102, 102), Font.PLAIN);
-//
-//        kit.setStyle( XMLStyleConstants.ENTITY, new Color( 102, 102, 102), Font.PLAIN);
-//        kit.setStyle( XMLStyleConstants.COMMENT, Color.gray, Font.PLAIN);
-//        kit.setStyle( XMLStyleConstants.CDATA, Color.black, Font.PLAIN);
-//        kit.setStyle( XMLStyleConstants.SPECIAL, Color.black, Font.BOLD);
-
-
         this.setEditorKit(kit);
 
         this.setFont( new Font( "Monospaced", Font.PLAIN, 12));
@@ -403,6 +387,12 @@ public class XmlTextPane extends JEditorPane {
         this.registerKeyboardAction(shiftTabAction, KeyStroke.getKeyStroke( KeyEvent.VK_TAB, ActionEvent.SHIFT_MASK), JComponent.WHEN_FOCUSED);
         this.registerKeyboardAction(deleteLineAction, KeyStroke.getKeyStroke( KeyEvent.VK_Y, ActionEvent.CTRL_MASK), JComponent.WHEN_FOCUSED);
         this.getActionMap().put(tabAction.getValue(Action.NAME), tabAction);
+
+//        try {
+//            this.getHighlighter().addHighlight(0, 30, new DefaultHighlighter.DefaultHighlightPainter(new Color(255, 164, 164)));
+//        } catch (BadLocationException e) {
+//            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+//        }
 
     }
 
@@ -443,4 +433,8 @@ public class XmlTextPane extends JEditorPane {
         commentAction.execute();
     }
 
+    public BreakpointCollection getBreakpoints() {
+        return breakpoints;
+    }
+    
 }
