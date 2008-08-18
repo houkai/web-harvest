@@ -6,8 +6,7 @@ import org.bounce.text.xml.XMLDocument;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.*;
-import javax.swing.text.PlainDocument;
-import javax.swing.text.Document;
+import javax.swing.text.*;
 import java.io.*;
 import java.awt.*;
 import java.net.URL;
@@ -94,11 +93,44 @@ public class ConfigDocument implements DocumentListener {
     }
 
     public void insertUpdate(DocumentEvent e) {
+        try {
+            Document document = xmlPane.getDocument();
+            int lineCount = countLines( document.getText(0, document.getLength()), 0, e.getOffset() );
+            System.out.println("inserted: " + lineCount);
+        } catch (BadLocationException e1) {
+            e1.printStackTrace();
+        }
         updateDocumentChanged(true);
     }
 
     public void removeUpdate(DocumentEvent e) {
+        try {
+            Document document = xmlPane.getDocument();
+            int lineCount = countLines( document.getText(0, document.getLength()), 0, e.getOffset() + e.getLength() );
+            System.out.println("removed: " + lineCount);
+        } catch (BadLocationException e1) {
+            e1.printStackTrace();
+        }
         updateDocumentChanged(true);
+    }
+
+    private int countLines(String text, int from, int to) {
+        int textLen = text.length();
+        if (from < 0) {
+            from = 0;
+        }
+        if (to >= textLen) {
+            to = textLen - 1;
+        }
+
+        int count = 0;
+        for (int i = from; i <= to; i++) {
+            if (text.charAt(i) == '\n') {
+                count++;
+            }
+        }
+
+        return count;
     }
 
     /**

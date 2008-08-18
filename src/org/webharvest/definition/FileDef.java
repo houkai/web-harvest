@@ -47,6 +47,10 @@ public class FileDef extends BaseElementDef {
     private String path;
     private String type;
     private String charset;
+    private String listFilter;
+    private String listFiles;
+    private String listDirs;
+    private String listRecursive;
 
     public FileDef(XmlNode xmlNode) {
         super(xmlNode);
@@ -55,6 +59,10 @@ public class FileDef extends BaseElementDef {
         this.path = CommonUtil.adaptFilename( (String) xmlNode.get("path") );
         this.type = (String) xmlNode.get("type");
         this.charset = (String) xmlNode.get("charset");
+        this.listFilter = (String) xmlNode.get("listfilter");
+        this.listFiles = (String) xmlNode.get("listfiles");
+        this.listDirs = (String) xmlNode.get("listdirs");
+        this.listRecursive = (String) xmlNode.get("listrecursive");
     }
 
     public String getAction() {
@@ -77,4 +85,20 @@ public class FileDef extends BaseElementDef {
         return "file";
     }
 
+    public String getListFilter() {
+        return listFilter;
+    }
+
+    public String getListDirs() {
+        return listDirs;
+    }
+
+    public String getListFiles() {
+        return listFiles;
+    }
+
+    public String getListRecursive() {
+        return listRecursive;
+    }
+    
 }

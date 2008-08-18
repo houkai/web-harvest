@@ -45,10 +45,9 @@ import org.webharvest.runtime.templaters.BaseTemplater;
 import org.webharvest.runtime.variables.*;
 import org.webharvest.utils.CommonUtil;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.Iterator;
+import java.io.*;
+import java.util.*;
+import java.util.regex.*;
 
 /**
  * File processor.
@@ -73,11 +72,21 @@ public class FileProcessor extends BaseProcessor {
         if (charset == null) {
             charset = scraper.getConfiguration().getCharset();
         }
+        String listFilter = BaseTemplater.execute( fileDef.getListFilter(), scriptEngine);
+        String listFiles = BaseTemplater.execute( fileDef.getListFiles(), scriptEngine);
+        boolean isListFiles = CommonUtil.getBooleanValue(listFiles, true);
+        String listDirs = BaseTemplater.execute( fileDef.getListDirs(), scriptEngine);
+        boolean isListDirs = CommonUtil.getBooleanValue(listDirs, true);
+        String listRecursive = BaseTemplater.execute( fileDef.getListRecursive(), scriptEngine);
+        boolean isListRecursive = CommonUtil.getBooleanValue(listRecursive, false);
 
         this.setProperty("Action", action);
         this.setProperty("File Path", filePath);
         this.setProperty("Type", type);
         this.setProperty("Charset", charset);
+        this.setProperty("List Files", Boolean.valueOf(listFiles));
+        this.setProperty("List Directories", Boolean.valueOf(listDirs));
+        this.setProperty("List Recursive", Boolean.valueOf(listRecursive));
 
         String fullPath = CommonUtil.getAbsoluteFilename(workingDir, filePath);
 
@@ -86,9 +95,33 @@ public class FileProcessor extends BaseProcessor {
             return executeFileWrite(false, scraper, context, fullPath, type, charset);
         } else if ( "append".equalsIgnoreCase(action) ) {
             return executeFileWrite(true, scraper, context, fullPath, type, charset);
+        } else if ( "list".equalsIgnoreCase(action) ) {
+            return executeFileList(filePath, listFilter, isListFiles, isListDirs, isListRecursive);
         } else {
             return executeFileRead(fullPath, type, charset, scraper);
         }
+    }
+
+    private Variable executeFileList(String filePath, String listFilter, boolean listFiles, boolean listDirs, boolean listRecursive) {
+        File dir = new File(filePath);
+        if ( !dir.exists() ) {
+            throw new FileException("Directory \"" + dir + "\" doesn't exist!");
+        } else if ( !dir.isDirectory() ) {
+            throw new FileException("\"" + dir + "\" is not directory!");
+        }
+
+        Collection collection = listFiles(dir, new CommandPromptFilenameFilter(listFilter), listRecursive);
+        TreeSet sortedFileNames = new TreeSet();
+        Iterator iterator = collection.iterator();
+        while (iterator.hasNext()) {
+            File file = (File) iterator.next();
+            boolean isDir = file.isDirectory();
+            if ( !((!listDirs && isDir) || (!listFiles && !isDir)) ) {
+                sortedFileNames.add( file.getAbsolutePath() );
+            }
+        }
+
+        return new ListVariable( new ArrayList(sortedFileNames) );
     }
 
     /**
@@ -179,5 +212,47 @@ public class FileProcessor extends BaseProcessor {
         return new NodeVariable(result);
     }
 
+    private Collection listFiles(File directory, FilenameFilter filter, boolean recurse) {
+        Vector files = new Vector();
+        File[] entries = directory.listFiles();
+        for (int f = 0; f < entries.length; f++) {
+            File entry = entries[f];
+            if (filter == null || filter.accept(directory, entry.getName())) {
+                files.add(entry);
+            }
+            if (recurse && entry.isDirectory()) {
+                files.addAll(listFiles(entry, filter, recurse));
+            }
+        }
+        return files;
+    }
+
+    private class CommandPromptFilenameFilter implements FilenameFilter {
+        Pattern pattern = Pattern.compile(".*");
+
+        private CommandPromptFilenameFilter(String filter) {
+            if ( !CommonUtil.isEmpty(filter) ) {
+                StringBuffer buffer = new StringBuffer();
+                for (int i = 0; i < filter.length(); i++) {
+                    char ch = filter.charAt(i);
+                    switch (ch) {
+                        case '.' : buffer.append("\\."); break;
+                        case '*' : buffer.append(".*"); break;
+                        case '?' : buffer.append("."); break;
+                        default : buffer.append(ch); break;
+                    }
+                }
+                try {
+                    pattern = Pattern.compile( buffer.toString() );
+                } catch (Exception e) {
+                    pattern = Pattern.compile("");
+                }
+            }
+        }
+
+        public boolean accept(File dir, String name) {
+            return pattern.matcher(name).matches();
+        }
+    }
 
 }

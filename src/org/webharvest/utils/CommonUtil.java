@@ -269,6 +269,21 @@ public class CommonUtil {
     	
     	return false;
     }
+
+    /**
+     * Reads boolean value from string
+     * @param value
+     * @param defaultValue value to be returned if string value is not recognized      
+     */
+    public static boolean getBooleanValue(String value, boolean defaultValue) {
+        if ( "1".equals(value) || "true".equalsIgnoreCase(value) || "yes".equalsIgnoreCase(value) ) {
+            return true;
+        } else if ( "0".equals(value) || "false".equalsIgnoreCase(value) || "no".equalsIgnoreCase(value) ) {
+            return false;
+        }
+
+        return defaultValue;
+    }
     
     /**
      * Escapes XML string - special characters: &'"<> are
