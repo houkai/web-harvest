@@ -38,7 +38,7 @@ package org.webharvest.utils;
 
 public class Constants {
 
-    public static final String WEB_HARVEST_VERSION = "1.1";
+    public static final String WEB_HARVEST_VERSION = "2.0";
     public static final String WEB_HARVEST_DATE = "20th September, 2008";
 
     public static final String WELCOME_ADDITION_URL = "http://web-harvest.sourceforge.net/welcome_add.xml";
