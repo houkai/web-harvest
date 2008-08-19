@@ -16,7 +16,7 @@ import java.util.Iterator;
 public class ElementInfo {
 
     private String name;
-    private WebHarvestPlugin plugin;
+    private Class pluginClass;
     private Class definitionClass;
     private String validTags;
     private String validAtts;
@@ -33,9 +33,9 @@ public class ElementInfo {
         this(name, null, definitionClass, validTags, validAtts);
     }
 
-    public ElementInfo(String name, WebHarvestPlugin plugin, Class definitionClass, String validTags, String validAtts) {
+    public ElementInfo(String name, Class pluginClass, Class definitionClass, String validTags, String validAtts) {
         this.name = name;
-        this.plugin = plugin;
+        this.pluginClass = pluginClass;
         this.definitionClass = definitionClass;
         this.validTags = validTags;
         this.validAtts = validAtts;
@@ -93,8 +93,8 @@ public class ElementInfo {
     }
 
 
-    public WebHarvestPlugin getPlugin() {
-        return plugin;
+    public Class getPluginClass() {
+        return pluginClass;
     }
 
     public Class getDefinitionClass() {

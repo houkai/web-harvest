@@ -115,6 +115,27 @@ public class CommonUtil {
     }
 
     /**
+     * Checks if given string is valid XML identifier, i.e. it can be valid XML tag
+     * or attribute name.
+     * @param name String to be checked
+     * @return True if string is valid XML identifier, false otherwise.
+     */
+    public static boolean isValidXmlIdentifier(String name) {
+        if ( !isEmpty(name) ) {
+            if ( Character.isJavaIdentifierStart(name.charAt(0)) ) {
+                for (int i = 1; i < name.length(); i++ )  {
+                    char ch = name.charAt(i);
+                    if ( !Character.isJavaIdentifierPart(ch) && ch != '-' ) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Checks if specified file path is absolute. Criteria for recogning absolute file paths is
      * that i starts with /, \, or X: where X is some letter.
      * @param path
@@ -556,6 +577,25 @@ public class CommonUtil {
         }
 
         return count;
+    }
+
+    /**
+     * Checks if specified string exists in given array
+     * @param array  Array of strings
+     * @param s String to be looked for in array
+     * @param caseSensitive Tells whether search is case sensitive
+     * @return True if string is found in array, false otherwise
+     */
+    public static boolean existsInStringArray(String[] array, String s, boolean caseSensitive) {
+        if (s != null && array != null) {
+            for (int i = 0; i < array.length; i++) {
+                if ( (caseSensitive && s.equals(array[i])) || s.equalsIgnoreCase(array[i]) ) {
+                    return true;
+                }
+
+            }
+        }
+        return false;
     }
 
 }

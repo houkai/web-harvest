@@ -36,13 +36,12 @@
 */
 package org.webharvest.definition;
 
-import org.webharvest.exception.ConfigurationException;
-import org.webharvest.exception.ErrMsg;
+import org.webharvest.exception.*;
 import org.webharvest.runtime.processors.*;
+import org.webharvest.utils.CommonUtil;
 
 import java.util.*;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 
 /**
  * Class contains information and logic to validate and crate definition classes for
@@ -100,31 +99,41 @@ public class DefinitionResolver {
         elementInfos.put( "exit", new ElementInfo("exit", ExitDef.class, "", "id,condition,message") );
     }
 
-    public static void registerPlugin(String fullClassName) {
-        Class pluginClass = null;
-        try {
-            pluginClass = Class.forName(fullClassName);
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-
+    public static void registerPlugin(Class pluginClass) throws PluginException {
+        String fullClassName = pluginClass != null ? pluginClass.getCanonicalName() : "null";
         try {
             Object pluginObj = pluginClass.newInstance();
             if ( !(pluginObj instanceof WebHarvestPlugin) ) {
-                // throw exception
+                throw new PluginException("Plugin class \"" + fullClassName + "\" does not inherit WebHarvestPlugin class!");
             }
             WebHarvestPlugin plugin = (WebHarvestPlugin) pluginObj;
             String pluginName = plugin.getName();
+            if ( !CommonUtil.isValidXmlIdentifier(pluginName) ) {
+                throw new PluginException("Plugin class \"" + fullClassName + "\" does not define valid name!");
+            }
             pluginName = pluginName.toLowerCase();
-            ElementInfo elementInfo = new ElementInfo(pluginName, WebHarvestPlugin.class, "", "");
-            elementInfos.put(pluginName, elementInfo);
-        } catch (InstantiationException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
 
-        
+            if (elementInfos.containsKey(pluginName)) {
+                throw new PluginException("Plugin named \"" + pluginName + "\" is already registered!");
+            }
+
+            String subtags = plugin.getTagDesc();
+            String atts = plugin.getTagDesc();
+            ElementInfo elementInfo = new ElementInfo(pluginName, pluginClass, WebHarvestPlugin.class, subtags, atts);
+            elementInfos.put(pluginName, elementInfo);
+        } catch (Exception e) {
+            throw new PluginException("Error instantiating plugin class \"" + fullClassName + "\": " + e.getMessage(), e);
+        }
+    }
+    
+    public static void registerPlugin(String fullClassName) throws PluginException {
+        Class pluginClass;
+        try {
+            pluginClass = Class.forName(fullClassName);
+        } catch (ClassNotFoundException e) {
+            throw new PluginException("Error finding plugin class \"" + fullClassName + "\": " + e.getMessage(), e);
+        }
+        registerPlugin(pluginClass);
     }
 
     /**
@@ -165,8 +174,7 @@ public class DefinitionResolver {
             Constructor constructor = elementClass.getConstructor( new Class[] {XmlNode.class} );
             IElementDef elementDef = (IElementDef) constructor.newInstance(new Object[]{node});
             if (elementDef instanceof WebHarvestPluginDef) {
-                WebHarvestPlugin plugin = elementInfo.getPlugin();
-                ((WebHarvestPluginDef) elementDef).setPluginProcessor(plugin);
+                ((WebHarvestPluginDef) elementDef).setPluginClass( elementInfo.getPluginClass() );
             }
             return elementDef;
         } catch (Exception e) {

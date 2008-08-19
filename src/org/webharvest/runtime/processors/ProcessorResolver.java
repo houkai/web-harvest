@@ -94,7 +94,11 @@ public class ProcessorResolver {
 	    	return new ScriptProcessor( (ScriptDef)elementDef );
 	    } else if (elementDef instanceof ExitDef) {
 	    	return new ExitProcessor( (ExitDef)elementDef );
-	    }
+	    } else if (elementDef instanceof WebHarvestPluginDef) {
+            WebHarvestPluginDef pluginDef = (WebHarvestPluginDef) elementDef;
+            pluginDef.createPlugin();
+            return pluginDef.getPlugin();
+        }
 
         return null;
     }

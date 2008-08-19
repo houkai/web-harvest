@@ -38,11 +38,17 @@ package org.webharvest.runtime.processors;
 
 import org.webharvest.runtime.*;
 import org.webharvest.runtime.variables.*;
+import org.webharvest.utils.CommonUtil;
+import org.webharvest.definition.WebHarvestPluginDef;
+
+import java.util.*;
 
 /**
  * Base for all user-defined plugins. 
  */
 abstract public class WebHarvestPlugin extends BaseProcessor {
+
+    private Map attributes;
 
     public WebHarvestPlugin() {
         super();
@@ -52,7 +58,7 @@ abstract public class WebHarvestPlugin extends BaseProcessor {
      * Defines name of the processor. Should be valid identifier.
      * Processor's tag will use this name. For example, if this name is
      * "myprocessor" in config file it will be used as &lt;myprocessor...&gt;...&lt;/myprocessor&gt; 
-     * @return
+     * @return Name of the processor
      */
     public abstract String getName();
 
@@ -100,4 +106,54 @@ abstract public class WebHarvestPlugin extends BaseProcessor {
      */
     public abstract Variable execute(Scraper scraper, ScraperContext context);
 
+    public String getTagDesc() {
+        String[] validSubprocessors = getValidSubprocessors();
+        if (validSubprocessors == null) {
+            return null;
+        }
+
+        String requiredTags[] = getRequiredSubprocessors();
+
+        StringBuffer result = new StringBuffer();
+        for (int i = 0; i < validSubprocessors.length; i++) {
+            if (result.length() != 0) {
+                result.append(',');
+            }
+            String subProcessor = validSubprocessors[i];
+            if (CommonUtil.existsInStringArray(requiredTags, subProcessor, true)) {
+                result.append('!');
+            }
+            result.append(subProcessor);
+        }
+        return result.toString();
+    }
+
+    public String getAttributeDesc() {
+        String[] validAtts = getValidAttributes();
+        if (validAtts == null) {
+            return "id";
+        }
+
+        String requiredAtts[] = getRequiredAttributes();
+
+        StringBuffer result = new StringBuffer("id,");
+        for (int i = 0; i < validAtts.length; i++) {
+            String att = validAtts[i];
+            if (CommonUtil.existsInStringArray(requiredAtts, att, true)) {
+                result.append('!');
+            }
+            result.append(att);
+        }
+        return result.toString();
+    }
+
+    public Map getAttributes() {
+        return attributes;
+    }
+
+    public void setDef(WebHarvestPluginDef def) {
+        this.elementDef = def;
+        this.attributes = def.getAttributes();
+    }
+    
 }
