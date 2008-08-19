@@ -38,6 +38,7 @@ package org.webharvest.definition;
 
 import org.webharvest.exception.ConfigurationException;
 import org.webharvest.exception.ErrMsg;
+import org.webharvest.runtime.processors.*;
 
 import java.util.*;
 import java.lang.reflect.Constructor;
@@ -99,6 +100,33 @@ public class DefinitionResolver {
         elementInfos.put( "exit", new ElementInfo("exit", ExitDef.class, "", "id,condition,message") );
     }
 
+    public static void registerPlugin(String fullClassName) {
+        Class pluginClass = null;
+        try {
+            pluginClass = Class.forName(fullClassName);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+
+        try {
+            Object pluginObj = pluginClass.newInstance();
+            if ( !(pluginObj instanceof WebHarvestPlugin) ) {
+                // throw exception
+            }
+            WebHarvestPlugin plugin = (WebHarvestPlugin) pluginObj;
+            String pluginName = plugin.getName();
+            pluginName = pluginName.toLowerCase();
+            ElementInfo elementInfo = new ElementInfo(pluginName, WebHarvestPlugin.class, "", "");
+            elementInfos.put(pluginName, elementInfo);
+        } catch (InstantiationException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+
+        
+    }
+
     /**
      * @return Map of all allowed element infos.
      */
@@ -135,7 +163,12 @@ public class DefinitionResolver {
         Class elementClass = elementInfo.getDefinitionClass();
         try {
             Constructor constructor = elementClass.getConstructor( new Class[] {XmlNode.class} );
-            return (IElementDef) constructor.newInstance( new Object[] {node} );
+            IElementDef elementDef = (IElementDef) constructor.newInstance(new Object[]{node});
+            if (elementDef instanceof WebHarvestPluginDef) {
+                WebHarvestPlugin plugin = elementInfo.getPlugin();
+                ((WebHarvestPluginDef) elementDef).setPluginProcessor(plugin);
+            }
+            return elementDef;
         } catch (Exception e) {
             if (e instanceof ConfigurationException) {
                 throw (ConfigurationException) e;

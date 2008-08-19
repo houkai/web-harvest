@@ -2,6 +2,7 @@ package org.webharvest.definition;
 
 import org.webharvest.exception.ConfigurationException;
 import org.webharvest.exception.ErrMsg;
+import org.webharvest.runtime.processors.*;
 
 import java.util.Set;
 import java.util.TreeSet;
@@ -15,6 +16,7 @@ import java.util.Iterator;
 public class ElementInfo {
 
     private String name;
+    private WebHarvestPlugin plugin;
     private Class definitionClass;
     private String validTags;
     private String validAtts;
@@ -26,8 +28,14 @@ public class ElementInfo {
 
     private boolean allTagsAllowed;
 
+
     public ElementInfo(String name, Class definitionClass, String validTags, String validAtts) {
+        this(name, null, definitionClass, validTags, validAtts);
+    }
+
+    public ElementInfo(String name, WebHarvestPlugin plugin, Class definitionClass, String validTags, String validAtts) {
         this.name = name;
+        this.plugin = plugin;
         this.definitionClass = definitionClass;
         this.validTags = validTags;
         this.validAtts = validAtts;
@@ -82,6 +90,11 @@ public class ElementInfo {
         }
 
         return result.toString();
+    }
+
+
+    public WebHarvestPlugin getPlugin() {
+        return plugin;
     }
 
     public Class getDefinitionClass() {
