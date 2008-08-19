@@ -104,7 +104,7 @@ public class DefinitionResolver {
         try {
             Object pluginObj = pluginClass.newInstance();
             if ( !(pluginObj instanceof WebHarvestPlugin) ) {
-                throw new PluginException("Plugin class \"" + fullClassName + "\" does not inherit WebHarvestPlugin class!");
+                throw new PluginException("Plugin class \"" + fullClassName + "\" does not extend WebHarvestPlugin class!");
             }
             WebHarvestPlugin plugin = (WebHarvestPlugin) pluginObj;
             String pluginName = plugin.getName();
