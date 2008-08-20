@@ -15,7 +15,7 @@ public class WebHarvestPluginDef extends BaseElementDef {
     private String name;
 
     public WebHarvestPluginDef(XmlNode xmlNode) {
-        super(xmlNode, false);
+        super(xmlNode, true);
         this.attributes = xmlNode.getAttributes();
     }
 

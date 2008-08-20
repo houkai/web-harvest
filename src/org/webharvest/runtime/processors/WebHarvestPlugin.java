@@ -37,6 +37,8 @@
 package org.webharvest.runtime.processors;
 
 import org.webharvest.runtime.*;
+import org.webharvest.runtime.templaters.*;
+import org.webharvest.runtime.scripting.*;
 import org.webharvest.runtime.variables.*;
 import org.webharvest.utils.CommonUtil;
 import org.webharvest.definition.WebHarvestPluginDef;
@@ -148,13 +150,67 @@ abstract public class WebHarvestPlugin extends BaseProcessor {
         return result.toString();
     }
 
-    public Map getAttributes() {
-        return attributes;
-    }
-
     public void setDef(WebHarvestPluginDef def) {
         this.elementDef = def;
         this.attributes = def.getAttributes();
     }
-    
+
+    /**
+     * @return Map of attributes of this plugin
+     */
+    protected Map getAttributes() {
+        return attributes;
+    }
+
+    /**
+     * @param attName Name of attrubte
+     * @param scraper
+     * @return Value of specified attribute, or null if attribute doesn't exist
+     */
+    protected String evaluateAttribute(String attName, Scraper scraper) {
+        String attValue = (String) attributes.get(attName);
+        ScriptEngine scriptEngine = scraper.getScriptEngine();
+        return BaseTemplater.execute(attValue, scriptEngine);
+    }
+
+    /**
+     * @param attName Name of attrubte
+     * @param defaultValue
+     * @param scraper
+     * @return Value of specified attribute as boolean, or default value if it cannot be recognized as valid boolean
+     */
+    protected boolean evaluateAttributeAsBoolean(String attName, boolean defaultValue, Scraper scraper) {
+        return CommonUtil.getBooleanValue(evaluateAttribute(attName, scraper), defaultValue);
+    }
+
+    /**
+     * @param attName Name of attrubte
+     * @param defaultValue
+     * @param scraper
+     * @return Value of specified attribute as integer, or default value if it cannot be recognized as valid integer
+     */
+    protected int evaluateAttributeAsInteger(String attName, int defaultValue, Scraper scraper) {
+        return CommonUtil.getIntValue(evaluateAttribute(attName, scraper), defaultValue);
+    }
+
+    /**
+     * @param attName Name of attrubte
+     * @param defaultValue
+     * @param scraper
+     * @return Value of specified attribute as double, or default value if it cannot be recognized as valid double
+     */
+    protected double evaluateAttributeAsDouble(String attName, double defaultValue, Scraper scraper) {
+        return CommonUtil.getDoubleValue(evaluateAttribute(attName, scraper), defaultValue);
+    }
+
+    /**
+     * Executes body of plugin processor
+     * @param scraper
+     * @param context
+     * @return Instance of Variable
+     */
+    protected Variable executeBody(Scraper scraper, ScraperContext context) {
+        return getBodyTextContent(elementDef, scraper, context);
+    }
+
 }

@@ -17,6 +17,7 @@ public class ElementInfo {
 
     private String name;
     private Class pluginClass;
+    private boolean isInternalPlugin;
     private Class definitionClass;
     private String validTags;
     private String validAtts;
@@ -28,14 +29,14 @@ public class ElementInfo {
 
     private boolean allTagsAllowed;
 
-
     public ElementInfo(String name, Class definitionClass, String validTags, String validAtts) {
-        this(name, null, definitionClass, validTags, validAtts);
+        this(name, null, true, definitionClass, validTags, validAtts);
     }
 
-    public ElementInfo(String name, Class pluginClass, Class definitionClass, String validTags, String validAtts) {
+    public ElementInfo(String name, Class pluginClass, boolean isInternalPlugin, Class definitionClass, String validTags, String validAtts) {
         this.name = name;
         this.pluginClass = pluginClass;
+        this.isInternalPlugin = isInternalPlugin;
         this.definitionClass = definitionClass;
         this.validTags = validTags;
         this.validAtts = validAtts;
@@ -95,6 +96,10 @@ public class ElementInfo {
 
     public Class getPluginClass() {
         return pluginClass;
+    }
+
+    public boolean isInternalPlugin() {
+        return isInternalPlugin;
     }
 
     public Class getDefinitionClass() {

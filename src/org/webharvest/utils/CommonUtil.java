@@ -305,7 +305,33 @@ public class CommonUtil {
 
         return defaultValue;
     }
-    
+
+    /**
+     * Reads integer value from string
+     * @param value
+     * @param defaultValue value to be returned if string value is not valid integer
+     */
+    public static int getIntValue(String value, int defaultValue) {
+        try {
+            return Integer.parseInt(value);
+        } catch (NumberFormatException e) {
+            return defaultValue;
+        }
+    }
+
+    /**
+     * Reads double value from string
+     * @param value
+     * @param defaultValue value to be returned if string value is not valid double
+     */
+    public static double getDoubleValue(String value, double defaultValue) {
+        try {
+            return Double.parseDouble(value);
+        } catch (NumberFormatException e) {
+            return defaultValue;
+        }
+    }
+
     /**
      * Escapes XML string - special characters: &'"<> are
      * replaced with XML escape sequences: &amp; &apos; &quot; &lt; &gt;

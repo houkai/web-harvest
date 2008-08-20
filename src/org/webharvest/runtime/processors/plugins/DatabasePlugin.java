@@ -1,7 +1,8 @@
-package org.webharvest.runtime.processors;
+package org.webharvest.runtime.processors.plugins;
 
 import org.webharvest.runtime.Scraper;
 import org.webharvest.runtime.ScraperContext;
+import org.webharvest.runtime.processors.*;
 import org.webharvest.runtime.variables.NodeVariable;
 import org.webharvest.runtime.variables.Variable;
 
@@ -15,7 +16,8 @@ public class DatabasePlugin extends WebHarvestPlugin {
     }
 
     public Variable execute(Scraper scraper, ScraperContext context) {
-        return new NodeVariable(getClass().toString());
+        Variable body = executeBody(scraper, context);
+        return new NodeVariable(evaluateAttribute("connection", scraper));
     }
 
     public String[] getValidAttributes() {

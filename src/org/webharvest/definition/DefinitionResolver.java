@@ -43,7 +43,7 @@ import org.webharvest.utils.CommonUtil;
 import java.util.*;
 import java.lang.reflect.Constructor;
 
-import org.webharvest.runtime.processors.DatabasePlugin;
+import org.webharvest.runtime.processors.plugins.DatabasePlugin;
 
 /**
  * Class contains information and logic to validate and crate definition classes for
@@ -100,11 +100,11 @@ public class DefinitionResolver {
         elementInfos.put( "script", new ElementInfo("script", ScriptDef.class, null, "id,language,return") );
         elementInfos.put( "exit", new ElementInfo("exit", ExitDef.class, "", "id,condition,message") );
 
-        registerPlugin(DatabasePlugin.class);
+        registerPlugin(DatabasePlugin.class, true);
     }
 
-    public static void registerPlugin(Class pluginClass) throws PluginException {
-        String fullClassName = pluginClass != null ? pluginClass.getCanonicalName() : "null";
+    private static void registerPlugin(Class pluginClass, boolean isInternalPlugin) {
+        String fullClassName = pluginClass != null ? pluginClass.getName() : "null";
         try {
             Object pluginObj = pluginClass.newInstance();
             if ( !(pluginObj instanceof WebHarvestPlugin) ) {
@@ -123,11 +123,15 @@ public class DefinitionResolver {
 
             String subtags = plugin.getTagDesc();
             String atts = plugin.getAttributeDesc();
-            ElementInfo elementInfo = new ElementInfo(pluginName, pluginClass, WebHarvestPluginDef.class, subtags, atts);
+            ElementInfo elementInfo = new ElementInfo(pluginName, pluginClass, isInternalPlugin, WebHarvestPluginDef.class, subtags, atts);
             elementInfos.put(pluginName, elementInfo);
         } catch (Exception e) {
             throw new PluginException("Error instantiating plugin class \"" + fullClassName + "\": " + e.getMessage(), e);
         }
+    }
+
+    public static void registerPlugin(Class pluginClass) throws PluginException {
+        registerPlugin(pluginClass, false);
     }
     
     public static void registerPlugin(String fullClassName) throws PluginException {
@@ -137,7 +141,28 @@ public class DefinitionResolver {
         } catch (ClassNotFoundException e) {
             throw new PluginException("Error finding plugin class \"" + fullClassName + "\": " + e.getMessage(), e);
         }
-        registerPlugin(pluginClass);
+        registerPlugin(pluginClass, false);
+    }
+
+    public static void unregisterPlugin(Class pluginClass) {
+        if (pluginClass != null) {
+            unregisterPlugin(pluginClass.getName());
+        }
+    }
+
+    public static void unregisterPlugin(String className) {
+        Iterator iterator = elementInfos.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry entry = (Map.Entry) iterator.next();
+            ElementInfo elementInfo = (ElementInfo) entry.getValue();
+            if (elementInfo != null) {
+                Class pluginClass = elementInfo.getPluginClass();
+                if ( pluginClass != null && !elementInfo.isInternalPlugin() && pluginClass.getName().equals(className)) {
+                    iterator.remove();
+                    return;
+                }
+            }
+        }
     }
 
     /**

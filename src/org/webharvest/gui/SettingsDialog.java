@@ -37,7 +37,7 @@
 package org.webharvest.gui;
 
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
+import javax.swing.border.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileFilter;
@@ -285,8 +285,47 @@ public class SettingsDialog extends JDialog implements ChangeListener {
         viewPanel.add(this.dynamicConfigLocateCheckBox);
         viewPanel.add(this.showFinishDialogCheckBox);
 
+        JPanel pluginsPanel = new JPanel(new BorderLayout(5, 0));
+        JPanel pluginButtonsPanel = new JPanel();
+//        pluginButtonsPanel.setLayout( new BoxLayout(pluginButtonsPanel, BoxLayout.Y_AXIS) );
+        SpringLayout springLayout = new SpringLayout();
+        pluginButtonsPanel.setLayout(springLayout);
+        pluginButtonsPanel.setBorder(new EmptyBorder(3, 0, 3, 3));
+        pluginButtonsPanel.setPreferredSize(new Dimension(116, 1));
+
+        JButton pluginAddButton = new JButton("Add plugin");
+        pluginAddButton.setPreferredSize( new Dimension(110, 26) );
+        pluginAddButton.setMinimumSize( new Dimension(110, 26) );
+        pluginAddButton.setMaximumSize( new Dimension(110, 26) );
+        
+        JButton pluginEditButton = new JButton("Edit plugin");
+        pluginEditButton.setPreferredSize( new Dimension(110, 26) );
+        pluginEditButton.setMinimumSize( new Dimension(110, 26) );
+        pluginEditButton.setMaximumSize( new Dimension(110, 26) );
+
+        JButton pluginRemoveButton = new JButton("Remove plugin");
+        pluginRemoveButton.setPreferredSize( new Dimension(110, 26) );
+        pluginRemoveButton.setMinimumSize( new Dimension(110, 26) );
+        pluginRemoveButton.setMaximumSize( new Dimension(110, 26) );
+
+        pluginButtonsPanel.add(pluginAddButton);
+        pluginButtonsPanel.add(pluginEditButton);
+        pluginButtonsPanel.add(pluginRemoveButton);
+
+        springLayout.putConstraint(SpringLayout.NORTH, pluginEditButton, 5, SpringLayout.SOUTH, pluginAddButton);
+        springLayout.putConstraint(SpringLayout.NORTH, pluginRemoveButton, 5, SpringLayout.SOUTH, pluginEditButton);
+        
+        pluginsPanel.add(pluginButtonsPanel, BorderLayout.EAST);
+        JPanel pluginsListPanel = new JPanel(new BorderLayout(5, 5));
+        pluginsListPanel.setBorder(new EmptyBorder(3, 3, 3, 3));
+        JList pluginsList = new JList();
+        pluginsList.setBorder(new BevelBorder(BevelBorder.LOWERED));
+        pluginsListPanel.add(pluginsList, BorderLayout.CENTER);
+        pluginsPanel.add(pluginsListPanel, BorderLayout.CENTER);
+
         tabbedPane.addTab("General", null, generalPanel, null);
         tabbedPane.addTab("View", null, viewPanel, null);
+        tabbedPane.addTab("Plugins", null, pluginsPanel, null);
 
         contentPane.add(tabbedPane, BorderLayout.CENTER);
         contentPane.add(buttonPanel, BorderLayout.SOUTH);
