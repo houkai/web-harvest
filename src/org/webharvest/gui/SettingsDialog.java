@@ -36,21 +36,106 @@
 */
 package org.webharvest.gui;
 
+import org.webharvest.gui.component.FixedSizeButton;
+import org.webharvest.definition.DefinitionResolver;
+import org.webharvest.exception.PluginException;
+
 import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.event.ListSelectionEvent;
 import javax.swing.filechooser.FileFilter;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.*;
 
 public class SettingsDialog extends JDialog implements ChangeListener {
+
+    private class PluginListItem {
+        String className;
+        String errorMessage;
+
+        private PluginListItem(String className, String errorMessage) {
+            this.className = className;
+            this.errorMessage = errorMessage;
+        }
+
+        private boolean isValid() {
+            return errorMessage == null;
+        }
+
+        public String toString() {
+            return className;
+        }
+    }
+
+    private class PluginListModel extends DefaultListModel {
+        public void addElement(Object obj) {
+            SettingsDialog.PluginListItem pluginListItem = createItem(obj);
+            if (pluginListItem != null) {
+                super.addElement(pluginListItem);
+            }
+        }
+
+        public boolean setElement(Object obj, int index) {
+            SettingsDialog.PluginListItem pluginListItem = createItem(obj);
+            if (pluginListItem != null) {
+                super.setElementAt(pluginListItem, index);
+                return true;
+            }
+            return false;
+        }
+
+        private PluginListItem createItem(Object obj) {
+            String newClassName = (String) obj.toString();
+            int size = getSize();
+            for (int i = 0; i < size; i++) {
+                PluginListItem item = (PluginListItem) get(i);
+                if (item != null && item.className.equals(newClassName)) {
+                    JOptionPane.showMessageDialog(SettingsDialog.this, "Plugin is already added to the list!", "Error", JOptionPane.ERROR_MESSAGE);
+                    return null;
+                }
+            }
+
+            String errorMessage = null;
+            try {
+                DefinitionResolver.registerPlugin(newClassName);
+            } catch (PluginException e) {
+                errorMessage = e.getMessage();
+            }
+
+            return new PluginListItem(newClassName, errorMessage);            
+        }
+    }
+
+    private class PluginListCellRenderer extends JLabel implements ListCellRenderer {
+
+        private PluginListCellRenderer() {
+            setOpaque(true);
+            setPreferredSize(new Dimension(1, 18));
+        }
+
+        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+            PluginListItem item = (PluginListItem) value;
+            if (isSelected) {
+                setBackground(list.getSelectionBackground());
+                setForeground(list.getSelectionForeground());
+            } else {
+                setBackground(list.getBackground());
+                setForeground(list.getForeground());
+            }
+
+            setText(item.className);
+            setIcon(item.isValid() ? ResourceManager.VALID_ICON : ResourceManager.INVALID_ICON);
+            setToolTipText(item.errorMessage);
+            return this;
+        }
+    }
 
     private class MyTextField extends JTextField {
         public MyTextField() {
@@ -94,6 +179,12 @@ public class SettingsDialog extends JDialog implements ChangeListener {
     private JCheckBox showLineNumbersByDefaultCheckBox;
     private JCheckBox dynamicConfigLocateCheckBox;
     private JCheckBox showFinishDialogCheckBox;
+
+    private JButton pluginAddButton;
+    private JButton pluginEditButton;
+    private JButton pluginRemoveButton;
+    private PluginListModel pluginListModel;
+    private JList pluginsList;
 
     private final JFileChooser pathChooser = new JFileChooser();
 
@@ -293,20 +384,47 @@ public class SettingsDialog extends JDialog implements ChangeListener {
         pluginButtonsPanel.setBorder(new EmptyBorder(3, 0, 3, 3));
         pluginButtonsPanel.setPreferredSize(new Dimension(116, 1));
 
-        JButton pluginAddButton = new JButton("Add plugin");
-        pluginAddButton.setPreferredSize( new Dimension(110, 26) );
-        pluginAddButton.setMinimumSize( new Dimension(110, 26) );
-        pluginAddButton.setMaximumSize( new Dimension(110, 26) );
-        
-        JButton pluginEditButton = new JButton("Edit plugin");
-        pluginEditButton.setPreferredSize( new Dimension(110, 26) );
-        pluginEditButton.setMinimumSize( new Dimension(110, 26) );
-        pluginEditButton.setMaximumSize( new Dimension(110, 26) );
+        final String pluginInputMsg = "Full class name of the plugin                                            ";
 
-        JButton pluginRemoveButton = new JButton("Remove plugin");
-        pluginRemoveButton.setPreferredSize( new Dimension(110, 26) );
-        pluginRemoveButton.setMinimumSize( new Dimension(110, 26) );
-        pluginRemoveButton.setMaximumSize( new Dimension(110, 26) );
+        pluginAddButton = new FixedSizeButton("Add plugin", 110, 26);
+        pluginAddButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String className = JOptionPane.showInputDialog(SettingsDialog.this, pluginInputMsg);
+                if (className != null) {
+                    pluginListModel.addElement(className);
+                    pluginsList.setSelectedIndex(pluginListModel.size() - 1);
+                }
+            }
+        });
+        pluginEditButton = new FixedSizeButton("Edit plugin", 110, 26);
+        final ActionListener editListener = new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                int index = pluginsList.getSelectedIndex();
+                if (index >= 0) {
+                    String oldClassName = pluginsList.getSelectedValue().toString();
+                    String className = JOptionPane.showInputDialog(SettingsDialog.this, pluginInputMsg, oldClassName);
+                    if (className != null) {
+                        boolean isSet = pluginListModel.setElement(className, index);
+                        if (isSet) {
+                            DefinitionResolver.unregisterPlugin(oldClassName);
+                        }
+                    }
+                }
+            }
+        };
+        pluginEditButton.addActionListener(editListener);
+        pluginRemoveButton = new FixedSizeButton("Remove plugin", 110, 26);
+        pluginRemoveButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                int index = pluginsList.getSelectedIndex();
+                if (index >= 0) {
+                    String oldClassName = pluginsList.getSelectedValue().toString();
+                    DefinitionResolver.unregisterPlugin(oldClassName);
+                    pluginListModel.remove(index);
+                    pluginsList.setSelectedIndex(Math.min(index, pluginListModel.size() - 1));
+                }
+            }
+        });
 
         pluginButtonsPanel.add(pluginAddButton);
         pluginButtonsPanel.add(pluginEditButton);
@@ -319,9 +437,25 @@ public class SettingsDialog extends JDialog implements ChangeListener {
         JPanel pluginsListPanel = new JPanel(new BorderLayout(5, 5));
         pluginsListPanel.setBorder(new EmptyBorder(3, 3, 3, 3));
 
-        JList pluginsList = new JList();
-        pluginsList.setBorder(new BevelBorder(BevelBorder.LOWERED));
-        pluginsListPanel.add(pluginsList, BorderLayout.CENTER);
+        pluginListModel = new PluginListModel();
+        pluginsList = new JList(pluginListModel);
+        pluginsList.setCellRenderer(new PluginListCellRenderer());
+        pluginsList.addListSelectionListener(new ListSelectionListener() {
+            public void valueChanged(ListSelectionEvent e) {
+                updateControls();
+            }
+        });
+        pluginsList.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2 && e.getButton() == MouseEvent.BUTTON1) {
+                    if (pluginsList.getSelectedIndex() >= 0) {
+                        editListener.actionPerformed(null);
+                    }
+                }
+            }
+        });
+
+        pluginsListPanel.add(new JScrollPane(pluginsList), BorderLayout.CENTER);
         pluginsPanel.add(pluginsListPanel, BorderLayout.CENTER);
 
         tabbedPane.addTab("General", null, generalPanel, null);
@@ -434,6 +568,10 @@ public class SettingsDialog extends JDialog implements ChangeListener {
         this.ntlmHostField.setEnabled( isProxyEnabled && isProxyAuthEnabled && isNtlmAuthEnabled );
         this.ntlmDomainLabel.setEnabled( isProxyEnabled && isProxyAuthEnabled && isNtlmAuthEnabled );
         this.ntlmDomainField.setEnabled( isProxyEnabled && isProxyAuthEnabled && isNtlmAuthEnabled );
+
+        int selectedPluginIndex = pluginsList.getSelectedIndex();
+        pluginEditButton.setEnabled( selectedPluginIndex >= 0 );
+        pluginRemoveButton.setEnabled( selectedPluginIndex >= 0 );
     }
 
     public void stateChanged(ChangeEvent e) {

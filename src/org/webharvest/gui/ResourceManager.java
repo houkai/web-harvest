@@ -89,6 +89,8 @@ public class ResourceManager {
     public static final Icon LISTTYPE_ICON = getIcon("resources/icons/list_type.gif");
     public static final Icon HELPDIR_ICON = getIcon("resources/icons/helpdir.gif");
     public static final Icon HELPTOPIC_ICON = getIcon("resources/icons/helptopic.gif");
+    public static final Icon VALID_ICON = getIcon("resources/icons/valid.gif");
+    public static final Icon INVALID_ICON = getIcon("resources/icons/invalid.gif");
 
     public static Image BREAKPOINT_IMAGE = getImage("resources/icons/breakpoint.gif");
 
