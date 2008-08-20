@@ -318,6 +318,7 @@ public class SettingsDialog extends JDialog implements ChangeListener {
         pluginsPanel.add(pluginButtonsPanel, BorderLayout.EAST);
         JPanel pluginsListPanel = new JPanel(new BorderLayout(5, 5));
         pluginsListPanel.setBorder(new EmptyBorder(3, 3, 3, 3));
+
         JList pluginsList = new JList();
         pluginsList.setBorder(new BevelBorder(BevelBorder.LOWERED));
         pluginsListPanel.add(pluginsList, BorderLayout.CENTER);
@@ -459,10 +460,6 @@ public class SettingsDialog extends JDialog implements ChangeListener {
 
 
         return rootPane;
-    }
-
-    public static void main(String[] args) {
-        System.out.println(Charset.availableCharsets());
     }
     
 }
