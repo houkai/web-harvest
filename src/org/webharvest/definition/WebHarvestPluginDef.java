@@ -12,7 +12,7 @@ public class WebHarvestPluginDef extends BaseElementDef {
 
 	private Map attributes;
     private Class pluginClass;
-    private WebHarvestPlugin plugin;
+    private String name;
 
     public WebHarvestPluginDef(XmlNode xmlNode) {
         super(xmlNode, false);
@@ -23,6 +23,10 @@ public class WebHarvestPluginDef extends BaseElementDef {
         this.pluginClass = pluginClass;
     }
 
+    void setPluginName(String name) {
+        this.name = name;
+    }
+
     public Map getAttributes() {
         return attributes;
     }
@@ -30,8 +34,9 @@ public class WebHarvestPluginDef extends BaseElementDef {
     public WebHarvestPlugin createPlugin() {
         if (pluginClass != null) {
             try {
-                plugin = (WebHarvestPlugin) pluginClass.newInstance();
+                WebHarvestPlugin plugin = (WebHarvestPlugin) pluginClass.newInstance();
                 plugin.setDef(this);
+                return plugin;
             } catch (Exception e) {
                 throw new PluginException(e);
             }
@@ -41,12 +46,7 @@ public class WebHarvestPluginDef extends BaseElementDef {
     }
 
     public String getShortElementName() {
-        String name = plugin.getName();
         return name != null ? name.toLowerCase() : "unknown plugin";
-    }
-
-    public WebHarvestPlugin getPlugin() {
-        return plugin;
     }
     
 }

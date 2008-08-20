@@ -43,6 +43,8 @@ import org.webharvest.utils.CommonUtil;
 import java.util.*;
 import java.lang.reflect.Constructor;
 
+import org.webharvest.runtime.processors.DatabasePlugin;
+
 /**
  * Class contains information and logic to validate and crate definition classes for
  * parsed xml nodes from Web-Harvest configurations.
@@ -97,6 +99,8 @@ public class DefinitionResolver {
         elementInfos.put( "catch", new ElementInfo("catch", BaseElementDef.class, null, "id") );
         elementInfos.put( "script", new ElementInfo("script", ScriptDef.class, null, "id,language,return") );
         elementInfos.put( "exit", new ElementInfo("exit", ExitDef.class, "", "id,condition,message") );
+
+        registerPlugin(DatabasePlugin.class);
     }
 
     public static void registerPlugin(Class pluginClass) throws PluginException {
@@ -118,8 +122,8 @@ public class DefinitionResolver {
             }
 
             String subtags = plugin.getTagDesc();
-            String atts = plugin.getTagDesc();
-            ElementInfo elementInfo = new ElementInfo(pluginName, pluginClass, WebHarvestPlugin.class, subtags, atts);
+            String atts = plugin.getAttributeDesc();
+            ElementInfo elementInfo = new ElementInfo(pluginName, pluginClass, WebHarvestPluginDef.class, subtags, atts);
             elementInfos.put(pluginName, elementInfo);
         } catch (Exception e) {
             throw new PluginException("Error instantiating plugin class \"" + fullClassName + "\": " + e.getMessage(), e);
@@ -174,7 +178,9 @@ public class DefinitionResolver {
             Constructor constructor = elementClass.getConstructor( new Class[] {XmlNode.class} );
             IElementDef elementDef = (IElementDef) constructor.newInstance(new Object[]{node});
             if (elementDef instanceof WebHarvestPluginDef) {
-                ((WebHarvestPluginDef) elementDef).setPluginClass( elementInfo.getPluginClass() );
+                WebHarvestPluginDef pluginDef = (WebHarvestPluginDef) elementDef;
+                pluginDef.setPluginClass( elementInfo.getPluginClass() );
+                pluginDef.setPluginName( elementInfo.getName() );
             }
             return elementDef;
         } catch (Exception e) {

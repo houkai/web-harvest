@@ -96,8 +96,7 @@ public class ProcessorResolver {
 	    	return new ExitProcessor( (ExitDef)elementDef );
 	    } else if (elementDef instanceof WebHarvestPluginDef) {
             WebHarvestPluginDef pluginDef = (WebHarvestPluginDef) elementDef;
-            pluginDef.createPlugin();
-            return pluginDef.getPlugin();
+            return pluginDef.createPlugin();
         }
 
         return null;

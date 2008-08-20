@@ -143,6 +143,7 @@ abstract public class WebHarvestPlugin extends BaseProcessor {
                 result.append('!');
             }
             result.append(att);
+            result.append(",");
         }
         return result.toString();
     }
