@@ -37,6 +37,8 @@
 package org.webharvest.gui;
 
 import java.io.*;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * @author: Vladimir Nikic
@@ -67,6 +69,8 @@ public class Settings implements Serializable {
 
     // specify if info is displayed on execution finish
     private boolean isShowFinishDialog = true;
+
+    private String plugins[] = {};
 
     public Settings() {
         try {
@@ -205,6 +209,14 @@ public class Settings implements Serializable {
         isShowLineNumbersByDefault = showLineNumbersByDefault;
     }
 
+    public String[] getPlugins() {
+        return plugins;
+    }
+
+    public void setPlugins(String[] plugins) {
+        this.plugins = plugins == null ? new String[] {} : plugins;
+    }
+
     private void writeString(ObjectOutputStream out, String s) throws IOException {
         if (s != null) {
             out.writeInt(s.getBytes().length);
@@ -266,6 +278,11 @@ public class Settings implements Serializable {
         writeString(out, fileCharset);
 
         out.writeBoolean(isShowFinishDialog);
+
+        out.writeInt(plugins.length);
+        for (int i = 0; i < plugins.length; i++) {
+            writeString(out, plugins[i]);
+        }
     }
 
     /**
@@ -294,6 +311,12 @@ public class Settings implements Serializable {
         fileCharset = readString(in, fileCharset);
 
         isShowFinishDialog = readBoolean(in, isShowFinishDialog);
+
+        int pluginsCount = readInt(in, 0);
+        plugins = new String[pluginsCount];
+        for (int i = 0; i < pluginsCount; i++) {
+            plugins[i] = readString(in, "");
+        }
     }
 
     private void readFromFile() throws IOException {

@@ -37,6 +37,7 @@
 package org.webharvest.gui;
 
 import org.webharvest.gui.component.FixedSizeButton;
+import org.webharvest.gui.component.FixedSizeTextField;
 import org.webharvest.definition.DefinitionResolver;
 import org.webharvest.exception.PluginException;
 
@@ -56,6 +57,10 @@ import java.util.*;
 
 public class SettingsDialog extends JDialog implements ChangeListener {
 
+    /**
+     * Class definining elements in list of plugins. Each item has name (fully qualified class name)
+     * and optional error message telling why plugin cannot be registered.
+     */
     private class PluginListItem {
         String className;
         String errorMessage;
@@ -74,6 +79,9 @@ public class SettingsDialog extends JDialog implements ChangeListener {
         }
     }
 
+    /**
+     * List model implementation for the list of plugins.
+     */
     private class PluginListModel extends DefaultListModel {
         public void addElement(Object obj) {
             SettingsDialog.PluginListItem pluginListItem = createItem(obj);
@@ -92,12 +100,15 @@ public class SettingsDialog extends JDialog implements ChangeListener {
         }
 
         private PluginListItem createItem(Object obj) {
-            String newClassName = (String) obj.toString();
+            String newClassName = obj.toString();
             int size = getSize();
+            // check if it already exists in the list
             for (int i = 0; i < size; i++) {
                 PluginListItem item = (PluginListItem) get(i);
                 if (item != null && item.className.equals(newClassName)) {
-                    JOptionPane.showMessageDialog(SettingsDialog.this, "Plugin is already added to the list!", "Error", JOptionPane.ERROR_MESSAGE);
+                    if (SettingsDialog.this.isVisible()) {
+                        JOptionPane.showMessageDialog(SettingsDialog.this, "Plugin is already added to the list!", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
                     return null;
                 }
             }
@@ -113,8 +124,12 @@ public class SettingsDialog extends JDialog implements ChangeListener {
         }
     }
 
+    /**
+     * Cell renderer for the list of plugins. It displays label with plugin class name
+     * and OK or ERROR icon telling if plugin is registered successfully or not. If
+     * plugin registration failed, tooltip is defined with error message for the label.
+     */
     private class PluginListCellRenderer extends JLabel implements ListCellRenderer {
-
         private PluginListCellRenderer() {
             setOpaque(true);
             setPreferredSize(new Dimension(1, 18));
@@ -134,20 +149,6 @@ public class SettingsDialog extends JDialog implements ChangeListener {
             setIcon(item.isValid() ? ResourceManager.VALID_ICON : ResourceManager.INVALID_ICON);
             setToolTipText(item.errorMessage);
             return this;
-        }
-    }
-
-    private class MyTextField extends JTextField {
-        public MyTextField() {
-            super();
-        }
-
-        public MyTextField(String text) {
-            super(text);
-        }
-
-        public Dimension getPreferredSize() {
-            return new Dimension(250, 20);
         }
     }
 
@@ -221,18 +222,18 @@ public class SettingsDialog extends JDialog implements ChangeListener {
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.insets = new Insets(2, 5, 2, 5);
 
-        workingPathField = new MyTextField();
+        workingPathField = new FixedSizeTextField(250, 20);
 
         Map charsetsMap = Charset.availableCharsets();
         Vector allSupportedCharsets = new Vector(charsetsMap.keySet());
         fileCharsetComboBox = new JComboBox(allSupportedCharsets);
 
-        proxyServerField = new MyTextField();
-        proxyPortField = new MyTextField();
-        proxyUsernameField = new MyTextField();
-        proxyPasswordField = new MyTextField();
-        ntlmHostField = new MyTextField();
-        ntlmDomainField = new MyTextField();
+        proxyServerField = new FixedSizeTextField(250, 20);
+        proxyPortField = new FixedSizeTextField(250, 20);
+        proxyUsernameField = new FixedSizeTextField(250, 20);
+        proxyPasswordField = new FixedSizeTextField(250, 20);
+        ntlmHostField = new FixedSizeTextField(250, 20);
+        ntlmDomainField = new FixedSizeTextField(250, 20);
 
         proxyEnabledCheckBox = new JCheckBox("Proxy server enabled");
         proxyEnabledCheckBox.addChangeListener(this);
@@ -403,7 +404,7 @@ public class SettingsDialog extends JDialog implements ChangeListener {
                 if (index >= 0) {
                     String oldClassName = pluginsList.getSelectedValue().toString();
                     String className = JOptionPane.showInputDialog(SettingsDialog.this, pluginInputMsg, oldClassName);
-                    if (className != null) {
+                    if ( className != null && !className.equals(oldClassName) ) {
                         boolean isSet = pluginListModel.setElement(className, index);
                         if (isSet) {
                             DefinitionResolver.unregisterPlugin(oldClassName);

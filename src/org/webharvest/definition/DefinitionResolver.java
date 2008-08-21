@@ -54,6 +54,7 @@ import org.webharvest.runtime.processors.plugins.DatabasePlugin;
 public class DefinitionResolver {
 
     private static Map elementInfos = new TreeMap();
+    private static Map externalPluginClasses = new LinkedHashMap();
 
     // defines all valid elements of Web-Harvest configuration file
     static {
@@ -125,6 +126,9 @@ public class DefinitionResolver {
             String atts = plugin.getAttributeDesc();
             ElementInfo elementInfo = new ElementInfo(pluginName, pluginClass, isInternalPlugin, WebHarvestPluginDef.class, subtags, atts);
             elementInfos.put(pluginName, elementInfo);
+            if (!isInternalPlugin) {
+                externalPluginClasses.put(pluginClass.getName(), pluginName);
+            }
         } catch (Exception e) {
             throw new PluginException("Error instantiating plugin class \"" + fullClassName + "\": " + e.getMessage(), e);
         }
@@ -151,18 +155,19 @@ public class DefinitionResolver {
     }
 
     public static void unregisterPlugin(String className) {
-        Iterator iterator = elementInfos.entrySet().iterator();
-        while (iterator.hasNext()) {
-            Map.Entry entry = (Map.Entry) iterator.next();
-            ElementInfo elementInfo = (ElementInfo) entry.getValue();
-            if (elementInfo != null) {
-                Class pluginClass = elementInfo.getPluginClass();
-                if ( pluginClass != null && !elementInfo.isInternalPlugin() && pluginClass.getName().equals(className)) {
-                    iterator.remove();
-                    return;
-                }
-            }
+        // only external plugins can be unregistered
+        if ( isPluginRegistered(className)) {
+            String pluginName = (String) externalPluginClasses.get(className);
+            elementInfos.remove(pluginName);
         }
+    }
+
+    public static boolean isPluginRegistered(String className) {
+        return externalPluginClasses.containsKey(className);
+    }
+
+    public static boolean isPluginRegistered(Class pluginClass) {
+        return pluginClass != null && isPluginRegistered(pluginClass.getName());
     }
 
     /**
