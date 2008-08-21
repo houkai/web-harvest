@@ -40,6 +40,7 @@ import org.webharvest.exception.BaseException;
 
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
+import java.util.List;
 
 /**
  * Simple Stack (FIFO list).
@@ -78,5 +79,9 @@ public class Stack {
 	public int size() {
 		return list.size();
 	}
+
+    public List getList() {
+        return list;
+    }
 
 }

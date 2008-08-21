@@ -119,7 +119,6 @@ abstract public class BaseProcessor {
             scraper.getLogger().info(indent + CommonUtil.getClassName(this) + " starts processing..." + idDesc);
         }
 
-        scraper.increaseRunningLevel();
         scraper.setExecutingProcessor(this);
         Variable result = execute(scraper, context);
         long executionTime = System.currentTimeMillis() - startTime;
@@ -128,7 +127,7 @@ abstract public class BaseProcessor {
         setProperty(Constants.VALUE_PROPERTY_NAME, result);
 
         scraper.processorFinishedExecution(this, this.properties);
-        scraper.decreaseRunningLevel();
+        scraper.finishExecutingProcessor();
 
         // if debug mode is true and processor ID is not null then write debugging file
         if (scraper.isDebugMode() && id != null) {

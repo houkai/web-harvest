@@ -645,4 +645,22 @@ public class CommonUtil {
         return result;
     }
 
+    /**
+     * Searches specified value in given collection
+     * @param c Collection to be searched
+     * @param value Object searched for
+     * @return First index in collection of object found, or -1 if collection doesn't contain it
+     */
+    public static int findValueInCollection(Collection c, Object value) {
+        Iterator iterator = c.iterator();
+        int index = 0;
+        while (iterator.hasNext()) {
+            if ( value == iterator.next() ) {
+                return index;
+            }
+            index++;
+        }
+        return -1;
+    }
+
 }

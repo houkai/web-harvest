@@ -76,6 +76,9 @@ public class Scraper {
 
     private HttpClientManager httpClientManager;
 
+    // stack of running processors
+    private transient Stack runningProcessors = new Stack();
+
     // stack of running functions
     private transient Stack runningFunctions = new Stack();
 
@@ -85,17 +88,11 @@ public class Scraper {
     // stack of running http processors
     private transient Stack runningHttpProcessors = new Stack();
 
-    // shows depth of running processors during execution 
-    private transient int runningLevel = 1;
-
     // default script engine used throughout the configuration execution
     private ScriptEngine scriptEngine = null;
 
     // all used script engines in this scraper
     private Map usedScriptEngines = new HashMap();
-
-    //currently running processor
-    private BaseProcessor runningProcessor;
 
     private List scraperRuntimeListeners = new LinkedList();
 
@@ -248,16 +245,9 @@ public class Scraper {
             runningHttpProcessors.pop();
         }
     }
-    public void increaseRunningLevel() {
-        this.runningLevel++;
-    }
-
-    public void decreaseRunningLevel() {
-        this.runningLevel--;
-    }
 
     public int getRunningLevel() {
-        return runningLevel;
+        return runningProcessors.size() + 1;
     }
 
     public boolean isDebugMode() {
@@ -287,7 +277,18 @@ public class Scraper {
     }
 
     public BaseProcessor getRunningProcessor() {
-        return runningProcessor;
+        return (BaseProcessor) runningProcessors.peek();
+    }
+
+    /**
+     * @param processor Processor whose parent is needed.
+     * @return Parent running processor of the specified running processor, or null if processor is
+     * not currently running or if it is top running processor.
+     */
+    public BaseProcessor getParentRunningProcessor(BaseProcessor processor) {
+        List runningProcessorList = runningProcessors.getList();
+        int index = CommonUtil.findValueInCollection(runningProcessorList, processor);
+        return index > 0 ? (BaseProcessor) runningProcessorList.get(index - 1) : null;
     }
 
     public RuntimeConfig getRuntimeConfig() {
@@ -295,11 +296,17 @@ public class Scraper {
     }
 
     public void setExecutingProcessor(BaseProcessor processor) {
-        this.runningProcessor = processor;
+        this.runningProcessors.push(processor);
         Iterator iterator = this.scraperRuntimeListeners.iterator();
         while (iterator.hasNext()) {
             ScraperRuntimeListener listener = (ScraperRuntimeListener) iterator.next();
             listener.onNewProcessorExecution(this, processor);
+        }
+    }
+
+    public void finishExecutingProcessor() {
+        if (this.runningProcessors.size() > 0) {
+            this.runningProcessors.pop();
         }
     }
 
