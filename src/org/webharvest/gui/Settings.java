@@ -36,6 +36,9 @@
 */
 package org.webharvest.gui;
 
+import org.webharvest.definition.*;
+import org.webharvest.exception.*;
+
 import java.io.*;
 import java.util.List;
 import java.util.ArrayList;
@@ -316,6 +319,11 @@ public class Settings implements Serializable {
         plugins = new String[pluginsCount];
         for (int i = 0; i < pluginsCount; i++) {
             plugins[i] = readString(in, "");
+            try {
+                DefinitionResolver.registerPlugin(plugins[i]);
+            } catch (PluginException e) {
+                // do nothing - try silently to register plugins
+            }
         }
     }
 

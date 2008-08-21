@@ -54,7 +54,9 @@ import org.webharvest.runtime.processors.plugins.DatabasePlugin;
 public class DefinitionResolver {
 
     private static Map elementInfos = new TreeMap();
-    private static Map externalPluginClasses = new LinkedHashMap();
+
+    // map containing pairs (class name, plugin name) of externally registered plugins
+    private static Map externalPlugins = new LinkedHashMap();
 
     // defines all valid elements of Web-Harvest configuration file
     static {
@@ -127,7 +129,7 @@ public class DefinitionResolver {
             ElementInfo elementInfo = new ElementInfo(pluginName, pluginClass, isInternalPlugin, WebHarvestPluginDef.class, subtags, atts);
             elementInfos.put(pluginName, elementInfo);
             if (!isInternalPlugin) {
-                externalPluginClasses.put(pluginClass.getName(), pluginName);
+                externalPlugins.put(pluginClass.getName(), pluginName);
             }
         } catch (Exception e) {
             throw new PluginException("Error instantiating plugin class \"" + fullClassName + "\": " + e.getMessage(), e);
@@ -157,17 +159,22 @@ public class DefinitionResolver {
     public static void unregisterPlugin(String className) {
         // only external plugins can be unregistered
         if ( isPluginRegistered(className)) {
-            String pluginName = (String) externalPluginClasses.get(className);
+            String pluginName = (String) externalPlugins.get(className);
             elementInfos.remove(pluginName);
+            externalPlugins.remove(className);
         }
     }
 
     public static boolean isPluginRegistered(String className) {
-        return externalPluginClasses.containsKey(className);
+        return externalPlugins.containsKey(className);
     }
 
     public static boolean isPluginRegistered(Class pluginClass) {
         return pluginClass != null && isPluginRegistered(pluginClass.getName());
+    }
+
+    public static Map getExternalPlugins() {
+        return externalPlugins;
     }
 
     /**

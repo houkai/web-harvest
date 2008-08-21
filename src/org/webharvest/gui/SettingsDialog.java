@@ -83,15 +83,15 @@ public class SettingsDialog extends JDialog implements ChangeListener {
      * List model implementation for the list of plugins.
      */
     private class PluginListModel extends DefaultListModel {
-        public void addElement(Object obj) {
-            SettingsDialog.PluginListItem pluginListItem = createItem(obj);
+        public void addElement(Object obj, boolean throwErrIfRegistered) {
+            SettingsDialog.PluginListItem pluginListItem = createItem(obj, throwErrIfRegistered);
             if (pluginListItem != null) {
                 super.addElement(pluginListItem);
             }
         }
 
         public boolean setElement(Object obj, int index) {
-            SettingsDialog.PluginListItem pluginListItem = createItem(obj);
+            SettingsDialog.PluginListItem pluginListItem = createItem(obj, true);
             if (pluginListItem != null) {
                 super.setElementAt(pluginListItem, index);
                 return true;
@@ -99,7 +99,7 @@ public class SettingsDialog extends JDialog implements ChangeListener {
             return false;
         }
 
-        private PluginListItem createItem(Object obj) {
+        private PluginListItem createItem(Object obj, boolean throwErrIfRegistered) {
             String newClassName = obj.toString();
             int size = getSize();
             // check if it already exists in the list
@@ -114,10 +114,13 @@ public class SettingsDialog extends JDialog implements ChangeListener {
             }
 
             String errorMessage = null;
-            try {
-                DefinitionResolver.registerPlugin(newClassName);
-            } catch (PluginException e) {
-                errorMessage = e.getMessage();
+
+            if ( !DefinitionResolver.isPluginRegistered(newClassName) || throwErrIfRegistered ) {
+                try {
+                    DefinitionResolver.registerPlugin(newClassName);
+                } catch (PluginException e) {
+                    errorMessage = e.getMessage();
+                }
             }
 
             return new PluginListItem(newClassName, errorMessage);            
@@ -392,7 +395,7 @@ public class SettingsDialog extends JDialog implements ChangeListener {
             public void actionPerformed(ActionEvent e) {
                 String className = JOptionPane.showInputDialog(SettingsDialog.this, pluginInputMsg);
                 if (className != null) {
-                    pluginListModel.addElement(className);
+                    pluginListModel.addElement(className, true);
                     pluginsList.setSelectedIndex(pluginListModel.size() - 1);
                 }
             }
@@ -492,11 +495,54 @@ public class SettingsDialog extends JDialog implements ChangeListener {
         showLineNumbersByDefaultCheckBox.setSelected( settings.isShowLineNumbersByDefault() );
         dynamicConfigLocateCheckBox.setSelected( settings.isDynamicConfigLocate() );
         showFinishDialogCheckBox.setSelected( settings.isShowFinishDialog() );
+
+        pluginListModel.clear();
+        String[] plugins = settings.getPlugins();
+        for (int i = 0; i < plugins.length; i++) {
+            pluginListModel.addElement(plugins[i], false);
+        }
+    }
+
+    private void undoPlugins() {
+        Map externalPlugins = DefinitionResolver.getExternalPlugins();
+
+        Settings settings = ide.getSettings();
+        String[] plugins = settings.getPlugins();
+        Set pluginSet = new HashSet();
+        for (int i = 0; i < plugins.length; i++) {
+            pluginSet.add(plugins[i]);
+        }
+
+        Set listSet = new HashSet();
+
+        // unregister plugins registered during this settings session
+        int count = pluginListModel.getSize();
+        for (int i = 0; i < count; i++) {
+            PluginListItem item = (PluginListItem) pluginListModel.get(i);
+            listSet.add(item.className);
+            if ( item.isValid() && !pluginSet.contains(item.className) ) {
+                DefinitionResolver.unregisterPlugin(item.className);
+            }
+        }
+
+        // register plugins unregistered during this setting session
+        for (int i = 0; i < plugins.length; i++) {
+            String currPlugin = plugins[i];
+            if ( !listSet.contains(currPlugin) && !DefinitionResolver.isPluginRegistered(currPlugin) ) {
+                try {
+                    DefinitionResolver.registerPlugin(currPlugin);
+                } catch (PluginException e) {
+                    ; // do nothing - ignore
+                }
+            }
+        }
     }
 
     public void setVisible(boolean b) {
         if (b) {
             fillValues();
+        } else {
+            undoPlugins();
         }
         super.setVisible(b);
     }
@@ -530,6 +576,14 @@ public class SettingsDialog extends JDialog implements ChangeListener {
         settings.setShowLineNumbersByDefault(this.showLineNumbersByDefaultCheckBox.isSelected());
         settings.setDynamicConfigLocate(this.dynamicConfigLocateCheckBox.isSelected());
         settings.setShowFinishDialog(this.showFinishDialogCheckBox.isSelected());
+
+        int pluginCount = pluginListModel.getSize();
+        String plugins[] = new String[pluginCount];
+        for (int i = 0; i < pluginCount; i++) {
+            PluginListItem item = (PluginListItem) pluginListModel.get(i);
+            plugins[i] = item.className;
+        }
+        settings.setPlugins(plugins);
 
         try {
             settings.writeToFile();
