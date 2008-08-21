@@ -112,6 +112,9 @@ public class TreeNodeInfo {
             result = (Icon) icons.get(this.elementDef.getClass());
             if (result == null && elementDef instanceof WebHarvestPluginDef) {
                 result = (Icon) icons.get( ((WebHarvestPluginDef)elementDef).getShortElementName() );
+                if (result == null) {
+                    result = ResourceManager.getIcon("resources/icons/plugin.gif");
+                }
             }
             if (result == null) {
                 result = DEFAULT_ICON;
