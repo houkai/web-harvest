@@ -624,4 +624,25 @@ public class CommonUtil {
         return false;
     }
 
+    /**
+     * Tokenize given string for specified delimiter(s).
+     * @param s String to be tokenized
+     * @param delimiters Delimiter character(s)
+     * @return Array of token strings      
+     */
+    public static String[] tokenize(String s, String delimiters) {
+        if (s == null) {
+            return new String[] {};
+        }
+
+        StringTokenizer tokenizer = new StringTokenizer(s, delimiters);
+        String result[] = new String[tokenizer.countTokens()];
+        int index = 0;
+        while (tokenizer.hasMoreTokens()) {
+            result[index++] = tokenizer.nextToken();
+        }
+
+        return result;
+    }
+
 }
