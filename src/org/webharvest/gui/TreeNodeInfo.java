@@ -38,6 +38,7 @@ package org.webharvest.gui;
 
 import org.webharvest.definition.*;
 import org.webharvest.runtime.processors.BaseProcessor;
+import org.webharvest.runtime.processors.plugins.XmlToJsonPlugin;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.*;
@@ -76,6 +77,9 @@ public class TreeNodeInfo {
         icons.put(CallDef.class, ResourceManager.getIcon("resources/icons/call.gif"));
         icons.put(CaseDef.class, ResourceManager.getIcon("resources/icons/case.gif"));
         icons.put(TryDef.class, ResourceManager.getIcon("resources/icons/try.gif"));
+        icons.put("database", ResourceManager.getIcon("resources/icons/database.gif"));
+        icons.put("xml-to-json", ResourceManager.getIcon("resources/icons/xmltojson.gif"));
+        icons.put("json-to-xml", ResourceManager.getIcon("resources/icons/jsontoxml.gif"));
     }
 
     private DefaultMutableTreeNode node;
@@ -106,6 +110,9 @@ public class TreeNodeInfo {
             result = DEFAULT_ICON;
         } else {
             result = (Icon) icons.get(this.elementDef.getClass());
+            if (result == null && elementDef instanceof WebHarvestPluginDef) {
+                result = (Icon) icons.get( ((WebHarvestPluginDef)elementDef).getShortElementName() );
+            }
             if (result == null) {
                 result = DEFAULT_ICON;
             }
