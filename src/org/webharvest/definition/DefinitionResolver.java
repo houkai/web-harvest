@@ -44,6 +44,8 @@ import java.util.*;
 import java.lang.reflect.Constructor;
 
 import org.webharvest.runtime.processors.plugins.DatabasePlugin;
+import org.webharvest.runtime.processors.plugins.JsonToXmlPlugin;
+import org.webharvest.runtime.processors.plugins.XmlToJsonPlugin;
 
 /**
  * Class contains information and logic to validate and crate definition classes for
@@ -104,6 +106,8 @@ public class DefinitionResolver {
         elementInfos.put( "exit", new ElementInfo("exit", ExitDef.class, "", "id,condition,message") );
 
         registerPlugin(DatabasePlugin.class, true);
+        registerPlugin(JsonToXmlPlugin.class, true);
+        registerPlugin(XmlToJsonPlugin.class, true);
     }
 
     private static void registerPlugin(Class pluginClass, boolean isInternalPlugin) {
