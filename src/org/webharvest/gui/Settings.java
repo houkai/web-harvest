@@ -36,12 +36,14 @@
 */
 package org.webharvest.gui;
 
-import org.webharvest.definition.*;
-import org.webharvest.exception.*;
+import org.webharvest.definition.DefinitionResolver;
+import org.webharvest.exception.PluginException;
+import org.webharvest.utils.CommonUtil;
 
 import java.io.*;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * @author: Vladimir Nikic
@@ -50,6 +52,7 @@ import java.util.ArrayList;
 public class Settings implements Serializable {
 
     private static final String CONFIG_FILE_PATH = System.getProperty("java.io.tmpdir") + "/webharvest.config";
+    private static final int MAX_RECENT_FILES = 20;
 
     private String workingPath = System.getProperty("java.io.tmpdir");
     private String fileCharset = "UTF-8";
@@ -73,7 +76,11 @@ public class Settings implements Serializable {
     // specify if info is displayed on execution finish
     private boolean isShowFinishDialog = true;
 
+    // array of plugins
     private String plugins[] = {};
+
+    // list of recently open files
+    private List recentFiles = new LinkedList();
 
     public Settings() {
         try {
@@ -220,6 +227,23 @@ public class Settings implements Serializable {
         this.plugins = plugins == null ? new String[] {} : plugins;
     }
 
+    public List getRecentFiles() {
+        return recentFiles;
+    }
+
+    public void addRecentFile(String filePath) {
+        int index = CommonUtil.findValueInCollection(recentFiles, filePath);
+        if (index >= 0) {
+            recentFiles.remove(index);
+        }
+        recentFiles.add(0, filePath);
+
+        int recentFilesCount = recentFiles.size();
+        if (recentFilesCount > MAX_RECENT_FILES) {
+            recentFiles.remove(recentFilesCount - 1);
+        }
+    }
+
     private void writeString(ObjectOutputStream out, String s) throws IOException {
         if (s != null) {
             out.writeInt(s.getBytes().length);
@@ -286,6 +310,12 @@ public class Settings implements Serializable {
         for (int i = 0; i < plugins.length; i++) {
             writeString(out, plugins[i]);
         }
+
+        out.writeInt(recentFiles.size());
+        Iterator iterator = recentFiles.iterator();
+        while (iterator.hasNext()) {
+            writeString(out, (String) iterator.next());
+        }
     }
 
     /**
@@ -325,6 +355,12 @@ public class Settings implements Serializable {
                 // do nothing - try silently to register plugins
             }
         }
+
+        int recentFilesCount = readInt(in, 0);
+        recentFiles.clear();
+        for (int i = 0; i < recentFilesCount; i++) {
+            recentFiles.add(readString(in, ""));
+        }
     }
 
     private void readFromFile() throws IOException {
@@ -345,6 +381,14 @@ public class Settings implements Serializable {
         fos.flush();
         oos.close();
         fos.close();
+    }
+
+    public void writeSilentlyToFile() {
+        try {
+            writeToFile();
+        } catch (IOException e) {
+            // ignore
+        }
     }
 
 }

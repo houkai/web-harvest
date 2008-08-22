@@ -655,7 +655,8 @@ public class CommonUtil {
         Iterator iterator = c.iterator();
         int index = 0;
         while (iterator.hasNext()) {
-            if ( value == iterator.next() ) {
+            Object curr = iterator.next();
+            if ( value == curr || (value != null && curr != null && value.equals(curr)) ) {
                 return index;
             }
             index++;

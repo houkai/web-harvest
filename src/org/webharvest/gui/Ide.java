@@ -47,6 +47,8 @@ import org.webharvest.gui.component.GCPanel;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.MenuListener;
+import javax.swing.event.MenuEvent;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
@@ -54,6 +56,7 @@ import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
+import java.util.List;
 
 public class Ide extends JFrame implements ActionListener, ChangeListener {
 
@@ -104,6 +107,7 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
 
     private JTabbedPane tabbedPane;
     private StatusBar statusBar;
+    private JMenu recentsSubmenu;
     private int configCounter = 0;
 
     // settings dialog box
@@ -175,6 +179,8 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
                 }
             }
         }
+
+        settings.writeSilentlyToFile();
 
         this.dispose();
         System.exit(0);
@@ -316,9 +322,7 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
 
         // define toolbar
         JToolBar toolBar = new JToolBar();
-//        toolBar.setRollover(true);
         toolBar.setFloatable(false);
-//        toolBar.setBorderPainted(true);
 
         defineToolbarButton("New configuration file", COMMAND_NEW, ResourceManager.NEW_ICON, toolBar);
         defineToolbarButton("Open configuration file", COMMAND_OPEN, ResourceManager.OPEN_ICON, toolBar);
@@ -508,9 +512,30 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
 
         // Build the CONFIGURATION menu.
         menu = new JMenu("Config");
+        menu.addMenuListener(new MenuListener() {
+            public void menuCanceled(MenuEvent e) {
+            }
+            public void menuDeselected(MenuEvent e) {
+            }
+            public void menuSelected(MenuEvent e) {
+                recentsSubmenu.removeAll();
+                List recentFiles = settings.getRecentFiles();
+                Iterator iterator = recentFiles.iterator();
+                while (iterator.hasNext()) {
+                    String recentFilename = (String) iterator.next();
+                    defineMenuItem(recentsSubmenu, recentFilename, null, -1, "recent:" + recentFilename, null);
+                }
+            }
+        });
         menu.setMnemonic('C');
         defineMenuItem(menu, "New", ResourceManager.NEW_ICON, KeyEvent.VK_N, COMMAND_NEW, KeyStroke.getKeyStroke( KeyEvent.VK_N, ActionEvent.CTRL_MASK));
         defineMenuItem(menu, "Open", ResourceManager.OPEN_ICON, KeyEvent.VK_O, COMMAND_OPEN, KeyStroke.getKeyStroke( KeyEvent.VK_O, ActionEvent.CTRL_MASK));
+
+        recentsSubmenu = new JMenu("Open Recent");
+        recentsSubmenu.setMnemonic(KeyEvent.VK_R);
+        recentsSubmenu.setIcon(ResourceManager.NONE_ICON);
+        menu.add(recentsSubmenu);
+
         defineMenuItem(menu, "Save", ResourceManager.SAVE_ICON,  KeyEvent.VK_S, COMMAND_SAVE, KeyStroke.getKeyStroke( KeyEvent.VK_S, ActionEvent.CTRL_MASK));
         defineMenuItem(menu, "Save As", null, KeyEvent.VK_V, COMMAND_SAVEAS, null);
         menu.addSeparator();
@@ -650,6 +675,8 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
         setCommandEnabled(COMMAND_VIEW_LOG, configPanel != null);
         setCommandSelected(COMMAND_VIEW_LINENUMBERS, configPanel != null && configPanel.getXmlEditorScrollPane().isShowLineNumbers());
         setCommandEnabled(COMMAND_VIEW_LINENUMBERS, configPanel != null);
+
+        recentsSubmenu.setEnabled( !settings.getRecentFiles().isEmpty() );
     }
 
     public ConfigPanel getActiveConfigPanel() {
@@ -823,6 +850,9 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
             if (activeConfigPanel != null) {
                 activeConfigPanel.getXmlEditorScrollPane().toggleShowLineNumbers();
             }
+        } else if (cmd.startsWith("recent:")) {
+            String filename = cmd.substring(7);
+            addTab(new File(filename));
         }
         
         this.updateGUI();

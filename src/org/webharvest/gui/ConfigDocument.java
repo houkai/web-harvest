@@ -88,6 +88,7 @@ public class ConfigDocument implements DocumentListener {
         this.name = file.getName();
         String fileCharset = ide.getSettings().getFileCharset();
         load( new InputStreamReader(new FileInputStream(file), fileCharset) );
+        ide.getSettings().addRecentFile( file.getAbsolutePath() );
     }
 
     void load(URL url) throws IOException {
@@ -183,6 +184,7 @@ public class ConfigDocument implements DocumentListener {
                 this.name = file.getName();
                 updateDocumentChanged(false);
                 updateGUI();
+                ide.getSettings().addRecentFile(file.getAbsolutePath());
             } catch (IOException e) {
                 DialogHelper.showErrorMessage( e.getMessage() );
             }
