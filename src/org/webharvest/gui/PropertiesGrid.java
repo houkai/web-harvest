@@ -47,7 +47,6 @@ import java.awt.event.ActionEvent;
  * Date: May 7, 2007
  */
 public class PropertiesGrid extends JTable {
-    private static final Color PROPERTY_NAME_FOREGROUND = new Color(180, 180, 180);
 
     private class ButtonRenderer extends JButton implements TableCellRenderer {
         public ButtonRenderer() {

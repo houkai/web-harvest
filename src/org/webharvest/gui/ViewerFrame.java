@@ -49,6 +49,7 @@ import org.webharvest.utils.XmlValidator;
 import org.xml.sax.InputSource;
 
 import javax.swing.*;
+import javax.swing.table.*;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.html.HTMLEditorKit;
 import java.awt.*;
@@ -112,7 +113,7 @@ public class ViewerFrame extends JFrame implements DropDownButtonListener, Actio
     private JLabel imageLabel;
     private int zoomFactor = 100;
     private JLabel zoomFactorLabel;
-    private JEditorPane listPane;
+    private JTable listTable;
     private JCheckBox keepSyncCheckBox;
     private JCheckBox wrapTextCheckBox;
     private JButton findButton;
@@ -331,12 +332,21 @@ public class ViewerFrame extends JFrame implements DropDownButtonListener, Actio
         this.imagePanel.add(imageLabel, BorderLayout.CENTER);
         this.cardPanel.add( new JScrollPane(this.imagePanel), String.valueOf(IMAGE_VIEW) );
 
-        // HTML view
-        this.listPane = new JEditorPane();
-        this.listPane.setEditable(false);
-        this.listPane.setContentType("text/html");
-        this.listPane.setEditorKit( new HTMLEditorKit() );
-        this.cardPanel.add( new JScrollPane(this.listPane), String.valueOf(LIST_VIEW) );
+        // List view
+        this.listTable = new JTable( new DefaultTableModel(0, 2) {
+            public boolean isCellEditable(int row, int column) {
+                return column == 1;
+            }
+        });
+        this.listTable.setTableHeader(null);
+        this.listTable.getColumnModel().getColumn(0).setMaxWidth(30);
+        this.listTable.setColumnSelectionAllowed(true);
+        this.listTable.setRowSelectionAllowed(true);
+        this.listTable.getSelectionModel().setSelectionMode( ListSelectionModel.MULTIPLE_INTERVAL_SELECTION );
+
+        JScrollPane tableScrollPane = new JScrollPane(this.listTable);
+        tableScrollPane.getViewport().setBackground(Color.white);
+        this.cardPanel.add(tableScrollPane, String.valueOf(LIST_VIEW) );
 
         openView(viewIndex);
 
@@ -473,26 +483,24 @@ public class ViewerFrame extends JFrame implements DropDownButtonListener, Actio
                 break;
             case LIST_VIEW:
                 if (!this.refreshed[LIST_VIEW]) {
+                    DefaultTableModel model = (DefaultTableModel) listTable.getModel();
+
+                    int rowCount = model.getRowCount();
+                    for (int i = rowCount - 1; i >= 0; i--) {
+                        model.removeRow(i);
+                    }
+
                     if (value instanceof Variable) {
                         Variable var = (Variable) value;
                         java.util.List list = var.toList();
-                        String html = "<table width=\"100%\">";
                         for (int i = 0; i < list.size(); i++) {
                             Object curr = list.get(i);
                             String stringValue = curr == null ? "" : curr.toString();
-                            stringValue = stringValue.replaceAll("<", "&lt;");
-                            stringValue = stringValue.replaceAll(">", "&gt;");
-                            html += i % 2 == 0 ? "<tr>" : "<tr bgcolor=\"#FFFFCC\">";
-                            html += "<td><code>" + (i + 1) + ".</code></td>";
-                            html += "<td width=\"100%\"><code>" + stringValue + "</code></td>";
-                            html += "</tr>";
+                            model.addRow( new String[] { String.valueOf(i + 1), stringValue} );
                         }
-                        html += "</table>";
-                        this.listPane.setText(html);
                     } else {
-                        this.listPane.setText(value == null ? "" : value.toString());
+                        model.addRow( new String[] {"1", value == null ? "" : value.toString()} );
                     }
-                    listPane.setCaretPosition(0);
                 }
                 break;
         }
