@@ -77,7 +77,7 @@ public class XmlTextPane extends JEditorPane {
                 } else {
                     final int docLen = document.getLength();
                     int fromIndex = Math.max( 0, getText(0, position).lastIndexOf('\n') );
-                    int toIndex = getText(fromIndex + 1, docLen - position).indexOf('\n');
+                    int toIndex = getText(fromIndex + 1, docLen - fromIndex).indexOf('\n');
                     toIndex = toIndex < 0 ? docLen : fromIndex + toIndex;
                     String textToDuplicate = getText(fromIndex, toIndex - fromIndex + 1);
                     if (!textToDuplicate.startsWith("\n")) {
