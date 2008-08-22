@@ -78,7 +78,12 @@ public class WelcomePanel extends JPanel implements HyperlinkListener {
         this.ide = ide;
 
         setLayout(new BorderLayout(0, 0));
-        htmlPane = new JEditorPane();
+        htmlPane = new JEditorPane() {
+            public void paint(Graphics g) {
+                ((Graphics2D)g).setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+                super.paint(g);
+            }
+        };
         htmlPane.setEditable(false);
         htmlPane.setContentType("text/html");
         htmlPane.setEditorKit( new HTMLEditorKit() );
