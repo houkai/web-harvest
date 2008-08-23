@@ -61,7 +61,11 @@ public class CallProcessor extends BaseProcessor {
 
     public CallProcessor(CallDef callDef, ScraperConfiguration configuration, Scraper scraper) {
         super(callDef);
-        this.functionContext = new ScraperContext(scraper);
+        CallProcessor runningFunction = scraper.getRunningFunction();
+        ScraperContext callerContext =
+                runningFunction == null ? scraper.getContext() : runningFunction.getFunctionContext();
+        this.functionContext = new ScraperContext(scraper, callerContext);
+        functionContext.put("caller", new NodeVariable(callerContext));
         this.scriptEngine = configuration.createScriptEngine(functionContext);
         this.callDef = callDef;
     }
@@ -99,13 +103,12 @@ public class CallProcessor extends BaseProcessor {
         this.functionResult = result;
     }
     
-    public void addContextVariable(String name, Variable variable) {
-
-    }
-
-
     public ScriptEngine getScriptEngine() {
         return scriptEngine;
+    }
+
+    public ScraperContext getFunctionContext() {
+        return functionContext;
     }
     
 }

@@ -49,8 +49,12 @@ import org.webharvest.runtime.variables.NodeVariable;
 import org.webharvest.runtime.web.HttpClientManager;
 import org.webharvest.utils.CommonUtil;
 import org.webharvest.utils.Stack;
+import org.webharvest.exception.DatabaseException;
 
 import java.util.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
 /**
  * Basic runtime class.
@@ -93,6 +97,9 @@ public class Scraper {
 
     // all used script engines in this scraper
     private Map usedScriptEngines = new HashMap();
+
+    // pool of used database connections
+    Map dbPool = new HashMap();
 
     private List scraperRuntimeListeners = new LinkedList();
 
@@ -162,6 +169,8 @@ public class Scraper {
             }
         }
 
+        releaseDBConnections();
+
         return new NodeVariable("");
     }
 
@@ -211,7 +220,7 @@ public class Scraper {
     }
 
     public CallProcessor getRunningFunction() {
-        return (CallProcessor) runningFunctions.peek();
+        return runningFunctions.isEmpty() ? null : (CallProcessor) runningFunctions.peek();
     }
 
     public void clearFunctionParams() {
@@ -293,6 +302,30 @@ public class Scraper {
 
     public RuntimeConfig getRuntimeConfig() {
         return runtimeConfig;
+    }
+
+    /**
+     * Get connection from the connection pool, and first create one if necessery 
+     * @param jdbc Name of JDBC class
+     * @param connection JDBC connection string
+     * @param username Username
+     * @param password Password
+     * @return JDBC connection used to access database
+     */
+    public Connection getConnection(String jdbc, String connection, String username, String password) {
+        try {
+            Class.forName(jdbc);
+            String poolKey = jdbc + "-" + connection + "-" + username + "-" + password;
+            Connection conn = (Connection) dbPool.get(poolKey);
+            if (conn == null) {
+                conn = DriverManager.getConnection(connection, username, password);
+                dbPool.put(poolKey, conn);
+            }
+            return conn;
+        }
+        catch (Exception e) {
+            throw new DatabaseException(e);
+        }
     }
 
     public void setExecutingProcessor(BaseProcessor processor) {
@@ -384,6 +417,23 @@ public class Scraper {
         while (listenersIterator.hasNext()) {
             ScraperRuntimeListener listener = (ScraperRuntimeListener) listenersIterator.next();
             listener.onExecutionError(this, e);
+        }
+    }
+
+    /**
+     * Releases all DB connections from the pool.
+     */
+    public void releaseDBConnections() {
+        Iterator iterator = dbPool.values().iterator();
+        while (iterator.hasNext()) {
+            Connection conn = (Connection) iterator.next();
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    throw new DatabaseException(e);
+                }
+            }
         }
     }
 

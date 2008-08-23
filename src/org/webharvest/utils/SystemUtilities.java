@@ -42,6 +42,7 @@ import org.webharvest.runtime.variables.Variable;
 import org.webharvest.runtime.variables.NodeVariable;
 import org.webharvest.runtime.Scraper;
 import org.webharvest.runtime.ScraperContext;
+import org.webharvest.runtime.processors.CallProcessor;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -81,8 +82,20 @@ public class SystemUtilities {
     }
 
     /**
+     * Returns variable from scraper context 
+     * @param varName Name of the variable
+     */
+    public Variable getVar(String varName) {
+        ScraperContext context = scraper.getContext();
+        CallProcessor runningFunction = scraper.getRunningFunction();
+        ScraperContext activeContext =
+                runningFunction == null ? scraper.getContext() : runningFunction.getFunctionContext();
+        return activeContext.getVar(varName);
+    }
+
+    /**
      * Adds or/replaces variable in scraper's context. If overwrite is false
-     * and variable with specified name already exists, it won't be updated. 
+     * and variable with specified name already exists, it won't be updated.
      * @param varName
      * @param varValue
      * @param overwrite

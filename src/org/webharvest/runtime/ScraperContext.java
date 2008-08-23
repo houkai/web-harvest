@@ -47,22 +47,38 @@ import org.webharvest.utils.SystemUtilities;
  */
 public class ScraperContext extends Catalog {
 
+    // context of the caller if context is crated in a function 
+    private ScraperContext callerContext = null;
+
     private SystemUtilities systemUtilities;
 
-    public ScraperContext(Scraper scraper) {
+    public ScraperContext(Scraper scraper, ScraperContext callerContext) {
 		super();
+        this.callerContext = callerContext;
         this.systemUtilities = new SystemUtilities(scraper);
         this.put("sys", this.systemUtilities);
         this.put("http", scraper.getHttpClientManager().getHttpInfo());
     }
-	
+
+    public ScraperContext(Scraper scraper) {
+		this(scraper, null);
+    }
+
 	public Variable getVar(String name) {
-		return (Variable) this.get(name);
+        Variable value = (Variable) this.get(name);
+        if ( value == null && callerContext != null && name.startsWith("caller.") ) {
+            return callerContext.getVar(name.substring(7));
+        }
+        return value;
     }
 
     public Object setVar(Object key, Object value) {
         Variable var = CommonUtil.createVariable(value);
         return super.put(key, var);
+    }
+
+    public ScraperContext getCallerContext() {
+        return callerContext;
     }
 
     public void dispose() {
