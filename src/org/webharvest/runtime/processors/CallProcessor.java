@@ -65,7 +65,6 @@ public class CallProcessor extends BaseProcessor {
         ScraperContext callerContext =
                 runningFunction == null ? scraper.getContext() : runningFunction.getFunctionContext();
         this.functionContext = new ScraperContext(scraper, callerContext);
-        functionContext.put("caller", new NodeVariable(callerContext));
         this.scriptEngine = configuration.createScriptEngine(functionContext);
         this.callDef = callDef;
     }
