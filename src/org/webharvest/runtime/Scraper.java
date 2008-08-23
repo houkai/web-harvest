@@ -46,6 +46,7 @@ import org.webharvest.runtime.processors.ProcessorResolver;
 import org.webharvest.runtime.scripting.ScriptEngine;
 import org.webharvest.runtime.variables.Variable;
 import org.webharvest.runtime.variables.NodeVariable;
+import org.webharvest.runtime.variables.EmptyVariable;
 import org.webharvest.runtime.web.HttpClientManager;
 import org.webharvest.utils.CommonUtil;
 import org.webharvest.utils.Stack;
@@ -159,19 +160,22 @@ public class Scraper {
             listener.onExecutionStart(this);
         }
 
-        Iterator it = ops.iterator();
-        while (it.hasNext()) {
-            IElementDef elementDef = (IElementDef) it.next();
-            BaseProcessor processor = ProcessorResolver.createProcessor(elementDef, this.configuration, this);
-
-            if (processor != null) {
-                processor.run(this, context);
+        try {
+            Iterator it = ops.iterator();
+            while (it.hasNext()) {
+                IElementDef elementDef = (IElementDef) it.next();
+                BaseProcessor processor = ProcessorResolver.createProcessor(elementDef, this.configuration, this);
+                if (processor != null) {
+                    processor.run(this, context);
+                }
             }
+            releaseDBConnections();
+        } catch (RuntimeException e) {
+            releaseDBConnections();
+            throw e;
         }
 
-        releaseDBConnections();
-
-        return new NodeVariable("");
+        return new EmptyVariable();
     }
 
     public void execute() {

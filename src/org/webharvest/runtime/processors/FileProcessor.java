@@ -215,13 +215,15 @@ public class FileProcessor extends BaseProcessor {
     private Collection listFiles(File directory, FilenameFilter filter, boolean recurse) {
         Vector files = new Vector();
         File[] entries = directory.listFiles();
-        for (int f = 0; f < entries.length; f++) {
-            File entry = entries[f];
-            if (filter == null || filter.accept(directory, entry.getName())) {
-                files.add(entry);
-            }
-            if (recurse && entry.isDirectory()) {
-                files.addAll(listFiles(entry, filter, recurse));
+        if (entries != null) {
+            for (int f = 0; f < entries.length; f++) {
+                File entry = entries[f];
+                if (filter == null || filter.accept(directory, entry.getName())) {
+                    files.add(entry);
+                }
+                if (recurse && entry.isDirectory()) {
+                    files.addAll(listFiles(entry, filter, recurse));
+                }
             }
         }
         return files;

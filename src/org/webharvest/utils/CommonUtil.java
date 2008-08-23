@@ -646,6 +646,27 @@ public class CommonUtil {
     }
 
     /**
+     * For the given string creates valid identifier name. All invalid characters
+     * are transformed to underscores, and valid characters are preserved.
+     * @param value String to be transformed to valid identifier
+     * @return Valid identifier name made of specified string.
+     */
+    public static String getValidIdentifier(String value) {
+        if (value == null) {
+            return "_";
+        }
+        StringBuffer validIdentifier = new StringBuffer();
+        for (int i = 0; i < value.length(); i++) {
+            char ch = value.charAt(i);
+            if ( (i == 0 && !Character.isJavaIdentifierStart(ch)) || !Character.isJavaIdentifierPart(ch) ) {
+                ch = '_';
+            }
+            validIdentifier.append(ch);
+        }
+        return validIdentifier.length() == 0 ? "_" : validIdentifier.toString();
+    }
+
+    /**
      * Searches specified value in given collection
      * @param c Collection to be searched
      * @param value Object searched for
