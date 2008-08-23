@@ -86,7 +86,6 @@ public class SystemUtilities {
      * @param varName Name of the variable
      */
     public Variable getVar(String varName) {
-        ScraperContext context = scraper.getContext();
         CallProcessor runningFunction = scraper.getRunningFunction();
         ScraperContext activeContext =
                 runningFunction == null ? scraper.getContext() : runningFunction.getFunctionContext();
