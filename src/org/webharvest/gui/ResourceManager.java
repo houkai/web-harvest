@@ -38,7 +38,11 @@ package org.webharvest.gui;
 
 import javax.swing.*;
 import java.net.URL;
+import java.net.URLClassLoader;
+import java.net.MalformedURLException;
 import java.awt.*;
+import java.io.File;
+import java.util.ArrayList;
 
 /**
  * @author: Vladimir Nikic
@@ -47,6 +51,31 @@ import java.awt.*;
 public class ResourceManager {
 
     private static final Class clazz = ResourceManager.class;
+
+    private static URLClassLoader rootClassLoader;
+    static {
+        java.util.List urls = new ArrayList();
+        File[] entries = new File(new File("").getAbsolutePath()).listFiles();
+        if (entries != null) {
+            for (int f = 0; f < entries.length; f++) {
+                File entry = entries[f];
+                if ( entry != null && !entry.isDirectory() && entry.getName().toLowerCase().endsWith(".jar") ) {
+                   try {
+                        urls.add( new URL("jar:file:/" + entry.getAbsolutePath().replace('\\', '/') + "!/") );
+                    } catch (MalformedURLException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+
+        URL urlsArray[] = new URL[urls.size()];
+        for (int i = 0; i < urls.size(); i++) {
+            urlsArray[i] = (URL) urls.get(i);
+        }
+
+        rootClassLoader = new URLClassLoader(urlsArray);
+    }
 
     public static final Icon WELCOME_LOGO_ICON = getIcon("resources/welcomelogo.jpg");
     public static final Icon NONE_ICON = getIcon("resources/icons/none.gif");
@@ -126,6 +155,10 @@ public class ResourceManager {
 
     public static Image getImage(String path) {
         return Toolkit.getDefaultToolkit().getImage(clazz.getResource(path));
+    }
+
+    public static URLClassLoader getRootLoader() {
+        return rootClassLoader;
     }
 
 }
