@@ -43,7 +43,7 @@ public class DatabasePlugin extends WebHarvestPlugin {
             rowElement = "row";
         }
         int maxRows = evaluateAttributeAsInteger("max", -1, scraper);
-        boolean isAutoCommit = evaluateAttributeAsBoolean("autocommit", false, scraper);
+        boolean isAutoCommit = evaluateAttributeAsBoolean("autocommit", true, scraper);
 
         Connection conn = scraper.getConnection(jdbc, connection, username, password);
         Variable body = executeBody(scraper, context);

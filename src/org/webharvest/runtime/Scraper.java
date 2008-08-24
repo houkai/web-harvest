@@ -50,17 +50,13 @@ import org.webharvest.runtime.variables.EmptyVariable;
 import org.webharvest.runtime.web.HttpClientManager;
 import org.webharvest.utils.CommonUtil;
 import org.webharvest.utils.Stack;
+import org.webharvest.utils.ClassLoaderUtil;
 import org.webharvest.exception.DatabaseException;
-import org.webharvest.gui.ResourceManager;
 
 import java.util.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.sql.Driver;
-import java.net.URLClassLoader;
-import java.net.URL;
-import java.io.File;
 
 /**
  * Basic runtime class.
@@ -326,9 +322,7 @@ public class Scraper {
             String poolKey = jdbc + "-" + connection + "-" + username + "-" + password;
             Connection conn = (Connection) dbPool.get(poolKey);
             if (conn == null) {
-                URLClassLoader rootLoader = ResourceManager.getRootLoader();
-                Driver driver = (Driver)Class.forName(jdbc, true, rootLoader).newInstance();
-		        DriverManager.registerDriver(new DriverShim(driver));
+                ClassLoaderUtil.registerJDBCDriver(jdbc);
                 conn = DriverManager.getConnection(connection, username, password);
                 dbPool.put(poolKey, conn);
             }
