@@ -33,7 +33,7 @@ public class DatabasePlugin extends WebHarvestPlugin {
         return "database";
     }
 
-    public Variable execute(Scraper scraper, ScraperContext context) {
+    public Variable executePlugin(Scraper scraper, ScraperContext context) {
         String jdbc = evaluateAttribute("jdbcclass", scraper);
         String connection = evaluateAttribute("connection", scraper);
         String username = evaluateAttribute("username", scraper);

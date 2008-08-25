@@ -19,7 +19,7 @@ public class JsonToXmlPlugin extends WebHarvestPlugin {
         return "json-to-xml";
     }
 
-    public Variable execute(Scraper scraper, ScraperContext context) {
+    public Variable executePlugin(Scraper scraper, ScraperContext context) {
         Variable body = executeBody(scraper, context);
         try {
             JSONObject jsonObject = new JSONObject(body.toString());

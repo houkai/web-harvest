@@ -98,15 +98,22 @@ abstract public class WebHarvestPlugin extends BaseProcessor {
         return new String[] {};
     }
 
+    public final Variable execute(Scraper scraper, ScraperContext context) {
+        // pre processing
+        Variable variable = executePlugin(scraper, context);
+        // post processing
+        return variable;
+    }
+
     /**
      * Mathod that actually executes processor. Since one instance of this class may
      * be used for multiple executions, creator of plugin is responsible for initiating
-     * local variables at the beginning of this method. 
+     * local variables at the beginning of this method.
      * @param scraper
      * @param context
      * @return Instance of variable as result of xecution.
      */
-    public abstract Variable execute(Scraper scraper, ScraperContext context);
+    public abstract Variable executePlugin(Scraper scraper, ScraperContext context);
 
     public String getTagDesc() {
         String[] validSubprocessors = getValidSubprocessors();

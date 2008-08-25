@@ -15,7 +15,7 @@ public class SamplePlugin1 extends WebHarvestPlugin {
         return "sample1";
     }
 
-    public Variable execute(Scraper scraper, ScraperContext context) {
+    public Variable executePlugin(Scraper scraper, ScraperContext context) {
         BaseProcessor parent = scraper.getParentRunningProcessor(this);
         return new NodeVariable(getName());
     }

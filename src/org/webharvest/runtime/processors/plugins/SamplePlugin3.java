@@ -15,7 +15,7 @@ public class SamplePlugin3 extends WebHarvestPlugin {
         return "sample3";
     }
 
-    public Variable execute(Scraper scraper, ScraperContext context) {
+    public Variable executePlugin(Scraper scraper, ScraperContext context) {
         return new NodeVariable(getName());
     }
 
