@@ -43,6 +43,7 @@ public class DatabasePlugin extends WebHarvestPlugin {
             output = "xml";
         }
         boolean isXmlOutput = "xml".equalsIgnoreCase(output);
+        String fieldSeparator = CommonUtil.nvl( evaluateAttribute("fieldseparator", scraper), "," );
         String rowElement = evaluateAttribute("rowelement", scraper);
         if ( rowElement == null || "".equals(rowElement.trim()) ) {
             rowElement = "row";
@@ -84,6 +85,9 @@ public class DatabasePlugin extends WebHarvestPlugin {
                             row.append("</").append(colIdentifier).append(">");
                         } else {
                             row.append(field);
+                            if (i < columnCount) {
+                                row.append(fieldSeparator);
+                            }
                         }
                     }
                     if (isXmlOutput) {
@@ -107,7 +111,16 @@ public class DatabasePlugin extends WebHarvestPlugin {
     }
 
     public String[] getValidAttributes() {
-        return new String[] {"jdbcclass", "connection", "username", "password", "output", "rowelement", "max", "autocommit"};
+        return new String[] {
+                "jdbcclass",
+                "connection",
+                "username",
+                "password",
+                "output",
+                "rowelement",
+                "fieldseparator",
+                "max",
+                "autocommit"};
     }
 
     public String[] getRequiredAttributes() {
