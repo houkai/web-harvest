@@ -38,6 +38,11 @@ public class DatabasePlugin extends WebHarvestPlugin {
         String connection = evaluateAttribute("connection", scraper);
         String username = evaluateAttribute("username", scraper);
         String password = evaluateAttribute("password", scraper);
+        String output = evaluateAttribute("output", scraper);
+        if ( output == null || !"text".equalsIgnoreCase(output.trim()) ) {
+            output = "xml";
+        }
+        boolean isXmlOutput = "xml".equalsIgnoreCase(output);
         String rowElement = evaluateAttribute("rowelement", scraper);
         if ( rowElement == null || "".equals(rowElement.trim()) ) {
             rowElement = "row";
@@ -68,16 +73,24 @@ public class DatabasePlugin extends WebHarvestPlugin {
 
                 int rowCount = 0;
                 while ( resultSet.next() && (maxRows < 0 || rowCount < maxRows) ) {
-                    StringBuffer row = new StringBuffer("<" + rowElement + ">");
+                    StringBuffer row = isXmlOutput ? new StringBuffer("<" + rowElement + ">") : new StringBuffer();
                     for (int i = 1; i <= columnCount; i++) {
                         String colName = colDescs[i - 1].name;
                         String colIdentifier = colDescs[i - 1].identifier;
                         String field = resultSet.getString(colName);
-                        row.append("<").append(colIdentifier).append(">");
-                        row.append(CommonUtil.escapeXml(field));
-                        row.append("</").append(colIdentifier).append(">");
+                        if (isXmlOutput) {
+                            row.append("<").append(colIdentifier).append(">");
+                            row.append(CommonUtil.escapeXml(field));
+                            row.append("</").append(colIdentifier).append(">");
+                        } else {
+                            row.append(field);
+                        }
                     }
-                    row.append("</").append(rowElement).append(">");
+                    if (isXmlOutput) {
+                        row.append("</").append(rowElement).append(">");
+                    } else {
+                        row.append("\n");
+                    }
 
                     queryResult.addVariable( new NodeVariable(row) );
                     rowCount++;
@@ -94,7 +107,7 @@ public class DatabasePlugin extends WebHarvestPlugin {
     }
 
     public String[] getValidAttributes() {
-        return new String[] {"jdbcclass", "connection", "username", "password", "max", "autocommit"};
+        return new String[] {"jdbcclass", "connection", "username", "password", "output", "rowelement", "max", "autocommit"};
     }
 
     public String[] getRequiredAttributes() {
