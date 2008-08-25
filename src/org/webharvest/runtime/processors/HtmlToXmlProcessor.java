@@ -94,6 +94,11 @@ public class HtmlToXmlProcessor extends BaseProcessor {
             properties.setOmitUnknownTags( CommonUtil.isBooleanTrue(omitUnknownTags) );
         }
 
+        final String useEmptyElementTags = BaseTemplater.execute(htmlToXmlDef.getUseEmptyElementTags(), scriptEngine);
+        if ( useEmptyElementTags != null) {
+            properties.setUseEmptyElementTags( CommonUtil.isBooleanTrue(useEmptyElementTags) );
+        }
+
         final String treatUnknownTagsAsContent = BaseTemplater.execute(htmlToXmlDef.getTreatUnknownTagsAsContent(), scriptEngine);
         if ( treatUnknownTagsAsContent != null) {
             properties.setTreatUnknownTagsAsContent( CommonUtil.isBooleanTrue(treatUnknownTagsAsContent) );
@@ -141,9 +146,19 @@ public class HtmlToXmlProcessor extends BaseProcessor {
             properties.setNamespacesAware(false);
         }
 
+        final String hyphenReplacement = BaseTemplater.execute(htmlToXmlDef.getHyphenReplacement(), scriptEngine);
+        if ( hyphenReplacement != null) {
+            properties.setHyphenReplacementInComment(hyphenReplacement);
+        }
+
         final String pruneTags = BaseTemplater.execute(htmlToXmlDef.getPrunetags(), scriptEngine);
         if ( pruneTags != null) {
             properties.setPruneTags(pruneTags);
+        }
+
+        final String booleanAtts = BaseTemplater.execute(htmlToXmlDef.getBooleanAtts(), scriptEngine);
+        if ( booleanAtts != null) {
+            properties.setBooleanAttributeValues(booleanAtts);
         }
 
         String outputType = BaseTemplater.execute(htmlToXmlDef.getOutputType(), scriptEngine);

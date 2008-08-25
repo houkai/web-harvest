@@ -53,10 +53,13 @@ public class HtmlToXmlDef extends BaseElementDef {
     private String omitXmlDecl;
     private String omitComments;
     private String omitHtmlEnvelope;
+    private String useEmptyElementTags;
     private String allowMultiWordAttributes;
     private String allowHtmlInsideAttributes;
     private String namespacesAware;
     private String prunetags;
+    private String hyphenReplacement;
+    private String booleanAtts;
 
     public HtmlToXmlDef(XmlNode xmlNode) {
         super(xmlNode);
@@ -73,10 +76,13 @@ public class HtmlToXmlDef extends BaseElementDef {
         this.omitXmlDecl = (String) xmlNode.get("omitxmldecl");
         this.omitComments = (String) xmlNode.get("omitcomments");
         this.omitHtmlEnvelope = (String) xmlNode.get("omithtmlenvelope");
+        this.useEmptyElementTags = (String) xmlNode.get("useemptyelementtags");
         this.allowMultiWordAttributes = (String) xmlNode.get("allowmultiwordattributes");
         this.allowHtmlInsideAttributes = (String) xmlNode.get("allowhtmlinsideattributes");
         this.namespacesAware = (String) xmlNode.get("namespacesaware");
         this.prunetags = (String) xmlNode.get("prunetags");
+        this.hyphenReplacement = (String) xmlNode.get("hyphenreplacement");
+        this.booleanAtts = (String) xmlNode.get("booleanatts");
     }
 
     public String getShortElementName() {
@@ -131,6 +137,10 @@ public class HtmlToXmlDef extends BaseElementDef {
         return omitHtmlEnvelope;
     }
 
+    public String getUseEmptyElementTags() {
+        return useEmptyElementTags;
+    }
+
     public String getAllowMultiWordAttributes() {
         return allowMultiWordAttributes;
     }
@@ -147,4 +157,12 @@ public class HtmlToXmlDef extends BaseElementDef {
         return prunetags;
     }
 
+    public String getHyphenReplacement() {
+        return hyphenReplacement;
+    }
+
+    public String getBooleanAtts() {
+        return booleanAtts;
+    }
+    
 }
