@@ -153,7 +153,7 @@ public class ConfigDocument implements DocumentListener {
      */
     public void saveConfigToFile(boolean isSaveAs) {
         if (isSaveAs || file == null) {
-            JFileChooser fileChooser = DialogHelper.getFileChooser();
+            JFileChooser fileChooser = GuiUtils.getFileChooser();
             int returnVal = fileChooser.showSaveDialog(this.ide);
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                 file = fileChooser.getSelectedFile();
@@ -165,7 +165,7 @@ public class ConfigDocument implements DocumentListener {
 
                 if ( isSaveAs && file != null && file.exists() ) {
                     String msg = "File \"" + file.getAbsolutePath() + "\" already exists.\nAre you sure you want to overwrite it?";
-                    boolean toContinue = DialogHelper.showYesNoConfirmWarning(msg);
+                    boolean toContinue = GuiUtils.showYesNoConfirmWarning(msg);
 
                     // if user choose not to overwrite existing file, then give up 
                     if (!toContinue) {
@@ -186,7 +186,7 @@ public class ConfigDocument implements DocumentListener {
                 updateGUI();
                 ide.getSettings().addRecentFile(file.getAbsolutePath());
             } catch (IOException e) {
-                DialogHelper.showErrorMessage( e.getMessage() );
+                GuiUtils.showErrorMessage( e.getMessage() );
             }
         }
     }
@@ -198,7 +198,7 @@ public class ConfigDocument implements DocumentListener {
      */
     public boolean offerToSaveIfChanged() {
         if (isChanged) {
-            int result = DialogHelper.showYesNoCancelConfirmWarning("Save file \"" + this.name + "\"?");
+            int result = GuiUtils.showYesNoCancelConfirmWarning("Save file \"" + this.name + "\"?");
             if (result == JOptionPane.YES_OPTION) {
                 saveConfigToFile(false);
             } else if (result == JOptionPane.CANCEL_OPTION || result == JOptionPane.DEFAULT_OPTION) {
