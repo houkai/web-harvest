@@ -55,7 +55,7 @@ public class DropDownButton extends JButton implements ActionListener {
     private java.util.List listeners = new ArrayList();
 
     public DropDownButton() {
-        this.popup = new JPopupMenu();
+        this.popup = new WHPopupMenu();
         addActionListener(this);
         this.isChangable = true;
     }

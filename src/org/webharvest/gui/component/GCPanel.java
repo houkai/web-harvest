@@ -104,7 +104,7 @@ public class GCPanel extends JPanel {
         this.percentLabel = new PercentLabel();
         this.percentLabel.setHorizontalAlignment(SwingConstants.CENTER);
         add(this.percentLabel);
-        JButton gcButton = new JButton(ResourceManager.SMALL_TRASHCAN_ICON) {
+        JButton gcButton = new SmallButton(ResourceManager.SMALL_TRASHCAN_ICON) {
             public Dimension getPreferredSize() {
                 return GC_BUTTON_DIMENSION;
             }

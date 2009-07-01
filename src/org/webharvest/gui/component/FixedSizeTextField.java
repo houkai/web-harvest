@@ -6,7 +6,7 @@ import java.awt.*;
 /**
  * Text field with specified fixed dimension
  */
-public class FixedSizeTextField extends JTextField {
+public class FixedSizeTextField extends WHTextField {
 
     private int width;
     private int height;
