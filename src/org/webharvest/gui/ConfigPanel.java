@@ -36,7 +36,6 @@
 */
 package org.webharvest.gui;
 
-import org.bounce.text.ScrollableEditorPanel;
 import org.webharvest.definition.BaseElementDef;
 import org.webharvest.definition.ConstantDef;
 import org.webharvest.definition.IElementDef;
@@ -46,12 +45,12 @@ import org.webharvest.runtime.ScraperRuntimeListener;
 import org.webharvest.runtime.processors.BaseProcessor;
 import org.webharvest.runtime.web.HttpClientManager;
 import org.webharvest.utils.Constants;
-import org.webharvest.gui.component.ProportionalSplitPane;
+import org.webharvest.gui.component.*;
 import org.xml.sax.InputSource;
 import org.apache.log4j.Logger;
 
 import javax.swing.*;
-import javax.swing.border.BevelBorder;
+import javax.swing.border.*;
 import javax.swing.text.BadLocationException;
 import javax.swing.event.*;
 import javax.swing.tree.*;
@@ -62,7 +61,6 @@ import java.net.URL;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.LinkedHashMap;
 
 /**
  * Single panel containing XML configuration.
@@ -188,8 +186,8 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
         this.tree.addTreeSelectionListener(this);
 
         // defines pop menu for the tree
-        final JPopupMenu treePopupMenu = new JPopupMenu();
-        JMenuItem menuItem = new JMenuItem("Locate in source");
+        final JPopupMenu treePopupMenu = new WHPopupMenu();
+        JMenuItem menuItem = new MenuElements.MenuItem("Locate in source");
         menuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 xmlEditorScrollPane.clearMarkers(XmlEditorScrollPane.DEFAULT_MARKER_TYPE);
@@ -207,23 +205,23 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
 
         ViewerActionListener viewContentActionListener = new ViewerActionListener();
 
-        textViewMenuItem = new JMenuItem(VIEW_RESULT_AS_TEXT);
+        textViewMenuItem = new MenuElements.MenuItem(VIEW_RESULT_AS_TEXT);
         textViewMenuItem.addActionListener(viewContentActionListener);
         treePopupMenu.add(textViewMenuItem);
 
-        xmlViewMenuItem = new JMenuItem(VIEW_RESULT_AS_XML);
+        xmlViewMenuItem = new MenuElements.MenuItem(VIEW_RESULT_AS_XML);
         xmlViewMenuItem.addActionListener(viewContentActionListener);
         treePopupMenu.add(xmlViewMenuItem);
 
-        htmlViewMenuItem = new JMenuItem(VIEW_RESULT_AS_HTML);
+        htmlViewMenuItem = new MenuElements.MenuItem(VIEW_RESULT_AS_HTML);
         htmlViewMenuItem.addActionListener(viewContentActionListener);
         treePopupMenu.add(htmlViewMenuItem);
 
-        imageViewMenuItem = new JMenuItem(VIEW_RESULT_AS_IMAGE);
+        imageViewMenuItem = new MenuElements.MenuItem(VIEW_RESULT_AS_IMAGE);
         imageViewMenuItem.addActionListener(viewContentActionListener);
         treePopupMenu.add(imageViewMenuItem);
 
-        listViewMenuItem = new JMenuItem(VIEW_RESULT_AS_LIST);
+        listViewMenuItem = new MenuElements.MenuItem(VIEW_RESULT_AS_LIST);
         listViewMenuItem.addActionListener(viewContentActionListener);
         treePopupMenu.add(listViewMenuItem);
 
@@ -243,6 +241,7 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
         });
 
         JScrollPane treeView = new JScrollPane(this.tree);
+        treeView.setBorder(new EmptyBorder(0, 0, 0, 0));
 
         // Create the XML editor pane.
         this.xmlPane = new XmlTextPane();
@@ -274,14 +273,14 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
         try {
             this.configDocument.load(BASIC_CONFIG_SKELETION);
         } catch (IOException e) {
-            DialogHelper.showErrorMessage( e.getMessage() );
+            GuiUtils.showErrorMessage( e.getMessage() );
         }
 
         this.xmlEditorScrollPane = new XmlEditorScrollPane( this.xmlPane, this.ide.getSettings().isShowLineNumbersByDefault() );
 
         this.propertiesGrid = new PropertiesGrid();
         JScrollPane propertiesView = new JScrollPane(propertiesGrid);
-        propertiesView.setBorder(null);
+        propertiesView.setBorder(new EmptyBorder(0, 0, 0, 0));
         propertiesView.getViewport().setBackground(Color.white);
         this.leftView = new ProportionalSplitPane(JSplitPane.VERTICAL_SPLIT);
         this.leftView.setResizeWeight(0.8d);
@@ -306,9 +305,9 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
         logTextArea.setEditable(false);
 
         // defines pop menu for the log area
-        final JPopupMenu logPopupMenu = new JPopupMenu();
+        final JPopupMenu logPopupMenu = new WHPopupMenu();
 
-        logSelectAllMenuItem = new JMenuItem("Select All");
+        logSelectAllMenuItem = new MenuElements.MenuItem("Select All");
         logSelectAllMenuItem.addActionListener( new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 logTextArea.selectAll();
@@ -316,7 +315,7 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
         });
         logPopupMenu.add(logSelectAllMenuItem);
 
-        logClearAllMenuItem = new JMenuItem("Clear All");
+        logClearAllMenuItem = new MenuElements.MenuItem("Clear All");
         logClearAllMenuItem.addActionListener( new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 logTextArea.setText("");
@@ -344,7 +343,8 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
         bottomSplitter.setResizeWeight(1.0d);
         bottomSplitter.setBorder(null);
         bottomSplitter.setTopComponent(leftSplitter);
-        this.bottomView = new JScrollPane(logTextArea);
+        bottomView = new JScrollPane(logTextArea);
+        bottomView.setBorder(new EmptyBorder(0, 0, 0, 0));
         bottomSplitter.setBottomComponent(this.bottomView);
         bottomSplitter.setDividerLocation(0.8d);
 //        bottomSplitter.setDividerSize(Constants.SPLITTER_WIDTH);
@@ -448,7 +448,7 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
             ScraperConfiguration scraperConfiguration = new ScraperConfiguration(in);
             setScraperConfiguration(scraperConfiguration);
         } catch (IOException e) {
-            DialogHelper.showErrorMessage( e.getMessage() );
+            GuiUtils.showErrorMessage( e.getMessage() );
         }
     }
 
@@ -558,21 +558,21 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
                 public void run() {
                     ide.setTabIcon(ConfigPanel.this, ResourceManager.SMALL_FINISHED_ICON);
                     if (settings.isShowFinishDialog()) {
-                        DialogHelper.showInfoMessage("Configuration \"" + configDocument.getName() + "\" finished execution.");
+                        GuiUtils.showInfoMessage("Configuration \"" + configDocument.getName() + "\" finished execution.");
                     }
                 }
             });
         } else if (status == Scraper.STATUS_STOPPED) {
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
-                    DialogHelper.showWarningMessage("Configuration \"" + configDocument.getName() + "\" aborted by user!");
+                    GuiUtils.showWarningMessage("Configuration \"" + configDocument.getName() + "\" aborted by user!");
                     ide.setTabIcon(ConfigPanel.this, ResourceManager.SMALL_FINISHED_ICON);
                 }
             });
         } else if ( status == Scraper.STATUS_EXIT && message != null && !"".equals(message.trim()) ) {
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
-                    DialogHelper.showWarningMessage("Configuration exited: " + message);
+                    GuiUtils.showWarningMessage("Configuration exited: " + message);
                     ide.setTabIcon(ConfigPanel.this, ResourceManager.SMALL_FINISHED_ICON);
                 }
             });
@@ -632,7 +632,7 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
         }
 
         if (settings.isShowFinishDialog()) {
-            DialogHelper.showErrorMessage(errorMessage);
+            GuiUtils.showErrorMessage(errorMessage);
         }
         
         this.ide.setTabIcon(this, ResourceManager.SMALL_ERROR_ICON);
