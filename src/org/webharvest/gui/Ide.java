@@ -42,7 +42,7 @@ package org.webharvest.gui;
  */
 
 import org.webharvest.runtime.Scraper;
-import org.webharvest.gui.component.GCPanel;
+import org.webharvest.gui.component.*;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -99,6 +99,33 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
         } catch (Exception e) {
             System.err.println("Couldn't use system look and feel.");
         }
+
+        UIManager.getLookAndFeelDefaults().put("ScrollBarUI", "org.webharvest.gui.env.WHScrollBarUI");
+//        UIManager.getLookAndFeelDefaults().put("ButtonUI", "com.futuresource.livecharts.env.LCButtonUI");
+        Color dialogBg = new Color(212, 208, 200);
+        UIManager.getLookAndFeelDefaults().put("Label.background", dialogBg);
+        UIManager.getLookAndFeelDefaults().put("SplitPane.background", dialogBg);
+        UIManager.getLookAndFeelDefaults().put("InternalFrame.minimizeIconBackground", dialogBg);
+        UIManager.getLookAndFeelDefaults().put("ComboBox.buttonBackground", dialogBg);
+        UIManager.getLookAndFeelDefaults().put("OptionPane.background", dialogBg);
+        UIManager.getLookAndFeelDefaults().put("ToggleButton.background", dialogBg);
+        UIManager.getLookAndFeelDefaults().put("Slider.background", dialogBg);
+        UIManager.getLookAndFeelDefaults().put("RadioButton.background", dialogBg);
+        UIManager.getLookAndFeelDefaults().put("CheckBox.background", dialogBg);
+        UIManager.getLookAndFeelDefaults().put("ToolBar.background", dialogBg);
+        UIManager.getLookAndFeelDefaults().put("ScrollBar.thumb", dialogBg);
+        UIManager.getLookAndFeelDefaults().put("ProgressBar.selectionForeground", dialogBg);
+        UIManager.getLookAndFeelDefaults().put("ComboBox.disabledBackground", dialogBg);
+        UIManager.getLookAndFeelDefaults().put("Panel.background", dialogBg);
+        UIManager.getLookAndFeelDefaults().put("TabbedPane.background", dialogBg);
+        UIManager.getLookAndFeelDefaults().put("ScrollPane.background", dialogBg);
+        UIManager.getLookAndFeelDefaults().put("Viewport.background", dialogBg);
+        UIManager.getLookAndFeelDefaults().put("Button.background", dialogBg);
+        UIManager.getLookAndFeelDefaults().put("ToolBar.floatingBackground", dialogBg);
+        UIManager.getLookAndFeelDefaults().put("ProgressBar.background", dialogBg);
+        UIManager.getLookAndFeelDefaults().put("TableHeader.background", dialogBg);
+        UIManager.getLookAndFeelDefaults().put("ToolBar.dockingBackground", dialogBg);
+        UIManager.getLookAndFeelDefaults().put("InternalFrame.borderColor", dialogBg);
     }
 
 
@@ -136,7 +163,7 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
     public Ide() {
         super("Web-Harvest");
 
-        DialogHelper.init(this);
+        GuiUtils.init(this);
 
         this.addWindowListener( new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
@@ -166,7 +193,7 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
 
                     int status = currenConfigPanel.getScraperStatus();
                     if (status == Scraper.STATUS_RUNNING) {
-                        canceled = !DialogHelper.showYesNoConfirmWarning("Configuration \"" + configDocument.getName() + "\" is still running!\nAre you sure you want to exit Web-Harvest?");
+                        canceled = !GuiUtils.showYesNoConfirmWarning("Configuration \"" + configDocument.getName() + "\" is still running!\nAre you sure you want to exit Web-Harvest?");
                     }
 
                     if (!canceled) {
@@ -201,7 +228,7 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
                 
                 int status = currenConfigPanel.getScraperStatus();
                 if (status == Scraper.STATUS_RUNNING) {
-                    canceled = !DialogHelper.showYesNoConfirmWarning("Configuration \"" + configDocument.getName() + "\" is still running!\nAre you sure you want to exit Web-Harvest?");
+                    canceled = !GuiUtils.showYesNoConfirmWarning("Configuration \"" + configDocument.getName() + "\" is still running!\nAre you sure you want to exit Web-Harvest?");
                     if (!canceled) {
                         currenConfigPanel.stopScraperExecution();
                     }
@@ -245,16 +272,16 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
         return new Dimension(800, 600);
     }
 
-    private void defineToolbarButton(String text, String command, Icon icon, JToolBar toolBar) {
-        defineToolbarButton(text, command, icon, toolBar, null);
+    private void defineToolbarButton(String text, String command, Icon icon, Container container) {
+        defineToolbarButton(text, command, icon, container, null);
     }
     
-    private void defineToolbarButton(String text, String command, Icon icon, JToolBar toolBar, final String label) {
-        JButton button = new JButton(label, icon);
+    private void defineToolbarButton(String text, String command, Icon icon, Container container, final String label) {
+        JButton button = new FixedSizeButton(label, icon, 24, 24);
         button.setActionCommand(command);
         button.addActionListener(this);
         button.setToolTipText(text);
-        toolBar.add(button);
+        container.add(button);
 
         addComponentForCommand(button, command);
     }
@@ -324,20 +351,23 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
 
-        defineToolbarButton("New configuration file", COMMAND_NEW, ResourceManager.NEW_ICON, toolBar);
-        defineToolbarButton("Open configuration file", COMMAND_OPEN, ResourceManager.OPEN_ICON, toolBar);
-        defineToolbarButton("Save configuration file", COMMAND_SAVE, ResourceManager.SAVE_ICON, toolBar);
-        defineToolbarButton("Synchronize tree view with XML editor", COMMAND_REFRESH, ResourceManager.REFRESH_ICON, toolBar);
-        toolBar.addSeparator(new Dimension(10, 0));
-        defineToolbarButton("Run", COMMAND_RUN, ResourceManager.RUN_ICON, toolBar);
-        defineToolbarButton("Pause execution", COMMAND_PAUSE, ResourceManager.PAUSE_ICON, toolBar);
-        defineToolbarButton("Stop execution", COMMAND_STOP, ResourceManager.STOP_ICON, toolBar);
-        toolBar.addSeparator(new Dimension(10, 0));
-        defineToolbarButton("Define initial run parameters", COMMAND_RUNPARAMS, ResourceManager.RUN_PARAMS_ICON, toolBar);        
-        toolBar.addSeparator(new Dimension(10, 0));
-        defineToolbarButton("Open Settings Dialog", COMMAND_SETTINGS, ResourceManager.SETTINGS_ICON, toolBar);
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 1, 0));
+        toolBar.add(buttonPanel);
 
-        toolBar.add( new GCPanel(new FlowLayout(FlowLayout.RIGHT)) );
+        defineToolbarButton("New configuration file", COMMAND_NEW, ResourceManager.NEW_ICON, buttonPanel);
+        defineToolbarButton("Open configuration file", COMMAND_OPEN, ResourceManager.OPEN_ICON, buttonPanel);
+        defineToolbarButton("Save configuration file", COMMAND_SAVE, ResourceManager.SAVE_ICON, buttonPanel);
+        defineToolbarButton("Synchronize tree view with XML editor", COMMAND_REFRESH, ResourceManager.REFRESH_ICON, buttonPanel);
+        buttonPanel.add(new JSeparator(JSeparator.VERTICAL));
+        defineToolbarButton("Run", COMMAND_RUN, ResourceManager.RUN_ICON, buttonPanel);
+        defineToolbarButton("Pause execution", COMMAND_PAUSE, ResourceManager.PAUSE_ICON, buttonPanel);
+        defineToolbarButton("Stop execution", COMMAND_STOP, ResourceManager.STOP_ICON, buttonPanel);
+        buttonPanel.add(new JSeparator(JSeparator.VERTICAL));
+        defineToolbarButton("Define initial run parameters", COMMAND_RUNPARAMS, ResourceManager.RUN_PARAMS_ICON, buttonPanel);
+        buttonPanel.add(new JSeparator(JSeparator.VERTICAL));
+        defineToolbarButton("Open Settings Dialog", COMMAND_SETTINGS, ResourceManager.SETTINGS_ICON, buttonPanel);
+
+        toolBar.add( new GCPanel(new FlowLayout(FlowLayout.RIGHT, 1, 0)) );
 
         mainPanel.add(toolBar, BorderLayout.NORTH);
 
@@ -405,7 +435,7 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
     }
 
     public void openConfigFromFile() {
-        JFileChooser fileChooser = DialogHelper.getFileChooser();
+        JFileChooser fileChooser = GuiUtils.getFileChooser();
         int returnVal = fileChooser.showOpenDialog(this);
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File files[] = fileChooser.getSelectedFiles();
@@ -443,7 +473,7 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
      * @param keyStroke
      */
     private void defineMenuItem(JMenu menu, String text, Icon icon, int mnemonic, String command, KeyStroke keyStroke) {
-        JMenuItem menuItem = new JMenuItem(text);
+        JMenuItem menuItem = new MenuElements.MenuItem(text);
         menuItem.setIcon(icon == null ? ResourceManager.NONE_ICON : icon);
         menuItem.setMnemonic(mnemonic);
         menuItem.setAccelerator(keyStroke);
@@ -464,8 +494,7 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
      * @param keyStroke
      */
     private void defineCheckboxMenuItem(JMenu menu, String text, Icon icon, int mnemonic, String command, KeyStroke keyStroke, boolean isChecked) {
-        JCheckBoxMenuItem menuItem = new JCheckBoxMenuItem(text);
-        menuItem.setSelected(isChecked);
+        JCheckBoxMenuItem menuItem = new MenuElements.CheckboxMenuItem(text, isChecked);
         menuItem.setIcon(icon == null ? ResourceManager.NONE_ICON : icon);
         menuItem.setMnemonic(mnemonic);
         menuItem.setAccelerator(keyStroke);
@@ -486,7 +515,7 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
      * @param keyStroke
      */
     private void definePopupMenuItem(JPopupMenu menu, String text, Icon icon, int mnemonic, String command, KeyStroke keyStroke) {
-        JMenuItem menuItem = new JMenuItem(text);
+        JMenuItem menuItem = new MenuElements.MenuItem(text);
         if (icon != null) {
             menuItem.setIcon(icon);
         }
@@ -505,13 +534,13 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
      */
     private JMenuBar defineMenuBar() {
         JMenuBar menuBar;
-        JMenu menu;
+        MenuElements.Menu menu;
 
         // Create the menu bar.
         menuBar = new JMenuBar();
 
         // Build the CONFIGURATION menu.
-        menu = new JMenu("Config");
+        menu = new MenuElements.Menu("Config");
         menu.addMenuListener(new MenuListener() {
             public void menuCanceled(MenuEvent e) {
             }
@@ -531,7 +560,7 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
         defineMenuItem(menu, "New", ResourceManager.NEW_ICON, KeyEvent.VK_N, COMMAND_NEW, KeyStroke.getKeyStroke( KeyEvent.VK_N, ActionEvent.CTRL_MASK));
         defineMenuItem(menu, "Open", ResourceManager.OPEN_ICON, KeyEvent.VK_O, COMMAND_OPEN, KeyStroke.getKeyStroke( KeyEvent.VK_O, ActionEvent.CTRL_MASK));
 
-        recentsSubmenu = new JMenu("Open Recent");
+        recentsSubmenu = new MenuElements.InnerMenu("Open Recent");
         recentsSubmenu.setMnemonic(KeyEvent.VK_R);
         recentsSubmenu.setIcon(ResourceManager.NONE_ICON);
         menu.add(recentsSubmenu);
@@ -546,7 +575,7 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
         menuBar.add(menu);
 
         // Build the EDIT menu.
-        menu = new JMenu("Edit");
+        menu = new MenuElements.Menu("Edit");
         menu.setMnemonic('E');
         defineMenuItem(menu, "Undo", ResourceManager.UNDO_ICON, KeyEvent.VK_U, COMMAND_UNDO, KeyStroke.getKeyStroke( KeyEvent.VK_Z, ActionEvent.CTRL_MASK));
         defineMenuItem(menu, "Redo", ResourceManager.REDO_ICON, KeyEvent.VK_R, COMMAND_REDO, KeyStroke.getKeyStroke( KeyEvent.VK_Y, ActionEvent.CTRL_MASK));
@@ -568,7 +597,7 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
         menuBar.add(menu);
 
         // Build the editor popup menu.
-        editorPopupMenu = new JPopupMenu();
+        editorPopupMenu = new WHPopupMenu();
         definePopupMenuItem(editorPopupMenu, "Undo", ResourceManager.UNDO_ICON, KeyEvent.VK_U, COMMAND_UNDO, KeyStroke.getKeyStroke( KeyEvent.VK_Z, ActionEvent.CTRL_MASK));
         definePopupMenuItem(editorPopupMenu, "Redo", ResourceManager.REDO_ICON, KeyEvent.VK_R, COMMAND_REDO, KeyStroke.getKeyStroke( KeyEvent.VK_Y, ActionEvent.CTRL_MASK));
         editorPopupMenu.addSeparator();
@@ -585,7 +614,7 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
         definePopupMenuItem(editorPopupMenu, "Comment/Uncomment", ResourceManager.NONE_ICON, KeyEvent.VK_SLASH, COMMAND_COMMENT, KeyStroke.getKeyStroke( KeyEvent.VK_SLASH, ActionEvent.CTRL_MASK));
 
         // Build the VIEW menu.
-        menu = new JMenu("View");
+        menu = new MenuElements.Menu("View");
         menu.setMnemonic('V');
         defineMenuItem(menu, "Synchronize tree", ResourceManager.REFRESH_ICON, KeyEvent.VK_R, COMMAND_REFRESH, KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0));
         menu.addSeparator();
@@ -596,7 +625,7 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
         menuBar.add(menu);
 
         // Build the EXECUTION menu.
-        menu = new JMenu("Execution");
+        menu = new MenuElements.Menu("Execution");
         menu.setMnemonic('x');
         defineMenuItem(menu, "Run", ResourceManager.RUN_ICON, KeyEvent.VK_R, COMMAND_RUN, KeyStroke.getKeyStroke(KeyEvent.VK_F9, 0));
         defineMenuItem(menu, "Pause", ResourceManager.PAUSE_ICON, KeyEvent.VK_R, COMMAND_PAUSE, null);
@@ -608,7 +637,7 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
         menuBar.add(menu);
 
         // Build the HELP menu.
-        menu = new JMenu("Help");
+        menu = new MenuElements.Menu("Help");
         menu.setMnemonic('H');
         defineMenuItem(menu, "Help", ResourceManager.HELP_ICON, KeyEvent.VK_H, COMMAND_HELP, KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0));
         menu.addSeparator();
@@ -624,7 +653,7 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
      * Defines context menu for tabbed pane.
      */
     private JPopupMenu defineTabContextMenu() {
-        JPopupMenu menu = new JPopupMenu();
+        JPopupMenu menu = new WHPopupMenu();
 
         definePopupMenuItem(menu, "New", null, KeyEvent.VK_N, COMMAND_NEW, null);
         menu.addSeparator();
@@ -916,7 +945,7 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
                 }
             }
         } catch (Exception e) {
-            DialogHelper.showErrorMessage( "Error attempting to launch web browser" + ":\n" + e.getLocalizedMessage() );
+            GuiUtils.showErrorMessage( "Error attempting to launch web browser" + ":\n" + e.getLocalizedMessage() );
         }
     }
 

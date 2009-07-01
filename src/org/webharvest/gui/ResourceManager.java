@@ -38,11 +38,7 @@ package org.webharvest.gui;
 
 import javax.swing.*;
 import java.net.URL;
-import java.net.URLClassLoader;
-import java.net.MalformedURLException;
 import java.awt.*;
-import java.io.File;
-import java.util.ArrayList;
 
 /**
  * @author: Vladimir Nikic
@@ -95,6 +91,21 @@ public class ResourceManager {
     public static final Icon HELPTOPIC_ICON = getIcon("resources/icons/helptopic.gif");
     public static final Icon VALID_ICON = getIcon("resources/icons/valid.gif");
     public static final Icon INVALID_ICON = getIcon("resources/icons/invalid.gif");
+
+    // UI icons and images
+    public static Icon RADIO_BUTTON_ICON = getIcon("resources/icons/env/radio_button_unselected.gif");
+    public static Icon RADIO_BUTTON_SELECTED_ICON = getIcon("resources/icons/env/radio_button_selected.gif");
+    public static Icon RADIO_BUTTON_EMPTY_ICON = getIcon("resources/icons/env/radio_button_empty.gif");
+    public static Icon CHECKBOX_ICON = getIcon("resources/icons/env/checkbox_unselected.gif");
+    public static Icon CHECKBOX_SELECTED_ICON = getIcon("resources/icons/env/checkbox_selected.gif");
+    public static Icon EXPAND_ICON = getIcon("resources/icons/env/expand.gif");
+    public static Icon COLLAPSE_ICON = getIcon("resources/icons/env/collapse.gif");
+    public static Icon ERROR_ICON = getIcon("resources/icons/env/error.gif");
+    public static Icon WARNING_ICON = getIcon("resources/icons/env/warning.gif");
+    public static Icon INFO_ICON = getIcon("resources/icons/env/information.gif");
+    public static Icon QUESTION_ICON = getIcon("resources/icons/env/question.gif");
+    public static Icon TRASHCAN_ICON = getIcon("resources/icons/env/trashcan.gif");
+
 
     public static Image BREAKPOINT_IMAGE = getImage("resources/icons/breakpoint.gif");
 
