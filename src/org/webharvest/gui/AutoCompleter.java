@@ -2,6 +2,7 @@ package org.webharvest.gui;
 
 import org.webharvest.definition.DefinitionResolver;
 import org.webharvest.definition.ElementInfo;
+import org.webharvest.gui.component.*;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -205,8 +206,7 @@ public class AutoCompleter {
                 this.popupMenu.removeAll();
 
                 this.list.setVisibleRowCount(Math.min(12, model.getSize()));
-                JScrollPane scrollPane = new JScrollPane(list);
-                scrollPane.setBorder(null);
+                JScrollPane scrollPane = new WHScrollPane(list);
 
                 this.popupMenu.add(scrollPane);
                 this.popupMenu.show( this.xmlPane, (int)position.getX(), (int)(position.getY() + position.getHeight()) );
