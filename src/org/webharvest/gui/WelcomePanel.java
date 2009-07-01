@@ -40,6 +40,7 @@ import org.webharvest.utils.CommonUtil;
 import org.webharvest.utils.Constants;
 import org.webharvest.definition.XmlParser;
 import org.webharvest.definition.XmlNode;
+import org.webharvest.gui.component.*;
 import org.xml.sax.InputSource;
 
 import javax.swing.*;
@@ -100,8 +101,7 @@ public class WelcomePanel extends JPanel implements HyperlinkListener {
             e.printStackTrace();
         }
 
-        JScrollPane scrollPane = new JScrollPane(htmlPane);
-        scrollPane.setBorder(null);
+        JScrollPane scrollPane = new WHScrollPane(htmlPane);
         this.add(scrollPane, BorderLayout.CENTER);
 
         new Thread() {

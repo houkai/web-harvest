@@ -36,6 +36,8 @@
 */
 package org.webharvest.gui;
 
+import org.webharvest.gui.component.*;
+
 import javax.swing.*;
 import javax.swing.table.*;
 import java.awt.*;
@@ -48,9 +50,10 @@ import java.awt.event.ActionEvent;
  */
 public class PropertiesGrid extends JTable {
 
-    private class ButtonRenderer extends JButton implements TableCellRenderer {
+    private class ButtonRenderer extends SmallButton implements TableCellRenderer {
         public ButtonRenderer() {
             setOpaque(true);
+            setBorder(null);
         }
 
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {

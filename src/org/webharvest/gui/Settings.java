@@ -87,7 +87,7 @@ public class Settings implements Serializable {
             readFromFile();
         } catch (IOException e) {
             e.printStackTrace();
-            DialogHelper.showErrorMessage("Error while reading programs settings: " + e.getMessage());
+            GuiUtils.showErrorMessage("Error while reading programs settings: " + e.getMessage());
         }
     }
 

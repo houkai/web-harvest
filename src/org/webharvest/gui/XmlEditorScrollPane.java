@@ -38,8 +38,10 @@
 package org.webharvest.gui;
 
 import org.bounce.text.ScrollableEditorPanel;
+import org.webharvest.gui.component.*;
 
 import javax.swing.*;
+import javax.swing.border.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -50,7 +52,7 @@ import java.util.ArrayList;
 /**
  * Scroll pane that contains XML xmlTextPane and line numbers at left border
  */
-public class XmlEditorScrollPane extends JScrollPane {
+public class XmlEditorScrollPane extends WHScrollPane {
 
     public static final int DEFAULT_MARKER_TYPE = 0;
     public static final int RUNNING_MARKER_TYPE = 1;

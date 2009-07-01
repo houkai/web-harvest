@@ -37,9 +37,7 @@
 package org.webharvest.gui;
 
 import net.sf.saxon.trans.XPathException;
-import org.webharvest.gui.component.DropDownButton;
-import org.webharvest.gui.component.DropDownButtonListener;
-import org.webharvest.gui.component.ProportionalSplitPane;
+import org.webharvest.gui.component.*;
 import org.webharvest.runtime.RuntimeConfig;
 import org.webharvest.runtime.variables.Variable;
 import org.webharvest.runtime.variables.ListVariable;
@@ -172,11 +170,11 @@ public class ViewerFrame extends JFrame implements DropDownButtonListener, Actio
         toolBar.addSeparator(new Dimension(10, 0));
 
         DropDownButton viewTypeButton = new DropDownButton();
-        viewTypeButton.addMenuItem( new JMenuItem("Text  ", ResourceManager.TEXTTYPE_ICON) );
-        viewTypeButton.addMenuItem( new JMenuItem("XML  ", ResourceManager.XMLTYPE_ICON) );
-        viewTypeButton.addMenuItem( new JMenuItem("HTML  ", ResourceManager.HTMLTYPE_ICON) );
-        viewTypeButton.addMenuItem( new JMenuItem("Image  ", ResourceManager.IMAGETYPE_ICON) );
-        viewTypeButton.addMenuItem( new JMenuItem("List  ", ResourceManager.LISTTYPE_ICON) );
+        viewTypeButton.addMenuItem( new MenuElements.MenuItem("Text  ", ResourceManager.TEXTTYPE_ICON) );
+        viewTypeButton.addMenuItem( new MenuElements.MenuItem("XML  ", ResourceManager.XMLTYPE_ICON) );
+        viewTypeButton.addMenuItem( new MenuElements.MenuItem("HTML  ", ResourceManager.HTMLTYPE_ICON) );
+        viewTypeButton.addMenuItem( new MenuElements.MenuItem("Image  ", ResourceManager.IMAGETYPE_ICON) );
+        viewTypeButton.addMenuItem( new MenuElements.MenuItem("List  ", ResourceManager.LISTTYPE_ICON) );
         viewTypeButton.changeSelectedTo(viewIndex);
         viewTypeButton.addListener(this);
         toolBar.add( new JLabel(" View as: ") );
@@ -260,7 +258,7 @@ public class ViewerFrame extends JFrame implements DropDownButtonListener, Actio
         this.textArea.setEditable(false);
         this.textArea.setWrapStyleWord(true);
         this.textArea.setFont( new Font("Monospaced", Font.PLAIN, 12) );
-        this.cardPanel.add( new JScrollPane(this.textArea), String.valueOf(TEXT_VIEW) );
+        this.cardPanel.add( new WHScrollPane(this.textArea), String.valueOf(TEXT_VIEW) );
 
         // XML view
         this.xmlPane = new XmlTextPane();
@@ -307,7 +305,7 @@ public class ViewerFrame extends JFrame implements DropDownButtonListener, Actio
         this.xpathResultPane.setEditorKit( new HTMLEditorKit() );
 
         xpathPanel.add(xpathToolbar, BorderLayout.NORTH);
-        xpathPanel.add(new JScrollPane(this.xpathResultPane), BorderLayout.CENTER);
+        xpathPanel.add(new WHScrollPane(this.xpathResultPane), BorderLayout.CENTER);
 
         JSplitPane splitPane = new ProportionalSplitPane(JSplitPane.VERTICAL_SPLIT);
         splitPane.setResizeWeight(1.0d);
@@ -323,14 +321,14 @@ public class ViewerFrame extends JFrame implements DropDownButtonListener, Actio
         this.htmlPane.setEditable(false);
         this.htmlPane.setContentType("text/html");
         this.htmlPane.setEditorKit( new HTMLEditorKit() );
-        this.cardPanel.add( new JScrollPane(this.htmlPane), String.valueOf(HTML_VIEW) );
+        this.cardPanel.add( new WHScrollPane(this.htmlPane), String.valueOf(HTML_VIEW) );
 
         // image view
         this.imagePanel = new JPanel(new BorderLayout());
         this.imagePanel.setBackground(Color.white);
         this.imageLabel = new JLabel("", JLabel.CENTER);
         this.imagePanel.add(imageLabel, BorderLayout.CENTER);
-        this.cardPanel.add( new JScrollPane(this.imagePanel), String.valueOf(IMAGE_VIEW) );
+        this.cardPanel.add( new WHScrollPane(this.imagePanel), String.valueOf(IMAGE_VIEW) );
 
         // List view
         this.listTable = new JTable( new DefaultTableModel(0, 2) {
@@ -344,7 +342,7 @@ public class ViewerFrame extends JFrame implements DropDownButtonListener, Actio
         this.listTable.setRowSelectionAllowed(true);
         this.listTable.getSelectionModel().setSelectionMode( ListSelectionModel.MULTIPLE_INTERVAL_SELECTION );
 
-        JScrollPane tableScrollPane = new JScrollPane(this.listTable);
+        JScrollPane tableScrollPane = new WHScrollPane(this.listTable);
         tableScrollPane.getViewport().setBackground(Color.white);
         this.cardPanel.add(tableScrollPane, String.valueOf(LIST_VIEW) );
 

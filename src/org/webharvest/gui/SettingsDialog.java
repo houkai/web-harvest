@@ -36,8 +36,7 @@
 */
 package org.webharvest.gui;
 
-import org.webharvest.gui.component.FixedSizeButton;
-import org.webharvest.gui.component.FixedSizeTextField;
+import org.webharvest.gui.component.*;
 import org.webharvest.definition.DefinitionResolver;
 import org.webharvest.exception.PluginException;
 
@@ -55,7 +54,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.*;
 
-public class SettingsDialog extends JDialog implements ChangeListener {
+public class SettingsDialog extends CommonDialog implements ChangeListener {
 
     /**
      * Class definining elements in list of plugins. Each item has name (fully qualified class name)
@@ -193,7 +192,7 @@ public class SettingsDialog extends JDialog implements ChangeListener {
     private final JFileChooser pathChooser = new JFileChooser();
 
     public SettingsDialog(Ide ide) throws HeadlessException {
-        super(ide, "Settings", true);
+        super("Settings");
         this.ide = ide;
         this.setResizable(false);
 
@@ -225,24 +224,24 @@ public class SettingsDialog extends JDialog implements ChangeListener {
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.insets = new Insets(2, 5, 2, 5);
 
-        workingPathField = new FixedSizeTextField(250, 20);
+        workingPathField = new FixedSizeTextField(250, 16);
 
         Map charsetsMap = Charset.availableCharsets();
         Vector allSupportedCharsets = new Vector(charsetsMap.keySet());
-        fileCharsetComboBox = new JComboBox(allSupportedCharsets);
+        fileCharsetComboBox = new WHComboBox(allSupportedCharsets);
 
-        proxyServerField = new FixedSizeTextField(250, 20);
-        proxyPortField = new FixedSizeTextField(250, 20);
-        proxyUsernameField = new FixedSizeTextField(250, 20);
-        proxyPasswordField = new FixedSizeTextField(250, 20);
-        ntlmHostField = new FixedSizeTextField(250, 20);
-        ntlmDomainField = new FixedSizeTextField(250, 20);
+        proxyServerField = new FixedSizeTextField(250, 16);
+        proxyPortField = new FixedSizeTextField(250, 16);
+        proxyUsernameField = new FixedSizeTextField(250, 16);
+        proxyPasswordField = new FixedSizeTextField(250, 16);
+        ntlmHostField = new FixedSizeTextField(250, 16);
+        ntlmDomainField = new FixedSizeTextField(250, 16);
 
-        proxyEnabledCheckBox = new JCheckBox("Proxy server enabled");
+        proxyEnabledCheckBox = new WHCheckBox("Proxy server enabled");
         proxyEnabledCheckBox.addChangeListener(this);
-        proxyAuthEnabledCheckBox = new JCheckBox("Proxy authentication enabled");
+        proxyAuthEnabledCheckBox = new WHCheckBox("Proxy authentication enabled");
         proxyAuthEnabledCheckBox.addChangeListener(this);
-        ntlmEnabledCheckBox = new JCheckBox("Use NTLM authentication scheme");
+        ntlmEnabledCheckBox = new WHCheckBox("Use NTLM authentication scheme");
         ntlmEnabledCheckBox.addChangeListener(this);
 
         constraints.gridx = 0;
@@ -253,11 +252,7 @@ public class SettingsDialog extends JDialog implements ChangeListener {
         constraints.gridy = 0;
         JPanel pathPanel = new JPanel( new FlowLayout(FlowLayout.LEFT, 0, 0) );
         pathPanel.add(workingPathField);
-        JButton chooseDirButton = new JButton(" ... ") {
-            public Dimension getPreferredSize() {
-                return new Dimension(20, 20);
-            }
-        };
+        JButton chooseDirButton = new SmallButton("...");
         chooseDirButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 int returnVal = pathChooser.showOpenDialog(SettingsDialog.this);
@@ -348,31 +343,17 @@ public class SettingsDialog extends JDialog implements ChangeListener {
         generalPanel.add(ntlmDomainField, constraints );
 
         JPanel buttonPanel = new JPanel( new FlowLayout(FlowLayout.CENTER) );
-
-        JButton okButton = new JButton("  Ok  ");
-        buttonPanel.add(okButton);
-        okButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                define();
-            }
-        });
-
-        JButton cancelButton = new JButton("Cancel");
-        cancelButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                setVisible(false);
-            }
-        });
-        buttonPanel.add(cancelButton);
+        buttonPanel.add(createOkButton());
+        buttonPanel.add(createCancelButton());
 
         JPanel viewPanel = new JPanel();
         viewPanel.setBorder( new EmptyBorder(4, 4, 4, 4) );
         viewPanel.setLayout( new BoxLayout(viewPanel, BoxLayout.PAGE_AXIS) );
-        this.showHierarchyByDefaultCheckBox = new JCheckBox("Show hierarchy panel by default");
-        this.showLogByDefaultCheckBox = new JCheckBox("Show log panel by default");
-        this.showLineNumbersByDefaultCheckBox = new JCheckBox("Show line numbers by default");
-        this.dynamicConfigLocateCheckBox = new JCheckBox("Dynamically locate processors in runtime");
-        this.showFinishDialogCheckBox = new JCheckBox("Show info/error dialog when execution finishes");
+        this.showHierarchyByDefaultCheckBox = new WHCheckBox("Show hierarchy panel by default");
+        this.showLogByDefaultCheckBox = new WHCheckBox("Show log panel by default");
+        this.showLineNumbersByDefaultCheckBox = new WHCheckBox("Show line numbers by default");
+        this.dynamicConfigLocateCheckBox = new WHCheckBox("Dynamically locate processors in runtime");
+        this.showFinishDialogCheckBox = new WHCheckBox("Show info/error dialog when execution finishes");
 
         viewPanel.add(this.showHierarchyByDefaultCheckBox);
         viewPanel.add(this.showLogByDefaultCheckBox);
@@ -390,7 +371,7 @@ public class SettingsDialog extends JDialog implements ChangeListener {
 
         final String pluginInputMsg = "Full class name of the plugin                                            ";
 
-        pluginAddButton = new FixedSizeButton("Add plugin", 110, 26);
+        pluginAddButton = new FixedSizeButton("Add plugin", 110, 22);
         pluginAddButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 String className = JOptionPane.showInputDialog(SettingsDialog.this, pluginInputMsg);
@@ -400,7 +381,7 @@ public class SettingsDialog extends JDialog implements ChangeListener {
                 }
             }
         });
-        pluginEditButton = new FixedSizeButton("Edit plugin", 110, 26);
+        pluginEditButton = new FixedSizeButton("Edit plugin", 110, 22);
         final ActionListener editListener = new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 int index = pluginsList.getSelectedIndex();
@@ -417,7 +398,7 @@ public class SettingsDialog extends JDialog implements ChangeListener {
             }
         };
         pluginEditButton.addActionListener(editListener);
-        pluginRemoveButton = new FixedSizeButton("Remove plugin", 110, 26);
+        pluginRemoveButton = new FixedSizeButton("Remove plugin", 110, 22);
         pluginRemoveButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 int index = pluginsList.getSelectedIndex();
@@ -442,7 +423,7 @@ public class SettingsDialog extends JDialog implements ChangeListener {
         pluginsListPanel.setBorder(new EmptyBorder(3, 3, 3, 3));
 
         pluginListModel = new PluginListModel();
-        pluginsList = new JList(pluginListModel);
+        pluginsList = new WHList(pluginListModel);
         pluginsList.setCellRenderer(new PluginListCellRenderer());
         pluginsList.addListSelectionListener(new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent e) {
@@ -459,7 +440,7 @@ public class SettingsDialog extends JDialog implements ChangeListener {
             }
         });
 
-        pluginsListPanel.add(new JScrollPane(pluginsList), BorderLayout.CENTER);
+        pluginsListPanel.add(new WHScrollPane(pluginsList), BorderLayout.CENTER);
         pluginsPanel.add(pluginsListPanel, BorderLayout.CENTER);
 
         tabbedPane.addTab("General", null, generalPanel, null);
@@ -589,7 +570,7 @@ public class SettingsDialog extends JDialog implements ChangeListener {
             settings.writeToFile();
         } catch (IOException e) {
             e.printStackTrace();
-            DialogHelper.showErrorMessage("Error saving programs settings: " + e.getMessage());
+            GuiUtils.showErrorMessage("Error saving programs settings: " + e.getMessage());
         }
 
         updateControls();
@@ -653,6 +634,10 @@ public class SettingsDialog extends JDialog implements ChangeListener {
 
 
         return rootPane;
+    }
+
+    protected void onOk() {
+        define();        
     }
     
 }
