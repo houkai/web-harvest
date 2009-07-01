@@ -3,22 +3,33 @@ package org.webharvest.gui.component;
 import javax.swing.*;
 import java.awt.*;
 
-/**
- * Button with fixed dimension
- */
-public class FixedSizeButton extends JButton {
+public class FixedSizeButton extends CommonButton {
+
+    public FixedSizeButton(int width, int height) {
+        super();
+        setFixedSize(width, height);
+    }
 
     public FixedSizeButton(String text, int width, int height) {
         super(text);
+        setFixedSize(width, height);
+    }
+
+    public FixedSizeButton(String text, Icon icon, int width, int height) {
+        super(text, icon);
+        setFixedSize(width, height);
+    }
+
+    public FixedSizeButton(Icon icon, int width, int height) {
+        super(icon);
+        setFixedSize(width, height);
+    }
+
+    private void setFixedSize(int width, int height) {
         Dimension dim = new Dimension(width, height);
         setPreferredSize(dim);
         setMinimumSize(dim);
         setMaximumSize(dim);
-    }
-
-    public FixedSizeButton(String text, Icon icon, int width, int height) {
-        this(text, width, height);
-        setIcon(icon);
     }
 
 }
