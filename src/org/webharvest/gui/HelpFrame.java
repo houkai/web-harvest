@@ -100,7 +100,7 @@ public class HelpFrame extends JFrame implements TreeSelectionListener {
             createNodes(topNode, xmlNode);
         } catch (Exception e) {
             e.printStackTrace();
-            DialogHelper.showErrorMessage("Error reading help content!");
+            GuiUtils.showErrorMessage("Error reading help content!");
         }
 
         tree = new JTree(topNode);
