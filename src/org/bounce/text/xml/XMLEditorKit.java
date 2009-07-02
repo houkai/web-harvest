@@ -28,6 +28,8 @@
  */
 package org.bounce.text.xml;
 
+import org.webharvest.gui.*;
+
 import java.awt.Color;
 import java.io.IOException;
 import java.io.InputStream;
@@ -111,13 +113,7 @@ public class XMLEditorKit extends DefaultEditorKit implements XMLStyleConstants 
     private boolean lineWrapping = false;
     private boolean wrapStyleWord = false;
 
-    /**
-     * Constructs an XMLEditorKit with view factory and Context, 
-     * but with line wrapping turned off.
-     */
-    public XMLEditorKit() {
-        this( false);
-    }
+    private BreakpointCollection breakpoints;
 
     /**
      * Called when the kit is being installed into the
@@ -136,9 +132,11 @@ public class XMLEditorKit extends DefaultEditorKit implements XMLStyleConstants 
      * 
      * @param lineWrapping enables line wrapping feature if true.
      */
-    public XMLEditorKit( boolean lineWrapping) {
+    public XMLEditorKit( boolean lineWrapping, BreakpointCollection breakpoints) {
         super();
 
+        this.breakpoints = breakpoints;
+        
         factory = new XMLViewFactory();
         context = new XMLContext();
         
@@ -261,7 +259,7 @@ public class XMLEditorKit extends DefaultEditorKit implements XMLStyleConstants 
                 }
             } else {
                 try {
-                    return new XMLView( context, elem);
+                    return new XMLView(context, elem, breakpoints);
                 } catch ( IOException e) {
                     // Instead of an IOException, this will return null if the 
                     // XMLView could not be instantiated. 

@@ -86,13 +86,14 @@ public class XmlEditorScrollPane extends WHScrollPane {
                     int y = e.getPoint().y;
                     int lineHeight = getFontMetrics(font).getHeight();
                     BreakpointCollection breakpoints = xmlTextPane.getBreakpoints();
-                    int lineNumber = y / lineHeight + 1;
+                    int lineNumber = y / lineHeight;
                     if ( breakpoints.isThereBreakpoint(lineNumber) ) {
                         breakpoints.removeBreakpoint(lineNumber);
                     } else {
                         breakpoints.addBreakpoint(new BreakpointInfo(lineNumber));
                     }
                     repaintLineNumbers();
+                    xmlTextPane.repaint();
                 }
             });
         }
@@ -138,7 +139,7 @@ public class XmlEditorScrollPane extends WHScrollPane {
             BreakpointCollection breakpoints = xmlTextPane.getBreakpoints();
             for (int i = 0; i < breakpoints.size(); i++) {
                 BreakpointInfo breakpoint = (BreakpointInfo) breakpoints.get(i);
-                y = breakpoint.getLineNumber() * lineHeight;
+                y = (breakpoint.getLineNumber() + 1)* lineHeight;
                 if (y < maxHeight) {
                     g.drawImage(ResourceManager.BREAKPOINT_IMAGE, width - 14, y - 10, this);
                 }

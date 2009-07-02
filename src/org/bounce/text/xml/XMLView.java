@@ -29,8 +29,9 @@
 
 package org.bounce.text.xml;
 
-import java.awt.Graphics;
-import java.awt.Shape;
+import org.webharvest.gui.*;
+
+import java.awt.*;
 import java.io.IOException;
 
 import javax.swing.text.View;
@@ -56,6 +57,7 @@ public class XMLView extends PlainView { // WrappedPlainView {
 
     private XMLScanner scanner = null;
     private XMLContext context = null;
+    private BreakpointCollection breakpoints;
 
     /**
      * Construct a colorized view of xml text for the element. Gets the current
@@ -63,13 +65,15 @@ public class XMLView extends PlainView { // WrappedPlainView {
      * 
      * @param context the styles used to colorize the view.
      * @param elem the element to create the view for.
-     * 
+     *
+     * @param breakpoints
      * @throws IOException
      */
-    public XMLView( XMLContext context, Element elem) throws IOException {
+    public XMLView(XMLContext context, Element elem, BreakpointCollection breakpoints) throws IOException {
         super( elem);
 
         this.context = context;
+        this.breakpoints = breakpoints;
         Document doc = getDocument();
 
         scanner = new XMLScanner( doc);
@@ -124,4 +128,14 @@ public class XMLView extends PlainView { // WrappedPlainView {
     protected int drawSelectedText( Graphics g, int x, int y, int start, int end) throws BadLocationException {
         return XMLViewUtilities.drawSelectedText( this, scanner, context, g, x, y, start, end);
     }
+
+    protected void drawLine(int lineIndex, Graphics g, int x, int y) {
+        if (breakpoints != null && breakpoints.isThereBreakpoint(lineIndex)) {
+            g.setColor(Color.lightGray);
+            g.fillRect(0, y - 12, getContainer().getWidth(), 16);
+        }
+
+        super.drawLine(lineIndex, g, x, y);
+    }
+
 }

@@ -359,7 +359,7 @@ public class XmlTextPane extends JEditorPane {
     private BreakpointCollection breakpoints = new BreakpointCollection();
 
     public XmlTextPane() {
-        XMLEditorKit kit = new XMLEditorKit(true);
+        XMLEditorKit kit = new XMLEditorKit(true, breakpoints);
 
         kit.setLineWrappingEnabled(false);
 
@@ -387,13 +387,6 @@ public class XmlTextPane extends JEditorPane {
         this.registerKeyboardAction(shiftTabAction, KeyStroke.getKeyStroke( KeyEvent.VK_TAB, ActionEvent.SHIFT_MASK), JComponent.WHEN_FOCUSED);
         this.registerKeyboardAction(deleteLineAction, KeyStroke.getKeyStroke( KeyEvent.VK_Y, ActionEvent.CTRL_MASK), JComponent.WHEN_FOCUSED);
         this.getActionMap().put(tabAction.getValue(Action.NAME), tabAction);
-
-//        try {
-//            this.getHighlighter().addHighlight(0, 30, new DefaultHighlighter.DefaultHighlightPainter(new Color(255, 164, 164)));
-//        } catch (BadLocationException e) {
-//            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-//        }
-
     }
 
     public boolean getScrollableTracksViewportWidth() {
