@@ -38,17 +38,16 @@ package org.webharvest.gui;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.File;
 
 /**
- * Class that ease work with common dialogs.
+ * Class that ease work with GUI staff.
  * All methods are static in order to be used easier from everywhere. The only
  * requirement is that parent component have to be initialized before any use.  
  *
  * @author: Vladimir Nikic
  * Date: May 17, 2007
  */
-public class DialogHelper {
+public class GuiUtils {
 
     // parent component for all the dialogs
     private static Component parent;
@@ -57,7 +56,7 @@ public class DialogHelper {
     private final static JFileChooser fileChooser = new JFileChooser();
 
     public static synchronized void init(Component parent) {
-        DialogHelper.parent = parent;
+        GuiUtils.parent = parent;
         fileChooser.setFileFilter( new XmlFileFilter() );
         fileChooser.setMultiSelectionEnabled(true);
     }
@@ -181,5 +180,10 @@ public class DialogHelper {
     public static JFileChooser getFileChooser() {
         return fileChooser;
     }
+
+    public static Frame getActiveFrame() {
+        Window window = KeyboardFocusManager.getCurrentKeyboardFocusManager().getActiveWindow();
+        return window instanceof Frame ? (Frame)window : null;
+    }    
 
 }
