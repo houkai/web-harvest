@@ -38,7 +38,7 @@ package org.webharvest.gui;
 
 import org.webharvest.definition.XmlNode;
 import org.webharvest.definition.XmlParser;
-import org.webharvest.gui.component.ProportionalSplitPane;
+import org.webharvest.gui.component.*;
 import org.webharvest.utils.CommonUtil;
 import org.xml.sax.InputSource;
 
@@ -133,11 +133,11 @@ public class HelpFrame extends JFrame implements TreeSelectionListener {
         splitPane.setResizeWeight(0.0d);
         splitPane.setBorder(null);
 
-        JScrollPane treeScrollPane = new JScrollPane(tree);
+        JScrollPane treeScrollPane = new WHScrollPane(tree);
         treeScrollPane.getViewport().setBackground(Color.white);
         treeScrollPane.setBackground(Color.white);
         splitPane.setLeftComponent(treeScrollPane);
-        splitPane.setRightComponent(new JScrollPane(htmlPane));
+        splitPane.setRightComponent(new WHScrollPane(htmlPane));
         splitPane.setDividerLocation(0.3d);
 
         Container contentPane = getContentPane();

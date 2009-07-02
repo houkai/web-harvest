@@ -100,7 +100,7 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
             System.err.println("Couldn't use system look and feel.");
         }
 
-        UIManager.getLookAndFeelDefaults().put("ScrollBarUI", "org.webharvest.gui.env.WHScrollBarUI");
+        UIManager.getLookAndFeelDefaults().put("ScrollBarUI", "org.webharvest.gui.ui.WHScrollBarUI");
 //        UIManager.getLookAndFeelDefaults().put("ButtonUI", "com.futuresource.livecharts.env.LCButtonUI");
         Color dialogBg = new Color(212, 208, 200);
         UIManager.getLookAndFeelDefaults().put("Label.background", dialogBg);
@@ -193,7 +193,7 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
 
                     int status = currenConfigPanel.getScraperStatus();
                     if (status == Scraper.STATUS_RUNNING) {
-                        canceled = !GuiUtils.showYesNoConfirmWarning("Configuration \"" + configDocument.getName() + "\" is still running!\nAre you sure you want to exit Web-Harvest?");
+                        canceled = GuiUtils.showWarningQuestionBox("Configuration \"" + configDocument.getName() + "\" is still running!\nAre you sure you want to exit Web-Harvest?", false) == JOptionPane.YES_OPTION;
                     }
 
                     if (!canceled) {
@@ -228,7 +228,7 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
                 
                 int status = currenConfigPanel.getScraperStatus();
                 if (status == Scraper.STATUS_RUNNING) {
-                    canceled = !GuiUtils.showYesNoConfirmWarning("Configuration \"" + configDocument.getName() + "\" is still running!\nAre you sure you want to exit Web-Harvest?");
+                    canceled = GuiUtils.showWarningQuestionBox("Configuration \"" + configDocument.getName() + "\" is still running!\nAre you sure you want to exit Web-Harvest?", false) == JOptionPane.YES_OPTION;
                     if (!canceled) {
                         currenConfigPanel.stopScraperExecution();
                     }

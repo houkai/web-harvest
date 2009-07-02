@@ -43,7 +43,7 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-public class DropDownButton extends JButton implements ActionListener {
+public class DropDownButton extends CommonButton implements ActionListener {
 
     private JPopupMenu popup;
     private ArrayList items = new ArrayList();

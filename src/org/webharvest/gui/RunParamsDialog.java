@@ -36,19 +36,15 @@
 */
 package org.webharvest.gui;
 
+import org.webharvest.gui.component.*;
+
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import javax.swing.event.ChangeEvent;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableCellEditor;
+import javax.swing.border.*;
+import javax.swing.event.*;
+import javax.swing.table.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.awt.event.*;
+import java.util.*;
 
 public class RunParamsDialog extends JDialog {
 
@@ -143,7 +139,7 @@ public class RunParamsDialog extends JDialog {
         JPanel buttonPanel = new JPanel(new GridLayout(6, 1, 10, 5));
         buttonPanel.setBorder(new EmptyBorder(4, 2, 4, 4));
 
-        JButton addButton = new JButton("Add");
+        JButton addButton = new CommonButton("Add");
         addButton.setMnemonic('A');
         addButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -155,7 +151,7 @@ public class RunParamsDialog extends JDialog {
             }
         });
 
-        JButton removeButton = new JButton("Remove");
+        JButton removeButton = new CommonButton("   Remove   ");
         removeButton.setMnemonic('R');
         removeButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -163,7 +159,7 @@ public class RunParamsDialog extends JDialog {
             }
         });
 
-        JButton okButton = new JButton("OK");
+        JButton okButton = new CommonButton("OK");
         okButton.setMnemonic('O');
         okButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -172,7 +168,7 @@ public class RunParamsDialog extends JDialog {
             }
         });
 
-        JButton applyButton = new JButton("Apply");
+        JButton applyButton = new CommonButton("Apply");
         applyButton.setMnemonic('p');
         applyButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -180,7 +176,7 @@ public class RunParamsDialog extends JDialog {
             }
         });
 
-        JButton cancelButton = new JButton("Cancel");
+        JButton cancelButton = new CommonButton("Cancel");
         cancelButton.setMnemonic('C');
         cancelButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -197,7 +193,8 @@ public class RunParamsDialog extends JDialog {
 
         JPanel leftPane = new JPanel(new BorderLayout());
         leftPane.setBorder(new EmptyBorder(4, 4, 4, 4));
-        JScrollPane tableScrollPane = new JScrollPane(table);
+        JScrollPane tableScrollPane = new WHScrollPane(table);
+        tableScrollPane.setBorder(new WHControlsBorder());
         leftPane.add(tableScrollPane, BorderLayout.CENTER);
         contentPane.add(leftPane, BorderLayout.CENTER);
         contentPane.add(buttonPanel, BorderLayout.EAST);

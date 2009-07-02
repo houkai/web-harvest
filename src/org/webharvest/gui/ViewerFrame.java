@@ -74,7 +74,7 @@ public class ViewerFrame extends JFrame implements DropDownButtonListener, Actio
     public static final int IMAGE_VIEW = 3;
     public static final int LIST_VIEW = 4;
     
-    private static final Dimension TOOLBAR_DIMENSION = new Dimension(0, 25);
+    private static final Dimension TOOLBAR_DIMENSION = new Dimension(0, 23);
 
     private abstract class MyAction extends AbstractAction {
         public MyAction(String text, Icon icon, String desc, KeyStroke keyStroke) {
@@ -160,21 +160,21 @@ public class ViewerFrame extends JFrame implements DropDownButtonListener, Actio
                 return TOOLBAR_DIMENSION;
             }
         };
+        toolBar.setLayout(new FlowLayout(FlowLayout.LEFT, 1, 0));
         toolBar.setFloatable(false);
-//        toolBar.setRollover(true);
 
-        this.keepSyncCheckBox = new JCheckBox("Keep synchronized");
+        this.keepSyncCheckBox = new WHCheckBox("Keep synchronized");
         this.keepSyncCheckBox.addActionListener(this);
         toolBar.add(this.keepSyncCheckBox);
 
         toolBar.addSeparator(new Dimension(10, 0));
 
         DropDownButton viewTypeButton = new DropDownButton();
-        viewTypeButton.addMenuItem( new MenuElements.MenuItem("Text  ", ResourceManager.TEXTTYPE_ICON) );
-        viewTypeButton.addMenuItem( new MenuElements.MenuItem("XML  ", ResourceManager.XMLTYPE_ICON) );
-        viewTypeButton.addMenuItem( new MenuElements.MenuItem("HTML  ", ResourceManager.HTMLTYPE_ICON) );
-        viewTypeButton.addMenuItem( new MenuElements.MenuItem("Image  ", ResourceManager.IMAGETYPE_ICON) );
-        viewTypeButton.addMenuItem( new MenuElements.MenuItem("List  ", ResourceManager.LISTTYPE_ICON) );
+        viewTypeButton.addMenuItem( new MenuElements.MenuItem("Text    ", ResourceManager.TEXTTYPE_ICON) );
+        viewTypeButton.addMenuItem( new MenuElements.MenuItem("XML    ", ResourceManager.XMLTYPE_ICON) );
+        viewTypeButton.addMenuItem( new MenuElements.MenuItem("HTML    ", ResourceManager.HTMLTYPE_ICON) );
+        viewTypeButton.addMenuItem( new MenuElements.MenuItem("Image    ", ResourceManager.IMAGETYPE_ICON) );
+        viewTypeButton.addMenuItem( new MenuElements.MenuItem("List    ", ResourceManager.LISTTYPE_ICON) );
         viewTypeButton.changeSelectedTo(viewIndex);
         viewTypeButton.addListener(this);
         toolBar.add( new JLabel(" View as: ") );
@@ -210,31 +210,31 @@ public class ViewerFrame extends JFrame implements DropDownButtonListener, Actio
             }
         };
 
-        this.findButton = new JButton(findTextAction);
+        this.findButton = new CommonButton(findTextAction);
         this.findButton.registerKeyboardAction(findTextAction, KeyStroke.getKeyStroke( KeyEvent.VK_F, ActionEvent.CTRL_MASK), JComponent.WHEN_IN_FOCUSED_WINDOW);
         this.findButton.registerKeyboardAction(findNextAction, KeyStroke.getKeyStroke( KeyEvent.VK_F3, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);
         this.findButton.registerKeyboardAction(findPrevAction, KeyStroke.getKeyStroke( KeyEvent.VK_F3, ActionEvent.SHIFT_MASK), JComponent.WHEN_IN_FOCUSED_WINDOW);
 
-        this.wrapTextCheckBox = new JCheckBox("Wrap Text");
+        this.wrapTextCheckBox = new WHCheckBox("Wrap Text");
         this.wrapTextCheckBox.addActionListener(this);
         toolBar.add(this.wrapTextCheckBox);
 
-        this.zoomInButton = new JButton(zoomInAction);
+        this.zoomInButton = new CommonButton(zoomInAction);
         this.zoomInButton.registerKeyboardAction(zoomInAction, KeyStroke.getKeyStroke( KeyEvent.VK_ADD, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);
 
-        this.zoomOutButton = new JButton(zoomOutAction);
+        this.zoomOutButton = new CommonButton(zoomOutAction);
         this.zoomOutButton.registerKeyboardAction(zoomOutAction, KeyStroke.getKeyStroke( KeyEvent.VK_SUBTRACT, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);
 
         this.zoomFactorLabel = new JLabel();
 
-        this.xmlValidateButton = new JButton("Check well-formedness", ResourceManager.VALIDATE_ICON);
+        this.xmlValidateButton = new CommonButton("Check well-formedness", ResourceManager.VALIDATE_ICON);
         this.xmlValidateButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 validateXml(true);
             }
         });
 
-        this.xmlPrettyPrintButton = new JButton("Pretty-print", ResourceManager.PRETTY_PRINT_ICON);
+        this.xmlPrettyPrintButton = new CommonButton("Pretty-print", ResourceManager.PRETTY_PRINT_ICON);
         this.xmlPrettyPrintButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 prettyPrintXml();
@@ -267,23 +267,16 @@ public class ViewerFrame extends JFrame implements DropDownButtonListener, Actio
         JPanel xpathPanel = new JPanel(new BorderLayout());
         JToolBar xpathToolbar = new JToolBar() {
             public Dimension getPreferredSize() {
-                return TOOLBAR_DIMENSION;
+                return new Dimension(0, 20);
             }
         };
-        final JComboBox xpathComboBox = new JComboBox();
-        xpathComboBox.getEditor().addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                String expression = e.getActionCommand();
-                xpathComboBox.removeItem(expression);
-                xpathComboBox.insertItemAt(expression, 0);
-                xpathComboBox.setSelectedItem(expression);
-                evaluateXPath(expression);
+        final JComboBox xpathComboBox = new EditableComboBox(50) {
+            protected void execute(Object value) {
+                evaluateXPath((String)getEditor().getItem());
             }
-        });
+        };
 
-        xpathComboBox.setEditable(true);
-
-        final JButton xpathEvalButton = new JButton("Evaluate");
+        final JButton xpathEvalButton = new SmallButton("Evaluate");
 
         xpathEvalButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -427,12 +420,12 @@ public class ViewerFrame extends JFrame implements DropDownButtonListener, Actio
         boolean valid = validator.parse( new InputSource(new StringReader(s)) );
         if (valid) {
             if (showOkMessage) {
-                JOptionPane.showMessageDialog(this, "XML is well-formed.", "XML validation", JOptionPane.INFORMATION_MESSAGE);
+                GuiUtils.showInfoMessage("XML is well-formed.");
             }
         } else {
             String msg = "XML is not well-formed: " + validator.getException().getMessage() +
                          " [line: " + validator.getLineNumber() + ", col: " + validator.getColumnNumber() + "].";
-            JOptionPane.showMessageDialog(this, msg, "XML validation", JOptionPane.ERROR_MESSAGE);
+            GuiUtils.showErrorMessage(msg);
         }
 
         return valid;

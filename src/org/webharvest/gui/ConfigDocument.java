@@ -165,7 +165,7 @@ public class ConfigDocument implements DocumentListener {
 
                 if ( isSaveAs && file != null && file.exists() ) {
                     String msg = "File \"" + file.getAbsolutePath() + "\" already exists.\nAre you sure you want to overwrite it?";
-                    boolean toContinue = GuiUtils.showYesNoConfirmWarning(msg);
+                    boolean toContinue = GuiUtils.showWarningQuestionBox(msg, false) == JOptionPane.YES_OPTION;
 
                     // if user choose not to overwrite existing file, then give up 
                     if (!toContinue) {
@@ -198,7 +198,7 @@ public class ConfigDocument implements DocumentListener {
      */
     public boolean offerToSaveIfChanged() {
         if (isChanged) {
-            int result = GuiUtils.showYesNoCancelConfirmWarning("Save file \"" + this.name + "\"?");
+            int result = GuiUtils.showWarningQuestionBox("Save file \"" + this.name + "\"?", true);
             if (result == JOptionPane.YES_OPTION) {
                 saveConfigToFile(false);
             } else if (result == JOptionPane.CANCEL_OPTION || result == JOptionPane.DEFAULT_OPTION) {

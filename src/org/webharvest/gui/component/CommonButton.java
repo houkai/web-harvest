@@ -28,6 +28,11 @@ public class CommonButton extends JButton {
         defineLook();
     }
 
+    public CommonButton(AbstractAction action) {
+        super(action);
+        defineLook();
+    }
+
     private void defineLook() {
         setUI(whButtonUI);
     }

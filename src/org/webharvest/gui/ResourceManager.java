@@ -93,18 +93,18 @@ public class ResourceManager {
     public static final Icon INVALID_ICON = getIcon("resources/icons/invalid.gif");
 
     // UI icons and images
-    public static Icon RADIO_BUTTON_ICON = getIcon("resources/icons/env/radio_button_unselected.gif");
-    public static Icon RADIO_BUTTON_SELECTED_ICON = getIcon("resources/icons/env/radio_button_selected.gif");
-    public static Icon RADIO_BUTTON_EMPTY_ICON = getIcon("resources/icons/env/radio_button_empty.gif");
-    public static Icon CHECKBOX_ICON = getIcon("resources/icons/env/checkbox_unselected.gif");
-    public static Icon CHECKBOX_SELECTED_ICON = getIcon("resources/icons/env/checkbox_selected.gif");
-    public static Icon EXPAND_ICON = getIcon("resources/icons/env/expand.gif");
-    public static Icon COLLAPSE_ICON = getIcon("resources/icons/env/collapse.gif");
-    public static Icon ERROR_ICON = getIcon("resources/icons/env/error.gif");
-    public static Icon WARNING_ICON = getIcon("resources/icons/env/warning.gif");
-    public static Icon INFO_ICON = getIcon("resources/icons/env/information.gif");
-    public static Icon QUESTION_ICON = getIcon("resources/icons/env/question.gif");
-    public static Icon TRASHCAN_ICON = getIcon("resources/icons/env/trashcan.gif");
+    public static Icon RADIO_BUTTON_ICON = getIcon("resources/icons/ui/radio_button_unselected.gif");
+    public static Icon RADIO_BUTTON_SELECTED_ICON = getIcon("resources/icons/ui/radio_button_selected.gif");
+    public static Icon RADIO_BUTTON_EMPTY_ICON = getIcon("resources/icons/ui/radio_button_empty.gif");
+    public static Icon CHECKBOX_ICON = getIcon("resources/icons/ui/checkbox_unselected.gif");
+    public static Icon CHECKBOX_SELECTED_ICON = getIcon("resources/icons/ui/checkbox_selected.gif");
+    public static Icon EXPAND_ICON = getIcon("resources/icons/ui/expand.gif");
+    public static Icon COLLAPSE_ICON = getIcon("resources/icons/ui/collapse.gif");
+    public static Icon ERROR_ICON = getIcon("resources/icons/ui/error.gif");
+    public static Icon WARNING_ICON = getIcon("resources/icons/ui/warning.gif");
+    public static Icon INFO_ICON = getIcon("resources/icons/ui/information.gif");
+    public static Icon QUESTION_ICON = getIcon("resources/icons/ui/question.gif");
+    public static Icon TRASHCAN_ICON = getIcon("resources/icons/ui/trashcan.gif");
 
 
     public static Image BREAKPOINT_IMAGE = getImage("resources/icons/breakpoint.gif");

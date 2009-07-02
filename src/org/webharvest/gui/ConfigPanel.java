@@ -480,7 +480,7 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
             this.logger.error(errorMessage + "\n" + writer.getBuffer().toString());
             
             ide.setTabIcon(this, ResourceManager.SMALL_ERROR_ICON);
-            JOptionPane.showMessageDialog(this, errorMessage, "Parser exception", JOptionPane.ERROR_MESSAGE);
+            GuiUtils.showErrorMessage(errorMessage);
             return false;
         }
 

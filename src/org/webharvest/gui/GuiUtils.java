@@ -36,6 +36,8 @@
 */
 package org.webharvest.gui;
 
+import org.webharvest.gui.component.*;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -91,7 +93,14 @@ public class GuiUtils {
      * @param msg
      */
     public static void showErrorMessage(String msg) {
-        JOptionPane.showMessageDialog(parent, prepareMsg(msg), "Error", JOptionPane.ERROR_MESSAGE);
+        new AlertDialog(
+                null,
+                "Error",
+                msg,
+                ResourceManager.ERROR_ICON,
+                new int[] {JOptionPane.OK_OPTION},
+                new String[] {"OK"}
+        ).display();
     }
 
     /**
@@ -99,7 +108,14 @@ public class GuiUtils {
      * @param msg
      */
     public static void showWarningMessage(String msg) {
-        JOptionPane.showMessageDialog(parent, prepareMsg(msg), "Warning", JOptionPane.WARNING_MESSAGE);
+        new AlertDialog(
+                null,
+                "Warning",
+                msg,
+                ResourceManager.WARNING_ICON,
+                new int[] {JOptionPane.OK_OPTION},
+                new String[] {"OK"}
+        ).display();
     }
 
     /**
@@ -107,71 +123,37 @@ public class GuiUtils {
      * @param msg
      */
     public static void showInfoMessage(String msg) {
-        JOptionPane.showMessageDialog(parent, prepareMsg(msg), "Information", JOptionPane.INFORMATION_MESSAGE);
+        new AlertDialog(
+                null,
+                "Information",
+                msg,
+                ResourceManager.INFO_ICON,
+                new int[] {JOptionPane.OK_OPTION},
+                new String[] {"OK"}
+        ).display();
     }
 
-    /**
-     * Displays confirmation dialog with YES and NO options in the form of question.
-     * @param questionMsg
-     * @return True if user has chosen YES, false otherwise.
-     */
-    public static boolean showYesNoConfirmQuestion(String questionMsg) {
-        int result = JOptionPane.showConfirmDialog(
-                parent,
-                prepareMsg(questionMsg),
-                "Question",
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.QUESTION_MESSAGE
-        );
-
-        return result == JOptionPane.YES_OPTION;
+    public static int showQuestionBox(String msg, String title, boolean hasCancelButton, Icon icon) {
+        int options[] = hasCancelButton ?
+                new int[] {JOptionPane.YES_OPTION, JOptionPane.NO_OPTION, JOptionPane.CANCEL_OPTION} :
+                new int[] {JOptionPane.YES_OPTION, JOptionPane.NO_OPTION};
+        String buttLabels[] = hasCancelButton ? new String[] {"Yes", "No", "Cancel"} : new String[] {"Yes", "No"};
+        return new AlertDialog(
+                null,
+                title,
+                msg,
+                icon,
+                options,
+                buttLabels
+        ).display();
     }
 
-    /**
-     * Displays confirmation dialog with YES and NO options in the form of warning.
-     * @param warningMsg
-     * @return True if user has chosen YES, false otherwise.
-     */
-    public static boolean showYesNoConfirmWarning(String warningMsg) {
-        int result = JOptionPane.showConfirmDialog(
-                parent,
-                prepareMsg(warningMsg),
-                "Warning",
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.WARNING_MESSAGE
-        );
-
-        return result == JOptionPane.YES_OPTION;
+    public static int showQuestionBox(String msg, boolean hasCancelButton) {
+        return showQuestionBox(msg, "Question", hasCancelButton, ResourceManager.QUESTION_ICON);
     }
 
-    /**
-     * Displays confirmation dialog with YES, NO and CANCEL options in the form of question.
-     * @param questionMsg
-     * @return Result inherited from JOptionPane.showConfirmDialog.
-     */
-    public static int showYesNoCancelConfirmQuestion(String questionMsg) {
-       return JOptionPane.showConfirmDialog(
-                parent,
-                prepareMsg(questionMsg),
-                "Question",
-                JOptionPane.YES_NO_CANCEL_OPTION,
-                JOptionPane.QUESTION_MESSAGE
-        );
-    }
-
-    /**
-     * Displays confirmation dialog with YES, NO and CANCEL options in the form of warning.
-     * @param warningMsg
-     * @return Result inherited from JOptionPane.showConfirmDialog.
-     */
-    public static int showYesNoCancelConfirmWarning(String warningMsg) {
-       return JOptionPane.showConfirmDialog(
-                parent,
-                prepareMsg(warningMsg),
-                "Warning",
-                JOptionPane.YES_NO_CANCEL_OPTION,
-                JOptionPane.WARNING_MESSAGE
-        );
+    public static int showWarningQuestionBox(String msg, boolean hasCancelButton) {
+        return showQuestionBox(msg, "Warning", hasCancelButton, ResourceManager.QUESTION_ICON);
     }
 
     /**
@@ -184,6 +166,28 @@ public class GuiUtils {
     public static Frame getActiveFrame() {
         Window window = KeyboardFocusManager.getCurrentKeyboardFocusManager().getActiveWindow();
         return window instanceof Frame ? (Frame)window : null;
-    }    
+    }
+    
+    public static void centerRelativeTo(Component comp, Component parent) {
+        if ( comp != null && parent != null ) {
+            Dimension dialogSize = comp.getSize();
+            if (parent.isVisible()) {
+                Point point = parent.getLocationOnScreen();
+                Dimension parentSize = parent.getSize();
+                int newX = point.x + (parentSize.width - dialogSize.width) / 2;
+                int newY = point.y + (parentSize.height - dialogSize.height) / 2;
+                if (newX >= 0 && newY >= 0) {
+                    comp.setLocation(newX, newY);
+                    return;
+                }
+            }
+            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+            int newX = (screenSize.width - dialogSize.width) / 2;
+            int newY = (screenSize.height - dialogSize.height) / 2;
+            if (newX >= 0 && newY >= 0) {
+                comp.setLocation(newX, newY);
+            }
+        }
+    }
 
 }
