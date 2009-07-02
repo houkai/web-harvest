@@ -102,8 +102,12 @@ public class CommonUtil {
         }
     }
 
-    public static String nvl(String value, String defaultValue) {
-        return value == null ? defaultValue : value;
+    public static boolean isEmptyString(Object o) {
+        return o == null || "".equals(o.toString().trim());
+    }
+
+    public static String nvl(Object value, String defaultValue) {
+        return value != null ? value.toString() : defaultValue;
     }
 
     public static String adaptFilename(String filePath) {
