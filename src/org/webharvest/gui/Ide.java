@@ -359,11 +359,14 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
         defineToolbarButton("Save configuration file", COMMAND_SAVE, ResourceManager.SAVE_ICON, buttonPanel);
         defineToolbarButton("Synchronize tree view with XML editor", COMMAND_REFRESH, ResourceManager.REFRESH_ICON, buttonPanel);
         buttonPanel.add(new JSeparator(JSeparator.VERTICAL));
+        buttonPanel.add(new JSeparator(JSeparator.VERTICAL));
         defineToolbarButton("Run", COMMAND_RUN, ResourceManager.RUN_ICON, buttonPanel);
         defineToolbarButton("Pause execution", COMMAND_PAUSE, ResourceManager.PAUSE_ICON, buttonPanel);
         defineToolbarButton("Stop execution", COMMAND_STOP, ResourceManager.STOP_ICON, buttonPanel);
         buttonPanel.add(new JSeparator(JSeparator.VERTICAL));
+        buttonPanel.add(new JSeparator(JSeparator.VERTICAL));
         defineToolbarButton("Define initial run parameters", COMMAND_RUNPARAMS, ResourceManager.RUN_PARAMS_ICON, buttonPanel);
+        buttonPanel.add(new JSeparator(JSeparator.VERTICAL));
         buttonPanel.add(new JSeparator(JSeparator.VERTICAL));
         defineToolbarButton("Open Settings Dialog", COMMAND_SETTINGS, ResourceManager.SETTINGS_ICON, buttonPanel);
 

@@ -112,7 +112,7 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
                         TreeNodeInfo treeNodeInfo = (TreeNodeInfo) userObject;
                         Map properties = treeNodeInfo.getProperties();
                         Object value = properties == null ? null : properties.get(Constants.VALUE_PROPERTY_NAME);
-                        final ViewerFrame viewerFrame = new ViewerFrame( Constants.VALUE_PROPERTY_NAME, value, treeNodeInfo, viewType );
+                        final ViewerFrame viewerFrame = new ViewerFrame( scraper, Constants.VALUE_PROPERTY_NAME, value, treeNodeInfo, viewType );
                         SwingUtilities.invokeLater(new Runnable() {
                             public void run() {
                                 viewerFrame.setVisible(true);
@@ -278,7 +278,7 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
 
         this.xmlEditorScrollPane = new XmlEditorScrollPane( this.xmlPane, this.ide.getSettings().isShowLineNumbersByDefault() );
 
-        this.propertiesGrid = new PropertiesGrid();
+        this.propertiesGrid = new PropertiesGrid(this);
         JScrollPane propertiesView = new JScrollPane(propertiesGrid);
         propertiesView.setBorder(new EmptyBorder(0, 0, 0, 0));
         propertiesView.getViewport().setBackground(Color.white);
@@ -521,8 +521,12 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
             if (nodeInfo != null) {
                 nodeInfo.increaseExecutionCount();
                 setExecutingNode(nodeInfo);
-                if ( ide.getSettings().isDynamicConfigLocate() ) {
-                    int lineNumber = locateInSource( nodeInfo.getNode(), true );
+                int lineNumber = locateInSource( nodeInfo.getNode(), true );
+                if (xmlPane.getBreakpoints().isThereBreakpoint(lineNumber)) {
+                    xmlEditorScrollPane.clearMarkers(XmlEditorScrollPane.RUNNING_MARKER_TYPE);
+                    scraper.pauseExecution();
+                    System.out.println("Breakpoint...waiting");
+                } else if ( ide.getSettings().isDynamicConfigLocate() ) {
                     xmlEditorScrollPane.clearMarkers(XmlEditorScrollPane.RUNNING_MARKER_TYPE);
                     xmlEditorScrollPane.addMarker(XmlEditorScrollPane.RUNNING_MARKER_TYPE, lineNumber);
                 }
@@ -589,7 +593,7 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
         this.ide.updateGUI();
 
         // releases scraper in order help garbage collector
-        releaseScraper();
+//        releaseScraper();
     }
 
     public void onProcessorExecutionFinished(Scraper scraper, BaseProcessor processor, Map properties) {
@@ -639,7 +643,7 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
         this.ide.updateGUI();
 
         // releases scraper in order to help garbage collector
-        releaseScraper();
+//        releaseScraper();
     }
 
     private void setExecutingNode(TreeNodeInfo nodeInfo) {
@@ -710,6 +714,10 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
                 new ScraperExecutionThread(this.scraper).start();
             }
         }
+    }
+
+    public Scraper getScraper() {
+        return scraper;
     }
 
     public synchronized int getScraperStatus() {

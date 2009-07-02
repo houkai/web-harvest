@@ -36,27 +36,23 @@
 */
 package org.webharvest.gui;
 
-import net.sf.saxon.trans.XPathException;
+import net.sf.saxon.trans.*;
 import org.webharvest.gui.component.*;
-import org.webharvest.runtime.RuntimeConfig;
-import org.webharvest.runtime.variables.Variable;
-import org.webharvest.runtime.variables.ListVariable;
-import org.webharvest.utils.CommonUtil;
-import org.webharvest.utils.XmlUtil;
-import org.webharvest.utils.XmlValidator;
-import org.xml.sax.InputSource;
+import org.webharvest.runtime.*;
+import org.webharvest.runtime.variables.*;
+import org.webharvest.utils.*;
+import org.xml.sax.*;
 
 import javax.swing.*;
 import javax.swing.table.*;
-import javax.swing.text.JTextComponent;
-import javax.swing.text.html.HTMLEditorKit;
+import javax.swing.text.*;
+import javax.swing.text.html.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.StringReader;
-import java.util.Iterator;
+import java.io.*;
+import java.util.*;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.regex.*;
 
 /**
  * @author: Vladimir Nikic
@@ -126,13 +122,14 @@ public class ViewerFrame extends JFrame implements DropDownButtonListener, Actio
 
     /**
      * Constructor.
+     * @param scraper
      * @param propertyName
      * @param value
      * @param nodeInfo
      */
-    public ViewerFrame(final String propertyName, final Object value, final TreeNodeInfo nodeInfo, final int viewIndex) {
+    public ViewerFrame(Scraper scraper, final String propertyName, final Object value, final TreeNodeInfo nodeInfo, final int viewIndex) {
         String elementName = nodeInfo.getElementDef().getShortElementName();
-        setTitle("[processor: " + elementName + ", property: " + propertyName + "]");
+        setTitle(elementName + "->" + propertyName);
         this.setIconImage( ((ImageIcon) ResourceManager.VIEW_ICON).getImage() );
 
         this.propertyName = propertyName;
@@ -163,11 +160,36 @@ public class ViewerFrame extends JFrame implements DropDownButtonListener, Actio
         toolBar.setLayout(new FlowLayout(FlowLayout.LEFT, 1, 0));
         toolBar.setFloatable(false);
 
-        this.keepSyncCheckBox = new WHCheckBox("Keep synchronized");
-        this.keepSyncCheckBox.addActionListener(this);
-        toolBar.add(this.keepSyncCheckBox);
+        if (scraper != null) {
+            final ScraperContext context = scraper.getContext();
 
-        toolBar.addSeparator(new Dimension(10, 0));
+            EditableComboBox variablesComboBox = new EditableComboBox(12) {
+                protected void execute(final Object value) {
+                    if (value != null) {
+                        ViewerFrame.this.value = context.get(value.toString());
+                        for (int i = 0; i < refreshed.length; i++) {
+                            refreshed[i] = false;
+                        }
+                        refresh(currentView);
+                    }
+                }
+            };
+            if (context != null) {
+                Iterator iterator = new TreeSet( context.keySet() ).iterator();
+                while (iterator.hasNext()) {
+                    variablesComboBox.addItem(iterator.next());
+                }
+            }
+            toolBar.add(variablesComboBox);
+
+            int scraperStatus = scraper.getStatus();
+            if (scraperStatus == Scraper.STATUS_RUNNING || scraperStatus == Scraper.STATUS_PAUSED) {
+                this.keepSyncCheckBox = new WHCheckBox("Synchronized");
+                this.keepSyncCheckBox.addActionListener(this);
+                toolBar.add(this.keepSyncCheckBox);
+                toolBar.addSeparator(new Dimension(10, 0));
+            }
+        }
 
         DropDownButton viewTypeButton = new DropDownButton();
         viewTypeButton.addMenuItem( new MenuElements.MenuItem("Text    ", ResourceManager.TEXTTYPE_ICON) );
@@ -227,7 +249,7 @@ public class ViewerFrame extends JFrame implements DropDownButtonListener, Actio
 
         this.zoomFactorLabel = new JLabel();
 
-        this.xmlValidateButton = new CommonButton("Check well-formedness", ResourceManager.VALIDATE_ICON);
+        this.xmlValidateButton = new CommonButton("Validate", ResourceManager.VALIDATE_ICON);
         this.xmlValidateButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 validateXml(true);
