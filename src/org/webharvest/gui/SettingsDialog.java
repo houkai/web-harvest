@@ -363,18 +363,17 @@ public class SettingsDialog extends CommonDialog implements ChangeListener {
 
         JPanel pluginsPanel = new JPanel(new BorderLayout(5, 0));
         JPanel pluginButtonsPanel = new JPanel();
-//        pluginButtonsPanel.setLayout( new BoxLayout(pluginButtonsPanel, BoxLayout.Y_AXIS) );
         SpringLayout springLayout = new SpringLayout();
         pluginButtonsPanel.setLayout(springLayout);
         pluginButtonsPanel.setBorder(new EmptyBorder(3, 0, 3, 3));
         pluginButtonsPanel.setPreferredSize(new Dimension(116, 1));
 
-        final String pluginInputMsg = "Full class name of the plugin                                            ";
+        final String pluginInputMsg = "Full class name of the plugin";
 
         pluginAddButton = new FixedSizeButton("Add plugin", 110, 22);
         pluginAddButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                String className = JOptionPane.showInputDialog(SettingsDialog.this, pluginInputMsg);
+                String className = new InputDialog(SettingsDialog.this, "Input", pluginInputMsg, "", 50, null).getValue();
                 if (className != null) {
                     pluginListModel.addElement(className, true);
                     pluginsList.setSelectedIndex(pluginListModel.size() - 1);
@@ -387,7 +386,7 @@ public class SettingsDialog extends CommonDialog implements ChangeListener {
                 int index = pluginsList.getSelectedIndex();
                 if (index >= 0) {
                     String oldClassName = pluginsList.getSelectedValue().toString();
-                    String className = JOptionPane.showInputDialog(SettingsDialog.this, pluginInputMsg, oldClassName);
+                    String className = new InputDialog(SettingsDialog.this, "Input", pluginInputMsg, oldClassName, 50, null).getValue();
                     if ( className != null && !className.equals(oldClassName) ) {
                         boolean isSet = pluginListModel.setElement(className, index);
                         if (isSet) {
