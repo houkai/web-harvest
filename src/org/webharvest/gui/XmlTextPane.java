@@ -50,8 +50,7 @@ import javax.swing.event.UndoableEditListener;
 import javax.swing.text.*;
 import javax.swing.undo.UndoManager;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
 
 public class XmlTextPane extends JEditorPane {
 
@@ -357,9 +356,12 @@ public class XmlTextPane extends JEditorPane {
     private CommentAction commentAction = new CommentAction();
 
     private BreakpointCollection breakpoints = new BreakpointCollection();
+    private int errorLine = -1;
+    private int markerLine = -1;
+    private int stopDebugLine = -1;
 
     public XmlTextPane() {
-        XMLEditorKit kit = new XMLEditorKit(true, breakpoints);
+        XMLEditorKit kit = new XMLEditorKit(true, this);
 
         kit.setLineWrappingEnabled(false);
 
@@ -384,8 +386,15 @@ public class XmlTextPane extends JEditorPane {
 
         this.setFont( new Font( "Monospaced", Font.PLAIN, 12));
 
-        this.registerKeyboardAction(shiftTabAction, KeyStroke.getKeyStroke( KeyEvent.VK_TAB, ActionEvent.SHIFT_MASK), JComponent.WHEN_FOCUSED);
-        this.registerKeyboardAction(deleteLineAction, KeyStroke.getKeyStroke( KeyEvent.VK_Y, ActionEvent.CTRL_MASK), JComponent.WHEN_FOCUSED);
+        this.registerKeyboardAction(shiftTabAction, KeyStroke.getKeyStroke(KeyEvent.VK_TAB, ActionEvent.SHIFT_MASK), JComponent.WHEN_FOCUSED);
+        this.registerKeyboardAction(deleteLineAction, KeyStroke.getKeyStroke(KeyEvent.VK_Y, ActionEvent.CTRL_MASK), JComponent.WHEN_FOCUSED);
+        ActionListener escAction = new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                clearMarkerLine();
+                clearErrorLine();
+            }
+        };
+        this.registerKeyboardAction(escAction, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_FOCUSED);
         this.getActionMap().put(tabAction.getValue(Action.NAME), tabAction);
     }
 
@@ -429,5 +438,47 @@ public class XmlTextPane extends JEditorPane {
     public BreakpointCollection getBreakpoints() {
         return breakpoints;
     }
-    
+
+    public int getMarkerLine() {
+        return markerLine;
+    }
+
+    public void setMarkerLine(int markerLine) {
+        this.markerLine = markerLine;
+        repaint();
+    }
+
+    public void clearMarkerLine() {
+        this.markerLine = -1;
+        repaint();
+    }
+
+    public int getErrorLine() {
+        return errorLine;
+    }
+
+    public void setErrorLine(int errorLine) {
+        this.errorLine = errorLine;
+        repaint();
+    }
+
+    public void clearErrorLine() {
+        this.errorLine = -1;
+        repaint();
+    }
+
+    public int getStopDebugLine() {
+        return stopDebugLine;
+    }
+
+    public void setStopDebugLine(int stopDebugLine) {
+        this.stopDebugLine = stopDebugLine;
+        repaint();
+    }
+
+    public void clearStopDebugLine() {
+        this.stopDebugLine = -1;
+        repaint();
+    }
+
 }

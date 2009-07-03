@@ -190,12 +190,21 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
         JMenuItem menuItem = new MenuElements.MenuItem("Locate in source");
         menuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                xmlEditorScrollPane.clearMarkers(XmlEditorScrollPane.DEFAULT_MARKER_TYPE);
                 TreePath path = tree.getSelectionPath();
                 if (path != null) {
-                    int line = locateInSource( (DefaultMutableTreeNode) path.getLastPathComponent(), false );
-                    xmlEditorScrollPane.addMarker( XmlEditorScrollPane.DEFAULT_MARKER_TYPE, line );
-                    xmlPane.grabFocus();
+                    locateInSource( (DefaultMutableTreeNode) path.getLastPathComponent(), false );
+                    try {
+                        int startPos = xmlPane.getCaretPosition();
+                        String content = xmlPane.getDocument().getText( 0, xmlPane.getDocument().getLength() );
+                        if (content != null && content.length() > startPos) {
+                            int closingIndex = content.indexOf('>', startPos);
+                            if (closingIndex > startPos) {
+                                xmlPane.select(startPos, closingIndex + 1);
+                            }
+                        }
+                    } catch (BadLocationException e1) {
+                    }
+                    xmlPane.requestFocus();
                 }
             }
         });
@@ -458,6 +467,9 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
      */
     public boolean refreshTree() {
         releaseScraper();
+        xmlPane.clearMarkerLine();
+        xmlPane.clearErrorLine();
+        xmlPane.clearStopDebugLine();
         updateControls();
 
         String xmlContent = this.xmlPane.getText();
@@ -521,26 +533,32 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
             if (nodeInfo != null) {
                 nodeInfo.increaseExecutionCount();
                 setExecutingNode(nodeInfo);
-                int lineNumber = locateInSource( nodeInfo.getNode(), true );
+                int lineNumber = locateInSource( nodeInfo.getNode(), true ) - 1;
                 if (xmlPane.getBreakpoints().isThereBreakpoint(lineNumber)) {
                     xmlEditorScrollPane.clearMarkers(XmlEditorScrollPane.RUNNING_MARKER_TYPE);
                     scraper.pauseExecution();
-                    System.out.println("Breakpoint...waiting");
+                    xmlPane.clearMarkerLine();
+                    xmlPane.setStopDebugLine(lineNumber);
                 } else if ( ide.getSettings().isDynamicConfigLocate() ) {
-                    xmlEditorScrollPane.clearMarkers(XmlEditorScrollPane.RUNNING_MARKER_TYPE);
-                    xmlEditorScrollPane.addMarker(XmlEditorScrollPane.RUNNING_MARKER_TYPE, lineNumber);
+                    xmlPane.setMarkerLine(lineNumber);
+                    xmlPane.repaint();
                 }
             }
         }
     }
 
     public void onExecutionStart(Scraper scraper) {
-        this.xmlEditorScrollPane.clearAllMarkers();
+        xmlPane.clearStopDebugLine();
+        xmlPane.clearErrorLine();
+        xmlPane.clearMarkerLine();
         updateControls();
         this.ide.updateGUI();
     }
 
     public void onExecutionContinued(Scraper scraper) {
+        xmlPane.clearStopDebugLine();
+        xmlPane.clearErrorLine();
+        xmlPane.clearMarkerLine();
         this.ide.updateGUI();
     }
 
@@ -588,6 +606,9 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
         if (previousNodeInfo != null) {
             this.treeModel.nodeChanged( previousNodeInfo.getNode() );
         }
+
+        xmlPane.clearMarkerLine();
+        xmlPane.clearStopDebugLine();
 
         // update GUI controls
         this.ide.updateGUI();
@@ -642,6 +663,9 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
         this.ide.setTabIcon(this, ResourceManager.SMALL_ERROR_ICON);
         this.ide.updateGUI();
 
+        xmlPane.clearMarkerLine();
+        xmlPane.clearStopDebugLine();
+
         // releases scraper in order to help garbage collector
 //        releaseScraper();
     }
@@ -658,15 +682,12 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
     }
 
     public void markException(Exception e) {
-        xmlEditorScrollPane.clearMarkers(XmlEditorScrollPane.ERROR_MARKER_TYPE);
-        xmlEditorScrollPane.clearMarkers(XmlEditorScrollPane.RUNNING_MARKER_TYPE);
-
         this.nodeRenderer.markException(e);
         TreeNodeInfo treeNodeInfo = this.nodeRenderer.getExecutingNodeInfo();
         if (treeNodeInfo != null) {
             this.treeModel.nodeChanged( treeNodeInfo.getNode() );
             int line = locateInSource( treeNodeInfo.getNode(), true );
-            xmlEditorScrollPane.addMarker( XmlEditorScrollPane.ERROR_MARKER_TYPE, line );
+            xmlPane.setErrorLine(line);
         }
     }
 

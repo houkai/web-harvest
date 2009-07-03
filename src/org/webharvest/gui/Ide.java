@@ -86,6 +86,7 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
     private static final String COMMAND_RUN = "run";
     private static final String COMMAND_PAUSE = "pause";
     private static final String COMMAND_STOP = "stop";
+    private static final String COMMAND_VIEWVALUES = "viewvalues";
     private static final String COMMAND_EXIT = "exit";
     private static final String COMMAND_RUNPARAMS = "runparams";
     private static final String COMMAND_SETTINGS = "settings";
@@ -363,6 +364,7 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
         defineToolbarButton("Run", COMMAND_RUN, ResourceManager.RUN_ICON, buttonPanel);
         defineToolbarButton("Pause execution", COMMAND_PAUSE, ResourceManager.PAUSE_ICON, buttonPanel);
         defineToolbarButton("Stop execution", COMMAND_STOP, ResourceManager.STOP_ICON, buttonPanel);
+        defineToolbarButton("View Runtime Values", COMMAND_VIEWVALUES, ResourceManager.VIEWVALUES_ICON, buttonPanel);
         buttonPanel.add(new JSeparator(JSeparator.VERTICAL));
         buttonPanel.add(new JSeparator(JSeparator.VERTICAL));
         defineToolbarButton("Define initial run parameters", COMMAND_RUNPARAMS, ResourceManager.RUN_PARAMS_ICON, buttonPanel);
@@ -677,6 +679,7 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
         setCommandEnabled(COMMAND_RUN, configPanel != null && configPanel.getScraperStatus() != Scraper.STATUS_RUNNING);
         setCommandEnabled(COMMAND_PAUSE, configPanel != null && configPanel.getScraperStatus() == Scraper.STATUS_RUNNING);
         setCommandEnabled(COMMAND_STOP, configPanel != null && configPanel.getScraperStatus() == Scraper.STATUS_RUNNING);
+        setCommandEnabled(COMMAND_VIEWVALUES, configPanel != null && configPanel.getScraper() != null);
         setCommandEnabled(COMMAND_RUNPARAMS, configPanel != null);
 
         setCommandEnabled(COMMAND_UNDO, configPanel != null);
@@ -789,6 +792,17 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
             ConfigPanel activeConfigPanel = getActiveConfigPanel();
             if (activeConfigPanel != null) {
                 activeConfigPanel.stopScraperExecution();
+            }
+        } else if ( COMMAND_VIEWVALUES.equals(cmd) ) {
+            ConfigPanel activeConfigPanel = getActiveConfigPanel();
+            if (activeConfigPanel != null) {
+                final ViewerFrame viewerFrame = new ViewerFrame(activeConfigPanel.getScraper(), null, "", null, 0);
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        viewerFrame.setVisible(true);
+                        viewerFrame.toFront();
+                    }
+                });
             }
         } else if ( COMMAND_RUNPARAMS.equals(cmd) ) {
             defineRuntimeParams();

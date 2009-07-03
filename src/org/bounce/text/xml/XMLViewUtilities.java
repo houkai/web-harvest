@@ -77,6 +77,16 @@ class XMLViewUtilities {
         String lastToken = null;
         int mark = start;
 
+        Color forceColor = null;
+        if (view instanceof XMLView) {
+            Color bgPaintColor = ((XMLView)view).getBgPaintColor();
+            if (bgPaintColor != null) {
+                if ( bgPaintColor.equals(XMLView.ERROR_COLOR) || bgPaintColor.equals(XMLView.DEBUG_STOP_COLOR) ) {
+                    forceColor = Color.white;
+                }
+            }
+        }
+
         while ( start < end) {
             updateScanner( scanner, doc, start);
 
@@ -88,7 +98,7 @@ class XMLViewUtilities {
             // If the style changes, do paint...
             if ( style != lastStyle && lastStyle != null) {
                 // color change, flush what we have
-                g.setColor( context.getForeground( lastStyle));
+                g.setColor( forceColor != null ? forceColor : context.getForeground( lastStyle));
                 g.setFont( g.getFont().deriveFont( context.getFontStyle( lastStyle)));
 
                 Segment text = getLineBuffer();
@@ -104,7 +114,7 @@ class XMLViewUtilities {
         }
 
         // flush remaining
-        g.setColor( context.getForeground( lastStyle));
+        g.setColor( forceColor != null ? forceColor : context.getForeground( lastStyle));
         g.setFont( g.getFont().deriveFont( context.getFontStyle( lastStyle)));
         Segment text = getLineBuffer();
         doc.getText( mark, end - mark, text);

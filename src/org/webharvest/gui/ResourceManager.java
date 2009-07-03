@@ -59,6 +59,7 @@ public class ResourceManager {
     public static final Icon RUN_ICON = getIcon("resources/icons/run.gif");
     public static final Icon PAUSE_ICON = getIcon("resources/icons/pause.gif");
     public static final Icon STOP_ICON = getIcon("resources/icons/stop.gif");
+    public static final Icon VIEWVALUES_ICON = getIcon("resources/icons/viewvalues.gif");
     public static final Icon COPY_ICON = getIcon("resources/icons/copy.gif");
     public static final Icon CUT_ICON = getIcon("resources/icons/cut.gif");
     public static final Icon PASTE_ICON = getIcon("resources/icons/paste.gif");

@@ -113,7 +113,7 @@ public class XMLEditorKit extends DefaultEditorKit implements XMLStyleConstants 
     private boolean lineWrapping = false;
     private boolean wrapStyleWord = false;
 
-    private BreakpointCollection breakpoints;
+    private XmlTextPane xmlTextPane;
 
     /**
      * Called when the kit is being installed into the
@@ -132,10 +132,10 @@ public class XMLEditorKit extends DefaultEditorKit implements XMLStyleConstants 
      * 
      * @param lineWrapping enables line wrapping feature if true.
      */
-    public XMLEditorKit( boolean lineWrapping, BreakpointCollection breakpoints) {
+    public XMLEditorKit( boolean lineWrapping, XmlTextPane xmlTextPane) {
         super();
 
-        this.breakpoints = breakpoints;
+        this.xmlTextPane = xmlTextPane;
         
         factory = new XMLViewFactory();
         context = new XMLContext();
@@ -259,7 +259,7 @@ public class XMLEditorKit extends DefaultEditorKit implements XMLStyleConstants 
                 }
             } else {
                 try {
-                    return new XMLView(context, elem, breakpoints);
+                    return new XMLView(context, elem, xmlTextPane);
                 } catch ( IOException e) {
                     // Instead of an IOException, this will return null if the 
                     // XMLView could not be instantiated. 

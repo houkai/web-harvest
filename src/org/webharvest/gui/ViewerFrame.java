@@ -39,8 +39,10 @@ package org.webharvest.gui;
 import net.sf.saxon.trans.*;
 import org.webharvest.gui.component.*;
 import org.webharvest.runtime.*;
+import org.webharvest.runtime.templaters.*;
 import org.webharvest.runtime.variables.*;
 import org.webharvest.utils.*;
+import org.webharvest.exception.*;
 import org.xml.sax.*;
 
 import javax.swing.*;
@@ -127,9 +129,14 @@ public class ViewerFrame extends JFrame implements DropDownButtonListener, Actio
      * @param value
      * @param nodeInfo
      */
-    public ViewerFrame(Scraper scraper, final String propertyName, final Object value, final TreeNodeInfo nodeInfo, final int viewIndex) {
-        String elementName = nodeInfo.getElementDef().getShortElementName();
-        setTitle(elementName + "->" + propertyName);
+    public ViewerFrame(final Scraper scraper, final String propertyName, final Object value, final TreeNodeInfo nodeInfo, final int viewIndex) {
+        if (propertyName == null) {
+            setTitle("Runtime Value Viewer");
+        } else {
+            String elementName = nodeInfo.getElementDef().getShortElementName();
+            setTitle(elementName + "->" + propertyName);
+        }
+        
         this.setIconImage( ((ImageIcon) ResourceManager.VIEW_ICON).getImage() );
 
         this.propertyName = propertyName;
@@ -163,27 +170,42 @@ public class ViewerFrame extends JFrame implements DropDownButtonListener, Actio
         if (scraper != null) {
             final ScraperContext context = scraper.getContext();
 
-            EditableComboBox variablesComboBox = new EditableComboBox(12) {
-                protected void execute(final Object value) {
-                    if (value != null) {
-                        ViewerFrame.this.value = context.get(value.toString());
-                        for (int i = 0; i < refreshed.length; i++) {
-                            refreshed[i] = false;
+            if (propertyName == null) {
+                final EditableComboBox variablesComboBox = new EditableComboBox(20) {
+                    protected void execute(final Object value) {
+                        if (value != null) {
+                            try {
+                                ViewerFrame.this.value = BaseTemplater.execute( "${" + value + "}", scraper.getScriptEngine() );;
+                            } catch (ScriptException e) {
+                                ViewerFrame.this.value = "Error evaluating \"" + value + "\"!";
+                            }
+                            for (int i = 0; i < refreshed.length; i++) {
+                                refreshed[i] = false;
+                            }
+                            refresh(currentView);
                         }
-                        refresh(currentView);
+                    }
+                };
+                if (context != null) {
+                    Iterator iterator = new TreeSet( context.keySet() ).iterator();
+                    while (iterator.hasNext()) {
+                        variablesComboBox.addItem(iterator.next());
                     }
                 }
-            };
-            if (context != null) {
-                Iterator iterator = new TreeSet( context.keySet() ).iterator();
-                while (iterator.hasNext()) {
-                    variablesComboBox.addItem(iterator.next());
-                }
+                SmallButton goButton = new SmallButton("Eval");
+                goButton.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        variablesComboBox.onValue();
+                    }
+                });
+                toolBar.add(new JLabel("Expression:"));
+                toolBar.add(variablesComboBox);
+                toolBar.add(goButton);
+                toolBar.addSeparator(new Dimension(10, 0));
             }
-            toolBar.add(variablesComboBox);
 
             int scraperStatus = scraper.getStatus();
-            if (scraperStatus == Scraper.STATUS_RUNNING || scraperStatus == Scraper.STATUS_PAUSED) {
+            if (propertyName != null && scraperStatus == Scraper.STATUS_RUNNING || scraperStatus == Scraper.STATUS_PAUSED) {
                 this.keepSyncCheckBox = new WHCheckBox("Synchronized");
                 this.keepSyncCheckBox.addActionListener(this);
                 toolBar.add(this.keepSyncCheckBox);
@@ -554,8 +576,8 @@ public class ViewerFrame extends JFrame implements DropDownButtonListener, Actio
     }
 
     public void setValue(Map properties) {
-        if (properties != null) {
-            Object newValue = properties.get(this.propertyName);
+        if (properties != null && propertyName != null) {
+            Object newValue = properties.get(propertyName);
             this.value = newValue;
 
             // invalidate views

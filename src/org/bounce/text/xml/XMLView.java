@@ -55,9 +55,16 @@ import javax.swing.text.Document;
  */
 public class XMLView extends PlainView { // WrappedPlainView {
 
+    public static final Color DEBUG_NORMAL_COLOR = new Color(255, 200, 200);
+    public static final Color DEBUG_STOP_COLOR = new Color(0, 0, 255);
+    public static final Color LINE_MARKER_COLOR = new Color(192, 192, 192);
+    public static final Color ERROR_COLOR = new Color(255, 0, 0);
+
     private XMLScanner scanner = null;
     private XMLContext context = null;
-    private BreakpointCollection breakpoints;
+    private XmlTextPane xmlTextPane;
+
+    private Color bgPaintColor = null;
 
     /**
      * Construct a colorized view of xml text for the element. Gets the current
@@ -66,14 +73,14 @@ public class XMLView extends PlainView { // WrappedPlainView {
      * @param context the styles used to colorize the view.
      * @param elem the element to create the view for.
      *
-     * @param breakpoints
+     * @param xmlTextPane
      * @throws IOException
      */
-    public XMLView(XMLContext context, Element elem, BreakpointCollection breakpoints) throws IOException {
+    public XMLView(XMLContext context, Element elem, XmlTextPane xmlTextPane) throws IOException {
         super( elem);
 
         this.context = context;
-        this.breakpoints = breakpoints;
+        this.xmlTextPane = xmlTextPane;
         Document doc = getDocument();
 
         scanner = new XMLScanner( doc);
@@ -130,12 +137,39 @@ public class XMLView extends PlainView { // WrappedPlainView {
     }
 
     protected void drawLine(int lineIndex, Graphics g, int x, int y) {
-        if (breakpoints != null && breakpoints.isThereBreakpoint(lineIndex)) {
-            g.setColor(Color.lightGray);
-            g.fillRect(0, y - 12, getContainer().getWidth(), 16);
+        this.bgPaintColor = null;
+
+        if (xmlTextPane.getErrorLine() == lineIndex) {
+            bgPaintColor = ERROR_COLOR;
+        }
+
+        if (bgPaintColor == null && xmlTextPane.getStopDebugLine() == lineIndex) {
+            bgPaintColor = DEBUG_STOP_COLOR;
+        }
+
+        if (bgPaintColor == null && xmlTextPane.getMarkerLine() == lineIndex) {
+            bgPaintColor = LINE_MARKER_COLOR;
+        }
+
+        if (bgPaintColor == null) {
+            BreakpointCollection breakpoints = xmlTextPane.getBreakpoints();
+            if (breakpoints != null && breakpoints.isThereBreakpoint(lineIndex)) {
+                bgPaintColor = DEBUG_NORMAL_COLOR;
+            }
+        }
+
+        if (bgPaintColor != null) {
+            g.setColor(bgPaintColor);
+            final FontMetrics fontMetrics = g.getFontMetrics();
+            final int fontHeight = fontMetrics.getHeight();
+            g.fillRect(0, y - fontMetrics.getAscent(), getContainer().getWidth(), fontHeight);
         }
 
         super.drawLine(lineIndex, g, x, y);
     }
 
+    public Color getBgPaintColor() {
+        return bgPaintColor;
+    }
+    
 }
