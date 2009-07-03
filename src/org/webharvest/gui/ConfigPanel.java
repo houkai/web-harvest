@@ -535,7 +535,6 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
                 setExecutingNode(nodeInfo);
                 int lineNumber = locateInSource( nodeInfo.getNode(), true ) - 1;
                 if (xmlPane.getBreakpoints().isThereBreakpoint(lineNumber)) {
-                    xmlEditorScrollPane.clearMarkers(XmlEditorScrollPane.RUNNING_MARKER_TYPE);
                     scraper.pauseExecution();
                     xmlPane.clearMarkerLine();
                     xmlPane.setStopDebugLine(lineNumber);

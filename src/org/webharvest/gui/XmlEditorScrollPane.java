@@ -54,20 +54,6 @@ import java.util.ArrayList;
  */
 public class XmlEditorScrollPane extends WHScrollPane {
 
-    public static final int DEFAULT_MARKER_TYPE = 0;
-    public static final int RUNNING_MARKER_TYPE = 1;
-    public static final int ERROR_MARKER_TYPE = 2;
-
-    private class LineMarker {
-        private int markerType = DEFAULT_MARKER_TYPE;
-        private int line = -1;
-
-        public LineMarker(int markerType, int line) {
-            this.markerType = markerType;
-            this.line = line;
-        }
-    }
-    
     /**
      * Panel used for optionally displying line numbers.
      */
@@ -148,27 +134,6 @@ public class XmlEditorScrollPane extends WHScrollPane {
             int right = width - 1;
             g.setColor(BORDER_COLOR);
             g.drawLine(right, 0, right, getHeight() - 1);
-
-            for (int i = 0; i < markers.size(); i++) {
-                LineMarker lineMarker = (LineMarker) markers.get(i);
-                int xpos = width - 12;
-                int ypos = lineHeight * lineMarker.line + 1;
-
-                switch(lineMarker.markerType) {
-                    case DEFAULT_MARKER_TYPE:
-                        g.setColor(DEFAULT_MARKER_COLOR);
-                        g.drawString(String.valueOf((char)0x25BA), xpos, ypos);
-                        break;
-                    case RUNNING_MARKER_TYPE:
-                        g.setColor(RUNNING_MARKER_COLOR);
-                        g.drawString(String.valueOf((char)0x25BA), xpos, ypos);
-                        break;
-                    case ERROR_MARKER_TYPE:
-                        g.setColor(ERROR_MARKER_COLOR);
-                        g.drawString(String.valueOf((char)0x25BA), xpos, ypos);
-                        break;
-                }
-            }
         }
 
         private int calculateTextHeight() {
@@ -186,9 +151,6 @@ public class XmlEditorScrollPane extends WHScrollPane {
     private LineNumberPanel lineNumberPanel;
     private XmlTextPane xmlTextPane = null;
     private boolean showLineNumbers;
-
-    // list of all markers
-    private java.util.List markers = new ArrayList();
 
     /**
      * Constructor.
@@ -226,47 +188,7 @@ public class XmlEditorScrollPane extends WHScrollPane {
         }
     }
 
-    /**
-     * Adds new xmlTextPane marker specified by type and line number
-     * @param markerType
-     * @param line
-     */
-    public void addMarker(int markerType, int line) {
-        this.markers.add( new LineMarker(markerType, line) );
-        if (showLineNumbers) {
-            this.lineNumberPanel.repaint();
-        }
-    }
-
-    /**
-     * Clears list of all xmlTextPane markers.
-     */
-    public void clearAllMarkers() {
-        this.markers.clear();
-        if (this.showLineNumbers) {
-            this.lineNumberPanel.repaint();
-        }
-    }
-
-    /**
-     * Deletes all markers of specified type.
-     */
-    public void clearMarkers(int markerType) {
-        Iterator iterator = markers.iterator();
-        while (iterator.hasNext()) {
-            LineMarker lineMarker = (LineMarker) iterator.next();
-            if (lineMarker.markerType == markerType) {
-                iterator.remove();
-            }
-        }
-
-        if (this.showLineNumbers) {
-            this.lineNumberPanel.repaint();
-        }
-    }
-
     public void onDocChanged() {
-        clearAllMarkers();
         repaintLineNumbers();
     }
 
