@@ -46,6 +46,7 @@ import javax.swing.text.JTextComponent;
 import javax.swing.text.Document;
 import javax.swing.text.BadLocationException;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.*;
 import java.beans.PropertyChangeListener;
@@ -172,7 +173,7 @@ public class FindReplaceDialog extends CommonDialog {
 
     private JPanel createDirectionsPanel() {
         JPanel directionsPanel = new JPanel(new GridLayout(3, 1));
-        directionsPanel.setBorder(BorderFactory.createTitledBorder("Direction"));
+        directionsPanel.setBorder( new TitledBorder("Direction") );
 
         ButtonGroup group = new ButtonGroup();
 
@@ -194,7 +195,7 @@ public class FindReplaceDialog extends CommonDialog {
 
     private JPanel createOptionsPanel() {
         JPanel optionsPanel = new JPanel(new GridLayout(3, 1));
-        optionsPanel.setBorder(BorderFactory.createTitledBorder("Options"));
+        optionsPanel.setBorder(new TitledBorder("Options"));
         this.caseSensitiveCheckBox = new WHCheckBox("Case sensitive");
         optionsPanel.add(this.caseSensitiveCheckBox);
         this.regularExpressionsCheckBox = new WHCheckBox("Regular expressions");

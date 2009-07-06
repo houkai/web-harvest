@@ -45,6 +45,8 @@ import org.webharvest.runtime.Scraper;
 import org.webharvest.gui.component.*;
 
 import javax.swing.*;
+import javax.swing.border.LineBorder;
+import javax.swing.border.EtchedBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.MenuListener;
@@ -102,8 +104,10 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
             System.err.println("Couldn't use system look and feel.");
         }
 
-        UIManager.getLookAndFeelDefaults().put("ScrollBarUI", "org.webharvest.gui.ui.WHScrollBarUI");
         Color dialogBg = new Color(212, 208, 200);
+
+        UIManager.getLookAndFeelDefaults().put("ScrollBarUI", "org.webharvest.gui.ui.WHScrollBarUI");
+        UIManager.getLookAndFeelDefaults().put("TabbedPaneUI", "org.webharvest.gui.ui.WHTabbedPaneUI");
         UIManager.getLookAndFeelDefaults().put("Label.background", dialogBg);
         UIManager.getLookAndFeelDefaults().put("SplitPane.background", dialogBg);
         UIManager.getLookAndFeelDefaults().put("InternalFrame.minimizeIconBackground", dialogBg);
@@ -119,6 +123,9 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
         UIManager.getLookAndFeelDefaults().put("ComboBox.disabledBackground", dialogBg);
         UIManager.getLookAndFeelDefaults().put("Panel.background", dialogBg);
         UIManager.getLookAndFeelDefaults().put("TabbedPane.background", dialogBg);
+        UIManager.getLookAndFeelDefaults().put("TabbedPane.shadow", new Color(103, 101, 97));
+        UIManager.getLookAndFeelDefaults().put("TabbedPane.darkShadow", dialogBg);
+        UIManager.getLookAndFeelDefaults().put("TabbedPane.highlight", new Color(103, 101, 97));
         UIManager.getLookAndFeelDefaults().put("ScrollPane.background", dialogBg);
         UIManager.getLookAndFeelDefaults().put("Viewport.background", dialogBg);
         UIManager.getLookAndFeelDefaults().put("Button.background", dialogBg);
@@ -128,6 +135,8 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
         UIManager.getLookAndFeelDefaults().put("ToolBar.dockingBackground", dialogBg);
         UIManager.getLookAndFeelDefaults().put("InternalFrame.borderColor", dialogBg);
         UIManager.getLookAndFeelDefaults().put("MenuBar.background", dialogBg);
+        UIManager.getLookAndFeelDefaults().put("TitledBorder.titleColor", Color.black);
+        UIManager.getLookAndFeelDefaults().put("TitledBorder.border", new EtchedBorder());
     }
 
 
