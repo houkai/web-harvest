@@ -69,7 +69,7 @@ public class DropDownButton extends CommonButton implements ActionListener {
         }
     }
 
-    public void addmenuSeparator() {
+    public void addMenuSeparator() {
         this.popup.addSeparator();
     }
 
@@ -95,7 +95,8 @@ public class DropDownButton extends CommonButton implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         Object source = e.getSource();
         if (source == this) {
-            this.popup.show(this, 0, this.getHeight() - 2);
+            this.popup.pack();
+            this.popup.show(this, 0, this.getHeight());
         } else {
             int oldSelectedItem = selectedItem;
 
