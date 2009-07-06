@@ -190,4 +190,21 @@ public class GuiUtils {
         }
     }
 
+    /**
+     * Calculates position within the top parent of given component
+     * @param component
+     * @param parentClass
+     * @return First parent of the specified component of specified class
+     */
+    public static Component getParentOfType(Component component, Class parentClass) {
+        Component parent = component.getParent();
+        while (parent != null) {
+            if (parent.getClass() == parentClass) {
+                return parent;
+            }
+            parent = parent.getParent();
+        }
+        return null;
+    }
+
 }

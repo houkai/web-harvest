@@ -60,9 +60,6 @@ public class XmlEditorScrollPane extends WHScrollPane {
     private class LineNumberPanel extends JPanel {
         private final Color BORDER_COLOR = new Color(128, 128, 128);
         private final Color NUMBER_COLOR = new Color(128, 128, 128);
-        private final Color DEFAULT_MARKER_COLOR = new Color(164, 164, 164);
-        private final Color RUNNING_MARKER_COLOR = new Color(0, 128, 0);
-        private final Color ERROR_MARKER_COLOR = new Color(255, 0, 0);
 
         private final Font font = xmlTextPane.getFont();
 

@@ -270,6 +270,7 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
         xmlPane.addMouseListener(new MouseAdapter() {
             public void mouseReleased(MouseEvent e) {
                 if ( e.isPopupTrigger()) {
+                    xmlPane.setLastClickPoint(e.getPoint());
                     ide.getEditorPopupMenu().show( (JComponent)e.getSource(), e.getX(), e.getY() );
                 }
             }
@@ -297,6 +298,7 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
         this.leftView.setTopComponent(treeView);
         this.leftView.setBottomComponent(propertiesView);
         this.leftView.setDividerLocation(0.8d);
+        this.leftView.setDividerSize(Constants.SPLITTER_WIDTH);
 //        this.leftView.setDividerSize(Constants.SPLITTER_WIDTH);
 
         //Add the scroll panes to a split pane.
@@ -304,7 +306,7 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
         leftSplitter.setBorder(null);
         leftSplitter.setLeftComponent(leftView);
         leftSplitter.setRightComponent( this.xmlEditorScrollPane );
-//        leftSplitter.setDividerSize(Constants.SPLITTER_WIDTH);
+        leftSplitter.setDividerSize(Constants.SPLITTER_WIDTH);
 
         leftSplitter.setDividerLocation(250);
 
@@ -352,11 +354,12 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
         bottomSplitter.setResizeWeight(1.0d);
         bottomSplitter.setBorder(null);
         bottomSplitter.setTopComponent(leftSplitter);
+        bottomSplitter.setDividerSize(Constants.SPLITTER_WIDTH);
         bottomView = new JScrollPane(logTextArea);
         bottomView.setBorder(new EmptyBorder(0, 0, 0, 0));
         bottomSplitter.setBottomComponent(this.bottomView);
         bottomSplitter.setDividerLocation(0.8d);
-//        bottomSplitter.setDividerSize(Constants.SPLITTER_WIDTH);
+
 
         this.add(bottomSplitter, BorderLayout.CENTER);
 
@@ -685,7 +688,7 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
         TreeNodeInfo treeNodeInfo = this.nodeRenderer.getExecutingNodeInfo();
         if (treeNodeInfo != null) {
             this.treeModel.nodeChanged( treeNodeInfo.getNode() );
-            int line = locateInSource( treeNodeInfo.getNode(), true );
+            int line = locateInSource( treeNodeInfo.getNode(), true ) - 1;
             xmlPane.setErrorLine(line);
         }
     }

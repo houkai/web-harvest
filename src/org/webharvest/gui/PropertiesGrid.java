@@ -119,7 +119,9 @@ public class PropertiesGrid extends JTable {
         super( new PropertiesGridModel() );
         this.configPanel = configPanel;
 
-        this.getTableHeader().setReorderingAllowed(false);
+        JTableHeader tableHeader = this.getTableHeader();
+        tableHeader.setReorderingAllowed(false);
+        tableHeader.setDefaultRenderer( new TableHeaderRenderer() );
 
         TableColumnModel columnModel = this.getColumnModel();
         columnModel.getColumn(2).setCellRenderer( new ButtonRenderer() );

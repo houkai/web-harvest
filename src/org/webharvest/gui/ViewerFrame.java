@@ -198,6 +198,7 @@ public class ViewerFrame extends JFrame implements DropDownButtonListener, Actio
                         variablesComboBox.onValue();
                     }
                 });
+                variablesComboBox.getEditor().setItem("");
                 toolBar.add(new JLabel("Expression:"));
                 toolBar.add(variablesComboBox);
                 toolBar.add(goButton);
@@ -325,10 +326,12 @@ public class ViewerFrame extends JFrame implements DropDownButtonListener, Actio
         xpathEvalButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 String expression = (String) xpathComboBox.getSelectedItem();
-                xpathComboBox.removeItem(expression);
-                xpathComboBox.insertItemAt(expression, 0);
-                xpathComboBox.setSelectedItem(expression);
-                evaluateXPath(expression);
+                if ( !CommonUtil.isEmptyString(expression) ) {
+                    xpathComboBox.removeItem(expression);
+                    xpathComboBox.insertItemAt(expression, 0);
+                    xpathComboBox.setSelectedItem(expression);
+                    evaluateXPath(expression);
+                }
             }
         });
         xpathToolbar.setFloatable(false);
@@ -350,6 +353,7 @@ public class ViewerFrame extends JFrame implements DropDownButtonListener, Actio
         splitPane.setTopComponent( new XmlEditorScrollPane(xmlPane, false) );
         splitPane.setBottomComponent(xpathPanel);
         splitPane.setDividerLocation(0.75d);
+        splitPane.setDividerSize(Constants.SPLITTER_WIDTH);
 
         this.cardPanel.add(splitPane , String.valueOf(XML_VIEW) );
 
@@ -626,6 +630,16 @@ public class ViewerFrame extends JFrame implements DropDownButtonListener, Actio
         imageIcon.setImage(resizedImg);
 
         return imageIcon;
+    }
+
+    public void setVisible(boolean b) {
+        if (b) {
+            Frame activeFrame = GuiUtils.getActiveFrame();
+            if (activeFrame != null) {
+                GuiUtils.centerRelativeTo(this, activeFrame);
+            }
+        }
+        super.setVisible(b);
     }
 
 }

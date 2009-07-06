@@ -36,6 +36,11 @@
 */
 package org.webharvest.gui;
 
+import org.webharvest.gui.component.CommonDialog;
+import org.webharvest.gui.component.WHComboBox;
+import org.webharvest.gui.component.WHCheckBox;
+import org.webharvest.gui.component.WHRadioButton;
+
 import javax.swing.*;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.Document;
@@ -48,7 +53,7 @@ import java.beans.PropertyChangeEvent;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
-public class FindReplaceDialog extends JDialog {
+public class FindReplaceDialog extends CommonDialog {
 
     private static final int OPERATION_FIND = 1;
     private static final int OPERATION_REPLACE = 2; 
@@ -71,15 +76,13 @@ public class FindReplaceDialog extends JDialog {
     private JRadioButton entireScopeRadioButton;
 
     public FindReplaceDialog(Frame parentFrame) throws HeadlessException {
-        super(parentFrame, "Find Text", true);
+        super("Find Text");
         this.parentFrame = parentFrame;
-        this.setResizable(false);
 
         addWindowListener( new WindowAdapter() {
            public void windowActivated( WindowEvent e ){
                 searchComboBox.requestFocus();
                 searchComboBox.getEditor().selectAll();
-//                searchComboBox.setSelectedIndex( searchComboBox.getSelectedIndex() );
              }
         } );
 
@@ -97,7 +100,7 @@ public class FindReplaceDialog extends JDialog {
         constraints.fill = GridBagConstraints.HORIZONTAL;
         constraints.insets = new Insets(2, 5, 2, 5);
 
-        searchComboBox = new JComboBox(new Object[] {}) {
+        searchComboBox = new WHComboBox(new Object[] {}) {
             public Dimension getPreferredSize() {
                 return new Dimension(300, 20);
             }
@@ -110,7 +113,7 @@ public class FindReplaceDialog extends JDialog {
         });
         
         replaceLabel = new JLabel("Replace with: ");
-        replaceComboBox = new JComboBox(new Object[] {}) {
+        replaceComboBox = new WHComboBox(new Object[] {}) {
             public Dimension getPreferredSize() {
                 return new Dimension(300, 20);
             }
@@ -122,7 +125,7 @@ public class FindReplaceDialog extends JDialog {
             }
         });
 
-        caseSensitiveCheckBox = new JCheckBox("Case sensitive", false);
+        caseSensitiveCheckBox = new WHCheckBox("Case sensitive", false);
 
         constraints.gridx = 0;
         constraints.gridy = 0;
@@ -156,25 +159,10 @@ public class FindReplaceDialog extends JDialog {
 
         JPanel buttonPanel = new JPanel( new FlowLayout(FlowLayout.CENTER) );
         
-        JButton okButton = new JButton("  Find  ");
+        JButton okButton = createOkButton();
+        okButton.setText("Find");
         buttonPanel.add(okButton);
-        okButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                if (operation == OPERATION_FIND) {
-                    find(false);
-                } else {
-                    replace(false);
-                }
-            }
-        });
-
-        JButton cancelButton = new JButton("Cancel");
-        cancelButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                setVisible(false);
-            }
-        });
-        buttonPanel.add(cancelButton);
+        buttonPanel.add(createCancelButton());
 
         mainPanel.add(buttonPanel, BorderLayout.SOUTH);
         contentPane.add(mainPanel, BorderLayout.CENTER);
@@ -188,10 +176,10 @@ public class FindReplaceDialog extends JDialog {
 
         ButtonGroup group = new ButtonGroup();
 
-        this.forwardRadioButton = new JRadioButton("Forward");
+        this.forwardRadioButton = new WHRadioButton("Forward");
         this.forwardRadioButton.setSelected(true);
-        this.backwordRadioButton = new JRadioButton("Backword");
-        this.entireScopeRadioButton = new JRadioButton("Entire scope");
+        this.backwordRadioButton = new WHRadioButton("Backword");
+        this.entireScopeRadioButton = new WHRadioButton("Entire scope");
 
         group.add(this.forwardRadioButton);
         group.add(this.backwordRadioButton);
@@ -207,9 +195,9 @@ public class FindReplaceDialog extends JDialog {
     private JPanel createOptionsPanel() {
         JPanel optionsPanel = new JPanel(new GridLayout(3, 1));
         optionsPanel.setBorder(BorderFactory.createTitledBorder("Options"));
-        this.caseSensitiveCheckBox = new JCheckBox("Case sensitive");
+        this.caseSensitiveCheckBox = new WHCheckBox("Case sensitive");
         optionsPanel.add(this.caseSensitiveCheckBox);
-        this.regularExpressionsCheckBox = new JCheckBox("Regular expressions");
+        this.regularExpressionsCheckBox = new WHCheckBox("Regular expressions");
         optionsPanel.add(this.regularExpressionsCheckBox);
         return optionsPanel;
     }
@@ -258,6 +246,9 @@ public class FindReplaceDialog extends JDialog {
 
     public boolean find(boolean backward, boolean showMessageIfNotFound) {
         String searchText = (String)this.searchComboBox.getSelectedItem();
+        if (searchText == null) {
+            return false;
+        }
 
         // there should be something to perform search on and something to search
         if ( this.textComponent == null || "".equals(searchText) ) {
@@ -466,6 +457,14 @@ public class FindReplaceDialog extends JDialog {
             System.out.println(matcher.start() + ", " + matcher.end());
         }
 
+    }
+
+    protected void onOk() {
+        if (operation == OPERATION_FIND) {
+            find(false);
+        } else {
+            replace(false);
+        }
     }
 
 }

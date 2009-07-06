@@ -49,6 +49,6 @@ public class Constants {
     public static final String EXECUTION_TIME_PROPERTY_NAME = "[Execution Time]";
 
     // size of splitter pane dividers
-    public static final int SPLITTER_WIDTH = 3;
+    public static final int SPLITTER_WIDTH = 7;
 
 }

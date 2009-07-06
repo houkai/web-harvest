@@ -136,6 +136,11 @@ public class RunParamsDialog extends JDialog {
 
         };
         table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+        JTableHeader tableHeader = table.getTableHeader();
+        tableHeader.setReorderingAllowed(false);
+        tableHeader.setDefaultRenderer( new TableHeaderRenderer() );
+
         JPanel buttonPanel = new JPanel(new GridLayout(6, 1, 10, 5));
         buttonPanel.setBorder(new EmptyBorder(4, 2, 4, 4));
 

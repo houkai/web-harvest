@@ -73,6 +73,7 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
     private static final String COMMAND_COPY = "copy";
     private static final String COMMAND_PASTE = "paste";
     private static final String COMMAND_DUPLICATE = "duplicate";
+    private static final String COMMAND_BREAKPOINT = "breakpoint";
     private static final String COMMAND_COMMENT = "comment";
     private static final String COMMAND_NEXTTAB = "nexttab";
     private static final String COMMAND_PREVTAB = "prevtab";
@@ -597,6 +598,8 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
         defineMenuItem(menu, "Duplicate", ResourceManager.NONE_ICON, KeyEvent.VK_D, COMMAND_DUPLICATE, KeyStroke.getKeyStroke( KeyEvent.VK_D, ActionEvent.CTRL_MASK));
         defineMenuItem(menu, "Comment/Uncomment", ResourceManager.NONE_ICON, KeyEvent.VK_SLASH, COMMAND_COMMENT, KeyStroke.getKeyStroke( KeyEvent.VK_SLASH, ActionEvent.CTRL_MASK));
         menu.addSeparator();
+        defineMenuItem(menu, "Toggle Line Breakpoint", ResourceManager.NONE_ICON, KeyEvent.VK_B, COMMAND_BREAKPOINT, KeyStroke.getKeyStroke( KeyEvent.VK_F8, ActionEvent.CTRL_MASK));
+        menu.addSeparator();
         defineMenuItem(menu, "Next Tab", null, KeyEvent.VK_E, COMMAND_NEXTTAB, KeyStroke.getKeyStroke( KeyEvent.VK_RIGHT, ActionEvent.ALT_MASK | ActionEvent.CTRL_MASK));
         defineMenuItem(menu, "Previous Tab", null, KeyEvent.VK_P, COMMAND_PREVTAB, KeyStroke.getKeyStroke( KeyEvent.VK_LEFT, ActionEvent.ALT_MASK | ActionEvent.CTRL_MASK));
         menuBar.add(menu);
@@ -617,6 +620,8 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
         editorPopupMenu.addSeparator();
         definePopupMenuItem(editorPopupMenu, "Duplicate", ResourceManager.NONE_ICON, KeyEvent.VK_D, COMMAND_DUPLICATE, KeyStroke.getKeyStroke( KeyEvent.VK_D, ActionEvent.CTRL_MASK));
         definePopupMenuItem(editorPopupMenu, "Comment/Uncomment", ResourceManager.NONE_ICON, KeyEvent.VK_SLASH, COMMAND_COMMENT, KeyStroke.getKeyStroke( KeyEvent.VK_SLASH, ActionEvent.CTRL_MASK));
+        editorPopupMenu.addSeparator();
+        definePopupMenuItem(editorPopupMenu, "Toggle Line Breakpoint", ResourceManager.NONE_ICON, KeyEvent.VK_B, COMMAND_BREAKPOINT, KeyStroke.getKeyStroke( KeyEvent.VK_F8, ActionEvent.CTRL_MASK));
 
         // Build the VIEW menu.
         menu = new MenuElements.Menu("View");
@@ -634,7 +639,8 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
         menu.setMnemonic('x');
         defineMenuItem(menu, "Run", ResourceManager.RUN_ICON, KeyEvent.VK_R, COMMAND_RUN, KeyStroke.getKeyStroke(KeyEvent.VK_F9, 0));
         defineMenuItem(menu, "Pause", ResourceManager.PAUSE_ICON, KeyEvent.VK_R, COMMAND_PAUSE, null);
-        defineMenuItem(menu, "Stop", ResourceManager.STOP_ICON, KeyEvent.VK_S, COMMAND_STOP, null);
+        defineMenuItem(menu, "Stop", ResourceManager.STOP_ICON, KeyEvent.VK_S, COMMAND_STOP, KeyStroke.getKeyStroke(KeyEvent.VK_F2, ActionEvent.CTRL_MASK));
+        defineMenuItem(menu, "View Runtime Values", ResourceManager.VIEWVALUES_ICON, KeyEvent.VK_V, COMMAND_VIEWVALUES, KeyStroke.getKeyStroke(KeyEvent.VK_F8, ActionEvent.ALT_MASK));
         menu.addSeparator();
         defineMenuItem(menu, "Define Run Parameters", ResourceManager.RUN_PARAMS_ICON, KeyEvent.VK_P, COMMAND_RUNPARAMS, KeyStroke.getKeyStroke(KeyEvent.VK_F11, 0));
         menu.addSeparator();
@@ -870,6 +876,11 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
             ConfigPanel activeConfigPanel = getActiveConfigPanel();
             if (activeConfigPanel != null) {
                 activeConfigPanel.getXmlPane().comment();
+            }
+        } else if ( COMMAND_BREAKPOINT.equals(cmd) ) {
+            ConfigPanel activeConfigPanel = getActiveConfigPanel();
+            if (activeConfigPanel != null) {
+                activeConfigPanel.getXmlPane().toggleBreakpoint();
             }
         } else if ( COMMAND_NEXTTAB.equals(cmd) ) {
             int tabCount = tabbedPane.getTabCount();

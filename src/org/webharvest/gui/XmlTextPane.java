@@ -360,6 +360,8 @@ public class XmlTextPane extends JEditorPane {
     private int markerLine = -1;
     private int stopDebugLine = -1;
 
+    private Point lastClickPoint;
+
     public XmlTextPane() {
         XMLEditorKit kit = new XMLEditorKit(true, this);
 
@@ -435,6 +437,37 @@ public class XmlTextPane extends JEditorPane {
         commentAction.execute();
     }
 
+    public void toggleBreakpoint() {
+        if (isEnabled()) {
+            try {
+                int position = lastClickPoint != null ? viewToModel(lastClickPoint) : getCaretPosition();
+                lastClickPoint = null;
+                if (position >= 0) {
+                    String textToCaret = getDocument().getText(0, position);
+                    int lineCount = 0;
+                    for (int i = 0; i < textToCaret.length(); i++) {
+                        if (textToCaret.charAt(i) == '\n') {
+                            lineCount++;
+                        }
+                    }
+                   if (breakpoints.isThereBreakpoint(lineCount)) {
+                       breakpoints.removeBreakpoint(lineCount);
+                   } else {
+                       breakpoints.addBreakpoint(new BreakpointInfo(lineCount));
+                   }
+                }
+            } catch (BadLocationException e) {
+                e.printStackTrace();
+            }
+
+            Component parent = GuiUtils.getParentOfType(this, XmlEditorScrollPane.class);
+            if (parent != null) {
+                ((XmlEditorScrollPane)parent).onDocChanged();
+            }
+            repaint();
+        }
+    }
+
     public BreakpointCollection getBreakpoints() {
         return breakpoints;
     }
@@ -481,4 +514,12 @@ public class XmlTextPane extends JEditorPane {
         repaint();
     }
 
+    public void setLastClickPoint(Point lastClickPoint) {
+        this.lastClickPoint = lastClickPoint;
+    }
+
+    public Point getLastClickPoint() {
+        return lastClickPoint;
+    }
+    
 }
