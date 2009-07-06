@@ -103,7 +103,6 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
         }
 
         UIManager.getLookAndFeelDefaults().put("ScrollBarUI", "org.webharvest.gui.ui.WHScrollBarUI");
-//        UIManager.getLookAndFeelDefaults().put("ButtonUI", "com.futuresource.livecharts.env.LCButtonUI");
         Color dialogBg = new Color(212, 208, 200);
         UIManager.getLookAndFeelDefaults().put("Label.background", dialogBg);
         UIManager.getLookAndFeelDefaults().put("SplitPane.background", dialogBg);
@@ -128,6 +127,7 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
         UIManager.getLookAndFeelDefaults().put("TableHeader.background", dialogBg);
         UIManager.getLookAndFeelDefaults().put("ToolBar.dockingBackground", dialogBg);
         UIManager.getLookAndFeelDefaults().put("InternalFrame.borderColor", dialogBg);
+        UIManager.getLookAndFeelDefaults().put("MenuBar.background", dialogBg);
     }
 
 
@@ -698,6 +698,7 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
         setCommandEnabled(COMMAND_PASTE, configPanel != null);
         setCommandEnabled(COMMAND_DUPLICATE, configPanel != null);
         setCommandEnabled(COMMAND_COMMENT, configPanel != null);
+        setCommandEnabled(COMMAND_BREAKPOINT, configPanel != null);
 
         int tabCount = tabbedPane.getTabCount();
         setCommandEnabled(COMMAND_NEXTTAB, tabCount > 1);
