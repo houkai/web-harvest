@@ -66,9 +66,10 @@ public class XmlTextPane extends JEditorPane {
             }
 
             try {
-                final int position = getCaretPosition();
-                final Document document = getDocument();
-                final String selectedText = getSelectedText();
+                int position = lastClickPoint != null ? viewToModel(lastClickPoint) : getCaretPosition();
+                lastClickPoint = null;
+                Document document = getDocument();
+                String selectedText = getSelectedText();
                 if ( selectedText != null && !CommonUtil.isEmpty(selectedText) ) {
                     final int selectionEnd = getSelectionEnd();
                     document.insertString(selectionEnd, selectedText, null);
@@ -104,9 +105,10 @@ public class XmlTextPane extends JEditorPane {
             if (!isEditable() || !isEnabled()) {
                 return;
             }
-            final int position = getCaretPosition();
-            final Document document = getDocument();
-            final String selectedText = getSelectedText();
+            int position = lastClickPoint != null ? viewToModel(lastClickPoint) : getCaretPosition();
+            lastClickPoint = null;
+            Document document = getDocument();
+            String selectedText = getSelectedText();
 
             try {
                 if ( selectedText != null && !CommonUtil.isEmpty(selectedText) ) {
@@ -468,6 +470,35 @@ public class XmlTextPane extends JEditorPane {
         }
     }
 
+    private int getPositionForLine(int line) {
+        String text = getText();
+        int lineCount = 0;
+        int pos = 0;
+        for (; pos < text.length(); pos++) {
+            if (lineCount == line) {
+                break;
+            }
+            if (text.charAt(pos) == '\n') {
+                lineCount++;
+            }
+        }
+
+        return pos;
+    }
+
+    private void scrollToLine(final int line) {
+        final int posForLine = getPositionForLine(line);
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                try {
+                    scrollRectToVisible(modelToView(posForLine));
+                } catch (BadLocationException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
     public BreakpointCollection getBreakpoints() {
         return breakpoints;
     }
@@ -479,6 +510,7 @@ public class XmlTextPane extends JEditorPane {
     public void setMarkerLine(int markerLine) {
         this.markerLine = markerLine;
         repaint();
+        scrollToLine(markerLine);
     }
 
     public void clearMarkerLine() {
@@ -493,6 +525,7 @@ public class XmlTextPane extends JEditorPane {
     public void setErrorLine(int errorLine) {
         this.errorLine = errorLine;
         repaint();
+        scrollToLine(errorLine);
     }
 
     public void clearErrorLine() {
@@ -507,6 +540,7 @@ public class XmlTextPane extends JEditorPane {
     public void setStopDebugLine(int stopDebugLine) {
         this.stopDebugLine = stopDebugLine;
         repaint();
+        scrollToLine(stopDebugLine);
     }
 
     public void clearStopDebugLine() {

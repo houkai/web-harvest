@@ -39,6 +39,7 @@ import javax.swing.text.PlainView;
 import javax.swing.text.Element;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
+import javax.swing.*;
 
 /**
  * The XML View uses the XML scanner to determine the style (font, color) of the
@@ -162,7 +163,8 @@ public class XMLView extends PlainView { // WrappedPlainView {
             g.setColor(bgPaintColor);
             final FontMetrics fontMetrics = g.getFontMetrics();
             final int fontHeight = fontMetrics.getHeight();
-            g.fillRect(0, y - fontMetrics.getAscent(), getContainer().getWidth(), fontHeight);
+            final int rectY = y - fontMetrics.getAscent();
+            g.fillRect(0, rectY, getContainer().getWidth(), fontHeight);
         }
 
         super.drawLine(lineIndex, g, x, y);

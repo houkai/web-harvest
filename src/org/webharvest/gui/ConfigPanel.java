@@ -321,6 +321,7 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
         logSelectAllMenuItem = new MenuElements.MenuItem("Select All");
         logSelectAllMenuItem.addActionListener( new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                logTextArea.requestFocus();
                 logTextArea.selectAll();
             }
         });
