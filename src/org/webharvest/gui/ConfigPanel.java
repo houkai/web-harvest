@@ -542,6 +542,7 @@ public class ConfigPanel extends JPanel implements ScraperRuntimeListener, TreeS
                     scraper.pauseExecution();
                     xmlPane.clearMarkerLine();
                     xmlPane.setStopDebugLine(lineNumber);
+                    ide.setTabIcon(ConfigPanel.this, ResourceManager.SMALL_BREAKPOINT_ICON);
                 } else if ( ide.getSettings().isDynamicConfigLocate() ) {
                     xmlPane.setMarkerLine(lineNumber);
                     xmlPane.repaint();

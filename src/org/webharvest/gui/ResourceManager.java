@@ -81,6 +81,7 @@ public class ResourceManager {
     public static final Icon SMALL_ERROR_ICON = getIcon("resources/icons/small_error.gif");
     public static final Icon SMALL_PAUSED_ICON = getIcon("resources/icons/small_paused.gif");
     public static final Icon SMALL_FINISHED_ICON = getIcon("resources/icons/small_finished.gif");
+    public static final Icon SMALL_BREAKPOINT_ICON = getIcon("resources/icons/small_breakpoint.gif");
     public static final Icon SMALL_VIEW_ICON = getIcon("resources/icons/small_view.gif");
     public static final Icon SMALL_TRASHCAN_ICON = getIcon("resources/icons/trashcan.gif");
     public static final Icon TEXTTYPE_ICON = getIcon("resources/icons/text_type.gif");
