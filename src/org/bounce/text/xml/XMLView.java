@@ -34,11 +34,7 @@ import org.webharvest.gui.*;
 import java.awt.*;
 import java.io.IOException;
 
-import javax.swing.text.View;
-import javax.swing.text.PlainView;
-import javax.swing.text.Element;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Document;
+import javax.swing.text.*;
 import javax.swing.*;
 
 /**
@@ -96,6 +92,7 @@ public class XMLView extends PlainView { // WrappedPlainView {
      * @param a the shape.
      */
     public void paint( Graphics g, Shape a) {
+        paintX(g, a);
         super.paint( g, a);
 
         scanner.setValid( false);
@@ -159,16 +156,66 @@ public class XMLView extends PlainView { // WrappedPlainView {
             }
         }
 
-        if (bgPaintColor != null) {
-            g.setColor(bgPaintColor);
-            final FontMetrics fontMetrics = g.getFontMetrics();
-            final int fontHeight = fontMetrics.getHeight();
-            final int rectY = y - fontMetrics.getAscent();
-            g.fillRect(0, rectY, getContainer().getWidth(), fontHeight);
-        }
-
         super.drawLine(lineIndex, g, x, y);
     }
+
+
+
+
+    public void paintX(Graphics g, Shape a) {
+        Rectangle alloc = (Rectangle) a;
+        Rectangle clip = g.getClipBounds();
+        int fontHeight = metrics.getHeight();
+        int heightBelow = (alloc.y + alloc.height) - (clip.y + clip.height);
+        int linesBelow = Math.max(0, heightBelow / fontHeight);
+        int heightAbove = clip.y - alloc.y;
+        int linesAbove = Math.max(0, heightAbove / fontHeight);
+        int linesTotal = alloc.height / fontHeight;
+
+        if (alloc.height % fontHeight != 0) {
+            linesTotal++;
+        }
+
+        // update the visible lines
+        Rectangle lineArea = lineToRect(a, linesAbove);
+        int y = lineArea.y + metrics.getAscent();
+        
+        Element map = getElement();
+    	int lineCount = map.getElementCount();
+        int endLine = Math.min(lineCount, linesTotal - linesBelow);
+        for (int line = linesAbove; line < endLine; line++) {
+            this.bgPaintColor = null;
+            
+            if (xmlTextPane.getErrorLine() == line) {
+                bgPaintColor = ERROR_COLOR;
+            }
+
+            if (bgPaintColor == null && xmlTextPane.getStopDebugLine() == line) {
+                bgPaintColor = DEBUG_STOP_COLOR;
+            }
+
+            if (bgPaintColor == null && xmlTextPane.getMarkerLine() == line) {
+                bgPaintColor = LINE_MARKER_COLOR;
+            }
+
+            if (bgPaintColor == null) {
+                BreakpointCollection breakpoints = xmlTextPane.getBreakpoints();
+                if (breakpoints != null && breakpoints.isThereBreakpoint(line)) {
+                    bgPaintColor = DEBUG_NORMAL_COLOR;
+                }
+            }
+
+            if (bgPaintColor != null) {
+                g.setColor(bgPaintColor);
+                final FontMetrics fontMetrics = g.getFontMetrics();
+                final int rectY = y - fontMetrics.getAscent();
+                g.fillRect(0, rectY, getContainer().getWidth(), fontHeight);
+            }
+            
+            y += fontHeight;
+	    }
+    }
+
 
     public Color getBgPaintColor() {
         return bgPaintColor;

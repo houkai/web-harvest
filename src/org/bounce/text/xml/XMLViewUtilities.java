@@ -145,7 +145,6 @@ class XMLViewUtilities {
         int mark = start;
 
         g.setColor(Color.white);
-        // g.setBackground( Color.black);
 
         while ( start < end) {
             updateScanner( scanner, doc, start);
