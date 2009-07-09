@@ -1,6 +1,7 @@
 package org.webharvest.gui.component;
 
 import org.webharvest.gui.*;
+import org.webharvest.utils.CommonUtil;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -26,11 +27,18 @@ public class AlertDialog extends CommonDialog {
 
         Container contentPane = this.getContentPane();
         contentPane.setLayout(new BorderLayout());
-        JLabel label = new JLabel(message);
-        label.setBorder(new EmptyBorder(10, 20, 10, 20));
-        label.setIcon(icon);
 
-        contentPane.add(label, BorderLayout.CENTER);
+        GridPanel gridPanel = new GridPanel();
+        gridPanel.setBorder(new EmptyBorder(10, 10, 10, 20));
+        String[] msgArray = CommonUtil.tokenize(message, "\n");
+        for (int i = 0; i < msgArray.length; i++) {
+            gridPanel.addComponent(null, "label" + i, new JLabel(msgArray[i]), 0, i, 1, 1);
+        }
+
+        JLabel iconLabel = new JLabel(icon);
+        iconLabel.setBorder(new EmptyBorder(10, 20, 10, 10));
+        contentPane.add(iconLabel, BorderLayout.WEST);
+        contentPane.add(gridPanel, BorderLayout.CENTER);
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 3, 4));
 
@@ -76,6 +84,31 @@ public class AlertDialog extends CommonDialog {
     public int display() {
         setVisible(true);
         return result;
+    }
+
+    /**
+     * Splits string in multiple lines if it is too long.
+     * @param msg
+     * @return Splitted string.
+     */
+    private String prepareMsg(String msg) {
+        final int maxLength = 80;
+        StringBuffer result = new StringBuffer("");
+        int lineLength = 0;
+        if (msg != null) {
+            for (int i = 0; i < msg.length(); i++) {
+                char ch = msg.charAt(i);
+                if ( (ch == '\n') || (ch == ' ' && lineLength > maxLength) ) {
+                    result.append('\n');
+                    lineLength = 0;
+                } else {
+                    result.append(ch);
+                    lineLength++;
+                }
+            }
+        }
+
+        return result.toString();
     }
 
 }

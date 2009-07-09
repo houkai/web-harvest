@@ -64,31 +64,6 @@ public class GuiUtils {
     }
 
     /**
-     * Splits string in multiple lines if it is too long. 
-     * @param msg
-     * @return Splitted string.
-     */
-    private static String prepareMsg(String msg) {
-        final int maxLength = 80;
-        StringBuffer result = new StringBuffer("");
-        int lineLength = 0;
-        if (msg != null) {
-            for (int i = 0; i < msg.length(); i++) {
-                char ch = msg.charAt(i);
-                if ( (ch == '\n') || (ch == ' ' && lineLength > maxLength) ) {
-                    result.append('\n');
-                    lineLength = 0;
-                } else {
-                    result.append(ch);
-                    lineLength++;
-                }
-            }
-        }
-
-        return result.toString();
-    }
-
-    /**
      * Displays dialog with specified error message.
      * @param msg
      */

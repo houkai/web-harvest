@@ -203,8 +203,8 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
                     boolean canceled = false;
 
                     int status = currenConfigPanel.getScraperStatus();
-                    if (status == Scraper.STATUS_RUNNING) {
-                        canceled = GuiUtils.showWarningQuestionBox("Configuration \"" + configDocument.getName() + "\" is still running!\nAre you sure you want to exit Web-Harvest?", false) == JOptionPane.YES_OPTION;
+                    if (status == Scraper.STATUS_RUNNING || status == Scraper.STATUS_PAUSED) {
+                        canceled = GuiUtils.showWarningQuestionBox("Configuration \"" + configDocument.getName() + "\" is still running!\nAre you sure you want to exit Web-Harvest?", false) != JOptionPane.YES_OPTION;
                     }
 
                     if (!canceled) {
@@ -238,8 +238,8 @@ public class Ide extends JFrame implements ActionListener, ChangeListener {
                 boolean canceled = false;
                 
                 int status = currenConfigPanel.getScraperStatus();
-                if (status == Scraper.STATUS_RUNNING) {
-                    canceled = GuiUtils.showWarningQuestionBox("Configuration \"" + configDocument.getName() + "\" is still running!\nAre you sure you want to exit Web-Harvest?", false) == JOptionPane.YES_OPTION;
+                if (status == Scraper.STATUS_RUNNING || status == Scraper.STATUS_PAUSED) {
+                    canceled = GuiUtils.showWarningQuestionBox("Configuration \"" + configDocument.getName() + "\" is still running!\nAre you sure you want to exit Web-Harvest?", false) != JOptionPane.YES_OPTION;
                     if (!canceled) {
                         currenConfigPanel.stopScraperExecution();
                     }
