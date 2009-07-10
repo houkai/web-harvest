@@ -45,6 +45,8 @@ public abstract class Variable {
 
     abstract public byte[] toBinary();
 
+    abstract public byte[] toBinary(String charset);
+
     abstract public String toString();
 
     abstract public List toList();
