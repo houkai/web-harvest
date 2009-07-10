@@ -42,7 +42,7 @@ package org.webharvest.definition;
 public class HttpParamDef extends BaseElementDef {
 
     private String name;
-    private String parttype;
+    private String isfile;
     private String filename;
     private String contenttype;
 
@@ -50,7 +50,7 @@ public class HttpParamDef extends BaseElementDef {
     	super(xmlNode);
     	
         this.name = (String) xmlNode.get("name");
-        this.parttype = (String) xmlNode.get("parttype");
+        this.isfile = (String) xmlNode.get("isfile");
         this.filename = (String) xmlNode.get("filename");
         this.contenttype = (String) xmlNode.get("contenttype");
     }
@@ -59,8 +59,8 @@ public class HttpParamDef extends BaseElementDef {
     	return name;
     }
 
-    public String getParttype() {
-        return parttype;
+    public String getIsfile() {
+        return isfile;
     }
 
     public String getFilename() {

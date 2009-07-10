@@ -233,15 +233,7 @@ public class HttpClientManager {
                     HttpParamInfo httpParamInfo = entry.getValue();
                     Variable value = httpParamInfo.getValue();
 
-                    boolean isFilePart = false;
-                    String partType = httpParamInfo.getPartType();
-                    if ("string".equalsIgnoreCase(partType)) {
-                        isFilePart = false;
-                    } else if ("file".equalsIgnoreCase(partType)) {
-                        isFilePart = true;
-                    }
-
-                    if (isFilePart) {
+                    if (httpParamInfo.isFile()) {
                         String filename = httpParamInfo.getFileName();
                         if (CommonUtil.isEmptyString(filename)) {
                             filename = "uploadfile" + filenameIndex;

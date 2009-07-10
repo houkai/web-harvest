@@ -10,9 +10,8 @@ public class HttpParamInfo {
     // name of parameter
     private String name;
 
-    // type of a part in multipart encoded requests - applies only if http processor is multiparted
-    // valid values are file and string
-    private String partType;
+    // tells if part is file to be uploaded - applies only if http processor is multiparted
+    private boolean isFile = false;
 
     // filename of upload file - applies only for multipart requests where partType = file
     private String fileName;
@@ -23,9 +22,9 @@ public class HttpParamInfo {
     // parameter value
     private Variable value;
 
-    public HttpParamInfo(String name, String partType, String fileName, String contentType, Variable value) {
+    public HttpParamInfo(String name, boolean isFile, String fileName, String contentType, Variable value) {
         this.name = name;
-        this.partType = partType;
+        this.isFile = isFile;
         this.fileName = fileName;
         this.contentType = contentType;
         this.value = value;
@@ -35,8 +34,8 @@ public class HttpParamInfo {
         return name;
     }
 
-    public String getPartType() {
-        return partType;
+    public boolean isFile() {
+        return isFile;
     }
 
     public String getFileName() {
@@ -50,5 +49,5 @@ public class HttpParamInfo {
     public Variable getValue() {
         return value;
     }
-    
+
 }

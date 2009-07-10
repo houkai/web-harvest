@@ -175,8 +175,8 @@ public class HttpProcessor extends BaseProcessor {
         return result;
     }
     
-    protected void addHttpParam(String name, String partType, String fileName, String contentType, Variable value) {
-        HttpParamInfo httpParamInfo = new HttpParamInfo(name, partType, fileName, contentType, value);
+    protected void addHttpParam(String name, boolean isFile, String fileName, String contentType, Variable value) {
+        HttpParamInfo httpParamInfo = new HttpParamInfo(name, isFile, fileName, contentType, value);
     	httpParams.put(name, httpParamInfo);
     }
     

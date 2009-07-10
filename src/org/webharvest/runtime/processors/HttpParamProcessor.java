@@ -42,6 +42,7 @@ import org.webharvest.runtime.Scraper;
 import org.webharvest.runtime.ScraperContext;
 import org.webharvest.runtime.templaters.BaseTemplater;
 import org.webharvest.runtime.variables.Variable;
+import org.webharvest.utils.*;
 
 /**
  * Variable definition http param processor.
@@ -57,17 +58,17 @@ public class HttpParamProcessor extends BaseProcessor {
 
     public Variable execute(Scraper scraper, ScraperContext context) {
     	String name = BaseTemplater.execute( httpParamDef.getName(), scraper.getScriptEngine() );
-    	String partType = BaseTemplater.execute( httpParamDef.getParttype(), scraper.getScriptEngine() );
+    	String isFileStr = BaseTemplater.execute( httpParamDef.getIsfile(), scraper.getScriptEngine() );
+        boolean isFile = CommonUtil.getBooleanValue(isFileStr, false);
     	String fileName = BaseTemplater.execute( httpParamDef.getFilename(), scraper.getScriptEngine() );
     	String contentType = BaseTemplater.execute( httpParamDef.getContenttype(), scraper.getScriptEngine() );
-//    	Variable value = getBodyTextContent(httpParamDef, scraper, context);
     	Variable value = new BodyProcessor(httpParamDef).execute(scraper, context);
 
     	HttpProcessor httpProcessor = scraper.getRunningHttpProcessor();
     	if (httpProcessor != null) {
-    		httpProcessor.addHttpParam(name, partType, fileName, contentType, value);
+            httpProcessor.addHttpParam(name, isFile, fileName, contentType, value);
             this.setProperty("Name", name);
-            this.setProperty("Part Type", partType);
+            this.setProperty("Is File", String.valueOf(isFile));
             this.setProperty("File Name", fileName);
             this.setProperty("Content Type", contentType);
         } else {
