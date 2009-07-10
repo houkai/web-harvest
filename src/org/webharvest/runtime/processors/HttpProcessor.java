@@ -47,6 +47,7 @@ import org.webharvest.runtime.variables.Variable;
 import org.webharvest.runtime.variables.NodeVariable;
 import org.webharvest.runtime.web.HttpClientManager;
 import org.webharvest.runtime.web.HttpResponseWrapper;
+import org.webharvest.utils.CommonUtil;
 
 import java.io.UnsupportedEncodingException;
 import java.util.*;
@@ -65,8 +66,8 @@ public class HttpProcessor extends BaseProcessor {
 
     private HttpDef httpDef;
     
-    List httpParams = new ArrayList();
-    Map httpHeaderMap = new HashMap();
+    private Map<String, Variable> httpParams = new LinkedHashMap<String, Variable>();
+    private Map httpHeaderMap = new HashMap();
 
     public HttpProcessor(HttpDef httpDef) {
         super(httpDef);
@@ -79,6 +80,8 @@ public class HttpProcessor extends BaseProcessor {
         ScriptEngine scriptEngine = scraper.getScriptEngine();
         String url = BaseTemplater.execute( httpDef.getUrl(), scriptEngine);
         String method = BaseTemplater.execute( httpDef.getMethod(), scriptEngine);
+        String multipart = BaseTemplater.execute( httpDef.getMultipart(), scriptEngine);
+        boolean isMultipart = CommonUtil.getBooleanValue(multipart, false);
         String specifiedCharset = BaseTemplater.execute( httpDef.getCharset(), scriptEngine);
         String username = BaseTemplater.execute( httpDef.getUsername(), scriptEngine);
         String password = BaseTemplater.execute( httpDef.getPassword(), scriptEngine);
@@ -96,7 +99,7 @@ public class HttpProcessor extends BaseProcessor {
         HttpClientManager manager = scraper.getHttpClientManager();
         manager.setCookiePolicy(cookiePolicy);
 
-        HttpResponseWrapper res = manager.execute(method, url, charset, username, password, httpParams, httpHeaderMap);
+        HttpResponseWrapper res = manager.execute(method, isMultipart, url, charset, username, password, httpParams, httpHeaderMap);
 
         scraper.removeRunningHttpProcessor();
 
@@ -155,6 +158,7 @@ public class HttpProcessor extends BaseProcessor {
 
         this.setProperty("URL", url);
         this.setProperty("Method", method);
+        this.setProperty("Multipart", String.valueOf(isMultipart));
         this.setProperty("Charset", charset);
         this.setProperty("Content length", String.valueOf(contentLength));
         this.setProperty("Status code", new Integer(res.getStatusCode()));
@@ -172,8 +176,8 @@ public class HttpProcessor extends BaseProcessor {
         return result;
     }
     
-    protected void addHttpParam(String name, String value) {
-    	httpParams.add( new NameValuePair(name, value) );
+    protected void addHttpParam(String name, Variable value) {
+    	httpParams.put(name, value);
     }
     
     protected void addHttpHeader(String name, String value) {

@@ -42,9 +42,15 @@ import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.contrib.ssl.EasySSLProtocolSocketFactory;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.methods.multipart.Part;
+import org.apache.commons.httpclient.methods.multipart.FilePart;
+import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
+import org.apache.commons.httpclient.methods.multipart.StringPart;
 import org.apache.commons.httpclient.params.HttpClientParams;
 import org.apache.commons.httpclient.protocol.Protocol;
 import org.webharvest.utils.CommonUtil;
+import org.webharvest.runtime.variables.Variable;
+import org.webharvest.runtime.variables.NodeVariable;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -129,13 +135,14 @@ public class HttpClientManager {
     }
     
     public HttpResponseWrapper execute(
-    		String methodType, 
-    		String url, 
-    		String charset,
-    		String username, 
-    		String password,
-    		List params, 
-    		Map headers ) {
+            String methodType,
+            boolean multipart,
+            String url,
+            String charset,
+            String username,
+            String password,
+            Map<String, Variable> params,
+            Map headers) {
         if ( !url.startsWith("http://") && !url.startsWith("https://") ) {
             url = "http://" + url;
         }
@@ -157,7 +164,7 @@ public class HttpClientManager {
         
         HttpMethodBase method;
         if ( "post".equalsIgnoreCase(methodType) ) {
-            method = createPostMethod(url, params);
+            method = createPostMethod(url, params, multipart, charset);
         } else {
             method = createGetMethod(url, params, charset);
         }
@@ -216,30 +223,45 @@ public class HttpClientManager {
         method.addRequestHeader(new Header("User-Agent", DEFAULT_USER_AGENT));
     }
 
-    private HttpMethodBase createPostMethod(String url, List params) {
+    private HttpMethodBase createPostMethod(String url, Map<String, Variable> params, boolean multipart, String charset) {
         PostMethod method = new PostMethod(url);
 
         if (params != null) {
-            NameValuePair[] paramArray = new NameValuePair[params.size()];
-            Iterator it = params.iterator();
-            int index = 0;
-            while (it.hasNext()) {
-                paramArray[index++] = (NameValuePair) it.next();
+            if (multipart) {
+                Part[] parts = new Part[params.size()];
+                int index = 0;
+                for (Map.Entry<String, Variable> entry: params.entrySet()) {
+                    Part part = null;
+                    String name = entry.getKey();
+                    Variable value = entry.getValue();
+                    if (value instanceof NodeVariable && value.getWrappedObject() instanceof byte[]) {
+                        // todo: should create temporary file for upload
+                        // parts[index] = new FilePart(entry.getKey(), value.toString());
+                    } else {
+                        parts[index] = new StringPart(name, value.toString(), charset);
+                    }
+                    index++;
+                }
+                method.setRequestEntity( new MultipartRequestEntity(parts, method.getParams()) );
+            } else {
+                NameValuePair[] paramArray = new NameValuePair[params.size()];
+                int index = 0;
+                for (Map.Entry<String, Variable> entry: params.entrySet()) {
+                    paramArray[index++] = new NameValuePair(entry.getKey(), entry.getValue().toString());
+                }
+                method.setRequestBody(paramArray);
             }
-
-            method.setRequestBody(paramArray);
         }
 
         return method;
     }
 
-    private GetMethod createGetMethod(String url, List params, String charset) {
+    private GetMethod createGetMethod(String url, Map<String, Variable> params, String charset) {
         if (params != null) {
             String urlParams = "";
-            Iterator it = params.iterator();
-            while (it.hasNext()) {
-                NameValuePair pair = (NameValuePair) it.next();
-                String value = pair.getValue();
+            for (Map.Entry<String, Variable> entry: params.entrySet()) {
+                String value = entry.getValue().toString();
+                NameValuePair pair = new NameValuePair(entry.getKey(), value);
                 try {
                     urlParams += pair.getName() + "=" + URLEncoder.encode(value == null ? "" : value, charset) + "&";
                 } catch (UnsupportedEncodingException e) {

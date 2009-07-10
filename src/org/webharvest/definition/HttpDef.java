@@ -47,6 +47,7 @@ public class HttpDef extends BaseElementDef {
     public static final String METHOD_POST = "post";
 
     private String method;
+    private String multipart;
     private String url;
     private String charset;
     private String username;
@@ -56,7 +57,8 @@ public class HttpDef extends BaseElementDef {
     public HttpDef(XmlNode xmlNode) {
         super(xmlNode);
 
-        this.method = CommonUtil.nvl( (String) xmlNode.get("method"), METHOD_GET );
+        this.method = CommonUtil.nvl( xmlNode.get("method"), METHOD_GET );
+        this.multipart = CommonUtil.nvl( xmlNode.get("multipart"), "false" );
         this.url = (String) xmlNode.get("url");
         this.charset = (String) xmlNode.get("charset");
         this.username = (String) xmlNode.get("username");
@@ -66,6 +68,10 @@ public class HttpDef extends BaseElementDef {
 
     public String getMethod() {
         return method;
+    }
+
+    public String getMultipart() {
+        return multipart;
     }
 
     public String getUrl() {
