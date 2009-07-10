@@ -42,10 +42,7 @@ import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.contrib.ssl.EasySSLProtocolSocketFactory;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.multipart.Part;
-import org.apache.commons.httpclient.methods.multipart.FilePart;
-import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
-import org.apache.commons.httpclient.methods.multipart.StringPart;
+import org.apache.commons.httpclient.methods.multipart.*;
 import org.apache.commons.httpclient.params.HttpClientParams;
 import org.apache.commons.httpclient.protocol.Protocol;
 import org.webharvest.utils.CommonUtil;
@@ -141,7 +138,7 @@ public class HttpClientManager {
             String charset,
             String username,
             String password,
-            Map<String, Variable> params,
+            Map<String, HttpParamInfo> params,
             Map headers) {
         if ( !url.startsWith("http://") && !url.startsWith("https://") ) {
             url = "http://" + url;
@@ -223,22 +220,49 @@ public class HttpClientManager {
         method.addRequestHeader(new Header("User-Agent", DEFAULT_USER_AGENT));
     }
 
-    private HttpMethodBase createPostMethod(String url, Map<String, Variable> params, boolean multipart, String charset) {
+    private HttpMethodBase createPostMethod(String url, Map<String, HttpParamInfo> params, boolean multipart, String charset) {
         PostMethod method = new PostMethod(url);
 
+        int filenameIndex = 0;
         if (params != null) {
             if (multipart) {
                 Part[] parts = new Part[params.size()];
                 int index = 0;
-                for (Map.Entry<String, Variable> entry: params.entrySet()) {
-                    Part part = null;
+                for (Map.Entry<String, HttpParamInfo> entry: params.entrySet()) {
                     String name = entry.getKey();
-                    Variable value = entry.getValue();
-                    if (value instanceof NodeVariable && value.getWrappedObject() instanceof byte[]) {
-                        // todo: should create temporary file for upload
-                        // parts[index] = new FilePart(entry.getKey(), value.toString());
+                    HttpParamInfo httpParamInfo = entry.getValue();
+                    Variable value = httpParamInfo.getValue();
+
+                    boolean isFilePart = false;
+                    String partType = httpParamInfo.getPartType();
+                    if ("string".equalsIgnoreCase(partType)) {
+                        isFilePart = false;
+                    } else if ("file".equalsIgnoreCase(partType)) {
+                        isFilePart = true;
                     } else {
-                        parts[index] = new StringPart(name, value.toString(), charset);
+                        isFilePart = value instanceof NodeVariable && value.getWrappedObject() instanceof byte[];
+                    }
+
+                    if (isFilePart) {
+                        String filename = httpParamInfo.getFileName();
+                        if (CommonUtil.isEmptyString(filename)) {
+                            filename = "uploadfile" + filenameIndex;
+                            filenameIndex++;
+                        }
+                        String contentType = httpParamInfo.getContentType();
+                        if (CommonUtil.isEmptyString(contentType)) {
+                            contentType = null;
+                        }
+
+                        byte[] bytes;
+                        try {
+                            bytes = value.getWrappedObject() instanceof byte[] ? value.toBinary() : value.toString().getBytes(charset);
+                        } catch (UnsupportedEncodingException e) {
+                            throw new org.webharvest.exception.HttpException("Unsupported encoding for the http parameter", e);
+                        }
+                        parts[index] = new FilePart( httpParamInfo.getName(), new ByteArrayPartSource(filename, bytes), contentType, charset );
+                    } else {
+                        parts[index] = new StringPart(name, CommonUtil.nvl(value, ""), charset);
                     }
                     index++;
                 }
@@ -246,7 +270,7 @@ public class HttpClientManager {
             } else {
                 NameValuePair[] paramArray = new NameValuePair[params.size()];
                 int index = 0;
-                for (Map.Entry<String, Variable> entry: params.entrySet()) {
+                for (Map.Entry<String, HttpParamInfo> entry: params.entrySet()) {
                     paramArray[index++] = new NameValuePair(entry.getKey(), entry.getValue().toString());
                 }
                 method.setRequestBody(paramArray);
@@ -256,10 +280,10 @@ public class HttpClientManager {
         return method;
     }
 
-    private GetMethod createGetMethod(String url, Map<String, Variable> params, String charset) {
+    private GetMethod createGetMethod(String url, Map<String, HttpParamInfo> params, String charset) {
         if (params != null) {
             String urlParams = "";
-            for (Map.Entry<String, Variable> entry: params.entrySet()) {
+            for (Map.Entry<String, HttpParamInfo> entry: params.entrySet()) {
                 String value = entry.getValue().toString();
                 NameValuePair pair = new NameValuePair(entry.getKey(), value);
                 try {

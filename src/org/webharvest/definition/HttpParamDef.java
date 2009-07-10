@@ -42,15 +42,33 @@ package org.webharvest.definition;
 public class HttpParamDef extends BaseElementDef {
 
     private String name;
+    private String parttype;
+    private String filename;
+    private String contenttype;
 
     public HttpParamDef(XmlNode xmlNode) {
     	super(xmlNode);
     	
         this.name = (String) xmlNode.get("name");
+        this.parttype = (String) xmlNode.get("parttype");
+        this.filename = (String) xmlNode.get("filename");
+        this.contenttype = (String) xmlNode.get("contenttype");
     }
 
     public String getName() {
     	return name;
+    }
+
+    public String getParttype() {
+        return parttype;
+    }
+
+    public String getFilename() {
+        return filename;
+    }
+
+    public String getContenttype() {
+        return contenttype;
     }
 
     public String getShortElementName() {

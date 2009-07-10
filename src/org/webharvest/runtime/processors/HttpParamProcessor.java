@@ -57,11 +57,14 @@ public class HttpParamProcessor extends BaseProcessor {
 
     public Variable execute(Scraper scraper, ScraperContext context) {
     	String name = BaseTemplater.execute( httpParamDef.getName(), scraper.getScriptEngine() );
+    	String partType = BaseTemplater.execute( httpParamDef.getParttype(), scraper.getScriptEngine() );
+    	String fileName = BaseTemplater.execute( httpParamDef.getFilename(), scraper.getScriptEngine() );
+    	String contentType = BaseTemplater.execute( httpParamDef.getContenttype(), scraper.getScriptEngine() );
     	Variable value = getBodyTextContent(httpParamDef, scraper, context);
         
     	HttpProcessor httpProcessor = scraper.getRunningHttpProcessor();
     	if (httpProcessor != null) {
-    		httpProcessor.addHttpParam(name, value);
+    		httpProcessor.addHttpParam(name, partType, fileName, contentType, value);
             this.setProperty("Name", name);
         } else {
     		throw new HttpException("Usage of http-param processor is not allowed outside of http processor!");

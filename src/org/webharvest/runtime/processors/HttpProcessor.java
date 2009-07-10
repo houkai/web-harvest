@@ -45,8 +45,7 @@ import org.webharvest.runtime.scripting.ScriptEngine;
 import org.webharvest.runtime.templaters.BaseTemplater;
 import org.webharvest.runtime.variables.Variable;
 import org.webharvest.runtime.variables.NodeVariable;
-import org.webharvest.runtime.web.HttpClientManager;
-import org.webharvest.runtime.web.HttpResponseWrapper;
+import org.webharvest.runtime.web.*;
 import org.webharvest.utils.CommonUtil;
 
 import java.io.UnsupportedEncodingException;
@@ -66,7 +65,7 @@ public class HttpProcessor extends BaseProcessor {
 
     private HttpDef httpDef;
     
-    private Map<String, Variable> httpParams = new LinkedHashMap<String, Variable>();
+    private Map<String, HttpParamInfo> httpParams = new LinkedHashMap<String, HttpParamInfo>();
     private Map httpHeaderMap = new HashMap();
 
     public HttpProcessor(HttpDef httpDef) {
@@ -176,8 +175,9 @@ public class HttpProcessor extends BaseProcessor {
         return result;
     }
     
-    protected void addHttpParam(String name, Variable value) {
-    	httpParams.put(name, value);
+    protected void addHttpParam(String name, String partType, String fileName, String contentType, Variable value) {
+        HttpParamInfo httpParamInfo = new HttpParamInfo(name, partType, fileName, contentType, value);
+    	httpParams.put(name, httpParamInfo);
     }
     
     protected void addHttpHeader(String name, String value) {
