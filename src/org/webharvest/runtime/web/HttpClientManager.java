@@ -239,8 +239,6 @@ public class HttpClientManager {
                         isFilePart = false;
                     } else if ("file".equalsIgnoreCase(partType)) {
                         isFilePart = true;
-                    } else {
-                        isFilePart = value instanceof NodeVariable && value.getWrappedObject() instanceof byte[];
                     }
 
                     if (isFilePart) {
@@ -254,12 +252,7 @@ public class HttpClientManager {
                             contentType = null;
                         }
 
-                        byte[] bytes;
-                        try {
-                            bytes = value.getWrappedObject() instanceof byte[] ? value.toBinary() : value.toString().getBytes(charset);
-                        } catch (UnsupportedEncodingException e) {
-                            throw new org.webharvest.exception.HttpException("Unsupported encoding for the http parameter", e);
-                        }
+                        byte[] bytes = value.toBinary(charset);
                         parts[index] = new FilePart( httpParamInfo.getName(), new ByteArrayPartSource(filename, bytes), contentType, charset );
                     } else {
                         parts[index] = new StringPart(name, CommonUtil.nvl(value, ""), charset);

@@ -60,8 +60,9 @@ public class HttpParamProcessor extends BaseProcessor {
     	String partType = BaseTemplater.execute( httpParamDef.getParttype(), scraper.getScriptEngine() );
     	String fileName = BaseTemplater.execute( httpParamDef.getFilename(), scraper.getScriptEngine() );
     	String contentType = BaseTemplater.execute( httpParamDef.getContenttype(), scraper.getScriptEngine() );
-    	Variable value = getBodyTextContent(httpParamDef, scraper, context);
-        
+//    	Variable value = getBodyTextContent(httpParamDef, scraper, context);
+    	Variable value = new BodyProcessor(httpParamDef).execute(scraper, context);
+
     	HttpProcessor httpProcessor = scraper.getRunningHttpProcessor();
     	if (httpProcessor != null) {
     		httpProcessor.addHttpParam(name, partType, fileName, contentType, value);

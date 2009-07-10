@@ -63,6 +63,10 @@ public class EmptyVariable extends Variable {
         return new byte[] {};
     }
 
+    public byte[] toBinary(String charset) {
+        return toBinary();
+    }
+
     public List toList() {
         return new ArrayList();
     }

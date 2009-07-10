@@ -36,8 +36,11 @@
 */
 package org.webharvest.runtime.variables;
 
+import org.webharvest.exception.*;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.io.*;
 
 /**
  * Node variable - Single node wrapper.
@@ -67,6 +70,18 @@ public class NodeVariable extends Variable {
             return (byte[]) data;
         } else {
             return data.toString().getBytes();
+        }
+    }
+
+    public byte[] toBinary(String charset) {
+        if (charset == null || data == null || data instanceof byte[]) {
+            return toBinary();
+        } else {
+            try {
+                return data.toString().getBytes(charset);
+            } catch (UnsupportedEncodingException e) {
+                throw new VariableException(e);
+            }
         }
     }
 

@@ -91,13 +91,13 @@ public class ListVariable extends Variable {
         return cachedStringRepresentation;
     }
 
-    public byte[] toBinary() {
+    public byte[] toBinary(String charset) {
         byte[] result = null;
         
         Iterator it = list.iterator();
         while (it.hasNext()) {
         	Variable currVar = (Variable) it.next();
-        	byte[] curr = currVar.toBinary();
+        	byte[] curr = charset == null ? currVar.toBinary() : currVar.toBinary(charset);
         	if (curr != null) {
         		if (result == null) {
         			result = curr;
@@ -111,6 +111,10 @@ public class ListVariable extends Variable {
         }
 
         return result;
+    }
+
+    public byte[] toBinary() {
+        return toBinary(null);
     }
 
     public List toList() {

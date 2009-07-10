@@ -184,15 +184,4 @@ public class HttpProcessor extends BaseProcessor {
     	httpHeaderMap.put(name, value);
     }
 
-    public static void main(String[] args) {
-        String s = "aaaaa<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">aaaaa";
-        String regex = "(<meta\\s*http-equiv\\s*=\\s*(\"|')content-type(\"|')\\s*content\\s*=\\s*(\"|')text/html;\\s*charset\\s*=\\s*(.*)(\"|')/?>)";
-
-        Matcher matcher = Pattern.compile(regex, Pattern.CASE_INSENSITIVE).matcher(s);
-        if (matcher.find()) {
-            String charset = matcher.group(5);
-            System.out.println("--->" + charset);
-        }
-    }
-
 }
