@@ -66,6 +66,9 @@ public class HttpParamProcessor extends BaseProcessor {
     	if (httpProcessor != null) {
     		httpProcessor.addHttpParam(name, partType, fileName, contentType, value);
             this.setProperty("Name", name);
+            this.setProperty("Part Type", partType);
+            this.setProperty("File Name", fileName);
+            this.setProperty("Content Type", contentType);
         } else {
     		throw new HttpException("Usage of http-param processor is not allowed outside of http processor!");
     	}
