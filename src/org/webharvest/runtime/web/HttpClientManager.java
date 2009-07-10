@@ -256,7 +256,7 @@ public class HttpClientManager {
                 NameValuePair[] paramArray = new NameValuePair[params.size()];
                 int index = 0;
                 for (Map.Entry<String, HttpParamInfo> entry: params.entrySet()) {
-                    paramArray[index++] = new NameValuePair(entry.getKey(), entry.getValue().toString());
+                    paramArray[index++] = new NameValuePair(entry.getKey(), entry.getValue().getValue().toString());
                 }
                 method.setRequestBody(paramArray);
             }
