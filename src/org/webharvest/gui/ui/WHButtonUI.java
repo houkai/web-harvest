@@ -38,20 +38,14 @@ public class WHButtonUI extends BasicButtonUI implements MouseListener {
     public void mouseEntered(MouseEvent e) {
         if (comp.isEnabled()) {
             buttonBorder.setMouseOverStatus();
-            repaintBorder();
+            comp.repaint();
         }
     }
 
     public void mouseExited(MouseEvent e) {
         if (comp.isEnabled()) {
             buttonBorder.setNormalStatus();
-            repaintBorder();
-        }
-    }
-
-    private void repaintBorder() {
-        if (comp != null) {
-            buttonBorder.paintBorder(comp, comp.getGraphics(), 0, 0, comp.getWidth(), comp.getHeight());
+            comp.repaint();
         }
     }
 
