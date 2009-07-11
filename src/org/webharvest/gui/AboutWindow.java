@@ -16,6 +16,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.net.URL;
+import java.util.*;
 
 public class AboutWindow extends JWindow implements HyperlinkListener {
 
@@ -59,6 +60,7 @@ public class AboutWindow extends JWindow implements HyperlinkListener {
             content = content.replaceAll("#program.date#", Constants.WEB_HARVEST_DATE);
             content = content.replaceAll("#java.version#", System.getProperty("java.version"));
             content = content.replaceAll("#java.vendor#", System.getProperty("java.vendor"));
+            content = content.replaceAll("#year#",  String.valueOf(Calendar.getInstance().get(Calendar.YEAR)));
             ((HTMLDocument)htmlPane.getDocument()).setBase(ResourceManager.getAboutUrl());
             htmlPane.setText(content);
         } catch (IOException e) {
