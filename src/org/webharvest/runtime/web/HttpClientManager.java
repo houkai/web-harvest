@@ -37,26 +37,19 @@
 package org.webharvest.runtime.web;
 
 import org.apache.commons.httpclient.*;
+import org.apache.commons.httpclient.auth.*;
+import org.apache.commons.httpclient.contrib.ssl.*;
 import org.apache.commons.httpclient.cookie.CookiePolicy;
-import org.apache.commons.httpclient.auth.AuthScope;
-import org.apache.commons.httpclient.contrib.ssl.EasySSLProtocolSocketFactory;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.httpclient.methods.*;
 import org.apache.commons.httpclient.methods.multipart.*;
-import org.apache.commons.httpclient.params.HttpClientParams;
-import org.apache.commons.httpclient.protocol.Protocol;
-import org.webharvest.utils.CommonUtil;
-import org.webharvest.runtime.variables.Variable;
-import org.webharvest.runtime.variables.NodeVariable;
+import org.apache.commons.httpclient.params.*;
+import org.apache.commons.httpclient.protocol.*;
+import org.webharvest.runtime.variables.*;
+import org.webharvest.utils.*;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.io.*;
+import java.net.*;
+import java.util.*;
 
 /**
  * HTTP client functionality.
@@ -165,7 +158,7 @@ public class HttpClientManager {
         } else {
             method = createGetMethod(url, params, charset);
         }
-        
+
         identifyAsDefaultBrowser(method);
 
         // define request headers, if any exist
@@ -189,10 +182,9 @@ public class HttpClientManager {
                 Header header = method.getResponseHeader("location");
                 if (header != null) {
                     String newURI = header.getValue();
-                    if ( newURI != null && !newURI.equals("") ) {
-                    	newURI = CommonUtil.fullUrl(url, newURI);
+                    if ( !CommonUtil.isEmptyString(newURI) ) {
                         method.releaseConnection();
-                        method = new GetMethod(newURI);
+                        method = new GetMethod( CommonUtil.fullUrl(url, newURI) );
                         identifyAsDefaultBrowser(method);
                         client.executeMethod(method);
                     }
@@ -223,7 +215,7 @@ public class HttpClientManager {
     private HttpMethodBase createPostMethod(String url, Map<String, HttpParamInfo> params, boolean multipart, String charset) {
         PostMethod method = new PostMethod(url);
 
-        int filenameIndex = 0;
+        int filenameIndex = 1;
         if (params != null) {
             if (multipart) {
                 Part[] parts = new Part[params.size()];
@@ -236,7 +228,7 @@ public class HttpClientManager {
                     if (httpParamInfo.isFile()) {
                         String filename = httpParamInfo.getFileName();
                         if (CommonUtil.isEmptyString(filename)) {
-                            filename = "uploadfile" + filenameIndex;
+                            filename = "uploadedfile_" + filenameIndex;
                             filenameIndex++;
                         }
                         String contentType = httpParamInfo.getContentType();
