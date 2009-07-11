@@ -3,6 +3,7 @@ package org.webharvest.gui;
 import org.webharvest.definition.DefinitionResolver;
 import org.webharvest.definition.ElementInfo;
 import org.webharvest.gui.component.*;
+import org.webharvest.utils.*;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -158,13 +159,12 @@ public class AutoCompleter {
 
         ElementInfo elementInfo = DefinitionResolver.getElementInfo(elementName);
         if (elementInfo != null) {
-            Set allAtts = elementInfo.getAttsSet();
-
-            Iterator iterator = allAtts.iterator();
-            while (iterator.hasNext()) {
-                String att = (String) iterator.next();
-                if ( att != null && att.toLowerCase().startsWith(prefix) ) {
-                    model.addElement(att);
+            for (Object attObj: elementInfo.getAttsSet()) {
+                if (attObj != null) {
+                    String att = ((String)attObj).toLowerCase();
+                    if ( att.startsWith(prefix) && !"id".equals(att) ) {
+                        model.addElement(att);
+                    }
                 }
             }
         }
