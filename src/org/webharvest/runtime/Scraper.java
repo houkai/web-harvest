@@ -103,7 +103,7 @@ public class Scraper {
     // pool of used database connections
     Map dbPool = new HashMap();
 
-    private List scraperRuntimeListeners = new LinkedList();
+    private List<ScraperRuntimeListener> scraperRuntimeListeners = new LinkedList<ScraperRuntimeListener>();
 
     private int status = STATUS_READY;
 
@@ -151,29 +151,23 @@ public class Scraper {
         }
     }
 
-    public Variable execute(List ops) {
+    public Variable execute(List<IElementDef> ops) {
         this.setStatus(STATUS_RUNNING);
 
         // inform al listeners that execution is just about to start
-        Iterator listenersIterator = this.scraperRuntimeListeners.iterator();
-        while (listenersIterator.hasNext()) {
-            ScraperRuntimeListener listener = (ScraperRuntimeListener) listenersIterator.next();
+        for (ScraperRuntimeListener listener: scraperRuntimeListeners) {
             listener.onExecutionStart(this);
         }
 
         try {
-            Iterator it = ops.iterator();
-            while (it.hasNext()) {
-                IElementDef elementDef = (IElementDef) it.next();
+            for (IElementDef elementDef: ops) {
                 BaseProcessor processor = ProcessorResolver.createProcessor(elementDef, this.configuration, this);
                 if (processor != null) {
                     processor.run(this, context);
                 }
             }
+        } finally {
             releaseDBConnections();
-        } catch (RuntimeException e) {
-            releaseDBConnections();
-            throw e;
         }
 
         return new EmptyVariable();
