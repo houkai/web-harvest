@@ -217,7 +217,8 @@ abstract public class WebHarvestPlugin extends BaseProcessor {
      * @return Instance of Variable
      */
     protected Variable executeBody(Scraper scraper, ScraperContext context) {
-        return getBodyTextContent(elementDef, scraper, context);
+//        return getBodyTextContent(elementDef, scraper, context);
+        return new BodyProcessor(elementDef).execute(scraper, context);
     }
 
 }

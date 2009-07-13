@@ -37,6 +37,7 @@
 package org.webharvest.runtime.processors;
 
 import org.webharvest.definition.BaseElementDef;
+import org.webharvest.definition.IElementDef;
 import org.webharvest.runtime.Scraper;
 import org.webharvest.runtime.ScraperContext;
 import org.webharvest.runtime.templaters.BaseTemplater;
@@ -186,6 +187,17 @@ abstract public class BaseProcessor {
 
     protected Variable getBodyTextContent(BaseElementDef elementDef, Scraper scraper, ScraperContext context) {
         return getBodyTextContent(elementDef, scraper, context, false);
+    }
+
+    protected BaseProcessor[] getSubprocessors(Scraper scraper) {
+        IElementDef[] defs = elementDef.getOperationDefs();
+        BaseProcessor result[] = new BaseProcessor[defs.length];
+
+        for (int i = 0; i < defs.length; i++) {
+            result[i] = ProcessorResolver.createProcessor( defs[i], scraper.getConfiguration(), scraper );
+        }
+
+        return result;
     }
 
     public BaseElementDef getElementDef() {
