@@ -98,6 +98,15 @@ abstract public class WebHarvestPlugin extends BaseProcessor {
         return new String[] {};
     }
 
+    /**
+     * Defines dependant subprocessors that are used inside this plugin and that will
+     * automatically be registered with this plugin.
+     * @return Array of subprocessor classes
+     */
+    public Class<WebHarvestPlugin>[] getDependantProcessors() {
+        return null;
+    }
+
     public final Variable execute(Scraper scraper, ScraperContext context) {
         // pre processing
         Variable variable = executePlugin(scraper, context);
@@ -217,7 +226,6 @@ abstract public class WebHarvestPlugin extends BaseProcessor {
      * @return Instance of Variable
      */
     protected Variable executeBody(Scraper scraper, ScraperContext context) {
-//        return getBodyTextContent(elementDef, scraper, context);
         return new BodyProcessor(elementDef).execute(scraper, context);
     }
 

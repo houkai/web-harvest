@@ -22,7 +22,7 @@ public class MailPlugin extends WebHarvestPlugin {
 
         boolean isHtml = "html".equalsIgnoreCase(evaluateAttribute("type", scraper));
         if (isHtml) {
-            email = new MultiPartEmail();
+            email = new HtmlEmail();
         } else {
             email = new SimpleEmail();
         }
@@ -87,7 +87,14 @@ public class MailPlugin extends WebHarvestPlugin {
         email.setCharset(charset);
 
         if (isHtml) {
-            BaseProcessor[] processors = getSubprocessors(scraper);
+            HtmlEmail htmlEmail = (HtmlEmail) email;
+            String htmlContent = executeBody(scraper, context).toString();
+            try {
+                htmlEmail.setHtmlMsg(htmlContent);
+                htmlEmail.setTextMsg("Your email client does not support HTML messages.");
+            } catch (EmailException e) {
+                e.printStackTrace();
+            }
         } else {
             try {
                 email.setMsg(executeBody(scraper, context).toString());
@@ -135,4 +142,10 @@ public class MailPlugin extends WebHarvestPlugin {
         return null;
     }
 
+    public Class<WebHarvestPlugin>[] getDependantProcessors() {
+        return new Class[] {
+            MailInlinePlugin.class,
+            MailAttachPlugin.class
+        };
+    }
 }

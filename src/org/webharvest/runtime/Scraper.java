@@ -299,6 +299,22 @@ public class Scraper {
         return index > 0 ? (BaseProcessor) runningProcessorList.get(index - 1) : null;
     }
 
+    /**
+     * @param processorClazz Class of enclosing running processor.
+     * @return Parent running processor in the tree of specified class, or null if it doesn't exist.
+     */
+    public BaseProcessor getRunningProcessorOfType(Class processorClazz) {
+        List runningProcessorList = runningProcessors.getList();
+        ListIterator listIterator = runningProcessorList.listIterator(runningProcessors.size());
+        while (listIterator.hasPrevious()) {
+            BaseProcessor curr = (BaseProcessor) listIterator.previous();
+            if (processorClazz.equals(curr.getClass())) {
+                return curr;
+            }
+        }
+        return null;
+    }
+
     public RuntimeConfig getRuntimeConfig() {
         return runtimeConfig;
     }

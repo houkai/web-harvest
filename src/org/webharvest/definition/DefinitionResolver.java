@@ -43,9 +43,7 @@ import org.webharvest.utils.CommonUtil;
 import java.util.*;
 import java.lang.reflect.Constructor;
 
-import org.webharvest.runtime.processors.plugins.DatabasePlugin;
-import org.webharvest.runtime.processors.plugins.JsonToXmlPlugin;
-import org.webharvest.runtime.processors.plugins.XmlToJsonPlugin;
+import org.webharvest.runtime.processors.plugins.*;
 
 /**
  * Class contains information and logic to validate and crate definition classes for
@@ -108,6 +106,7 @@ public class DefinitionResolver {
         registerPlugin(DatabasePlugin.class, true);
         registerPlugin(JsonToXmlPlugin.class, true);
         registerPlugin(XmlToJsonPlugin.class, true);
+        registerPlugin(MailPlugin.class, true);
     }
 
     private static void registerPlugin(Class pluginClass, boolean isInternalPlugin) {
@@ -134,6 +133,13 @@ public class DefinitionResolver {
             elementInfos.put(pluginName, elementInfo);
             if (!isInternalPlugin) {
                 externalPlugins.put(pluginClass.getName(), pluginName);
+            }
+
+            Class<WebHarvestPlugin>[] subprocessorClasses = plugin.getDependantProcessors();
+            if (subprocessorClasses != null) {
+                for (Class<WebHarvestPlugin> subClass: subprocessorClasses) {
+                    registerPlugin(subClass, isInternalPlugin);
+                }
             }
         } catch (Exception e) {
             throw new PluginException("Error instantiating plugin class \"" + fullClassName + "\": " + e.getMessage(), e);
