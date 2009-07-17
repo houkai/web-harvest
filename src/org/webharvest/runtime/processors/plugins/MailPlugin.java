@@ -3,23 +3,35 @@ package org.webharvest.runtime.processors.plugins;
 import org.webharvest.runtime.Scraper;
 import org.webharvest.runtime.ScraperContext;
 import org.webharvest.runtime.processors.*;
-import org.webharvest.runtime.variables.NodeVariable;
-import org.webharvest.runtime.variables.Variable;
+import org.webharvest.runtime.variables.*;
 import org.webharvest.utils.CommonUtil;
 import org.apache.commons.mail.*;
+
+import javax.activation.*;
+import java.io.*;
 
 /**
  * Sample plugin
  */
 public class MailPlugin extends WebHarvestPlugin {
 
+    public static DataSource createDataSourceOfVariable(Variable variable, String charset, String mimeType) throws IOException {
+        if (variable != null) {
+            byte[] bytes = variable.toBinary(charset);
+            return new ByteArrayDataSource(bytes, mimeType);
+        }
+        return null;
+    }
+
+    Email email = null;
+
     public String getName() {
         return "mail";
     }
 
     public Variable executePlugin(Scraper scraper, ScraperContext context) {
-        Email email;
-
+        email = null;
+        
         boolean isHtml = "html".equalsIgnoreCase(evaluateAttribute("type", scraper));
         if (isHtml) {
             email = new HtmlEmail();
@@ -91,7 +103,6 @@ public class MailPlugin extends WebHarvestPlugin {
             String htmlContent = executeBody(scraper, context).toString();
             try {
                 htmlEmail.setHtmlMsg(htmlContent);
-                htmlEmail.setTextMsg("Your email client does not support HTML messages.");
             } catch (EmailException e) {
                 e.printStackTrace();
             }
@@ -108,8 +119,10 @@ public class MailPlugin extends WebHarvestPlugin {
         } catch (EmailException e) {
             e.printStackTrace();
         }
+
+        email = null;
         
-        return new NodeVariable(getName());
+        return new EmptyVariable();
     }
 
     public String[] getValidAttributes() {
@@ -144,8 +157,12 @@ public class MailPlugin extends WebHarvestPlugin {
 
     public Class<WebHarvestPlugin>[] getDependantProcessors() {
         return new Class[] {
-            MailInlinePlugin.class,
-            MailAttachPlugin.class
+            MailAttachPlugin.class,
         };
     }
+
+    public Email getEmail() {
+        return email;
+    }
+
 }
