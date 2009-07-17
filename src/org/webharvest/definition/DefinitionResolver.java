@@ -107,6 +107,7 @@ public class DefinitionResolver {
         registerPlugin(JsonToXmlPlugin.class, true);
         registerPlugin(XmlToJsonPlugin.class, true);
         registerPlugin(MailPlugin.class, true);
+        registerPlugin(ZipPlugin.class, true);
     }
 
     private static void registerPlugin(Class pluginClass, boolean isInternalPlugin) {

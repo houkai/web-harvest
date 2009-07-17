@@ -11,7 +11,7 @@ import javax.activation.*;
 import java.io.*;
 
 /**
- * Sample plugin
+ * Mail sending processor.
  */
 public class MailPlugin extends WebHarvestPlugin {
 
