@@ -18,8 +18,8 @@ public class ZipEntryPlugin extends WebHarvestPlugin {
     }
 
     public Variable executePlugin(Scraper scraper, ScraperContext context) {
-        BaseProcessor processor = scraper.getRunningProcessorOfType(ZipPlugin.class);
-        if (processor != null) {
+        ZipPlugin zipPlugin = (ZipPlugin) scraper.getRunningProcessorOfType(ZipPlugin.class);
+        if (zipPlugin != null) {
             String name = evaluateAttribute("name", scraper);
             if (CommonUtil.isEmptyString(name)) {
                 throw new ZipPluginException("Name of zip entry cannot be empty!");
@@ -29,7 +29,6 @@ public class ZipEntryPlugin extends WebHarvestPlugin {
                 charset = scraper.getConfiguration().getCharset();
             }
 
-            ZipPlugin zipPlugin = (ZipPlugin) processor;
             ZipOutputStream zipOutStream = zipPlugin.getZipOutStream();
             Variable bodyResult = executeBody(scraper, context);
             try {
