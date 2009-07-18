@@ -45,35 +45,35 @@ public class MailPlugin extends WebHarvestPlugin {
         try {
             email.setFrom( evaluateAttribute("from", scraper) );
         } catch (EmailException e) {
-            e.printStackTrace();
+            throw new MailPluginException("Invalid \"from\" email address!", e);
         }
 
         for ( String replyTo:  CommonUtil.tokenize(evaluateAttribute("reply-to", scraper), ",") ) {
             try {
                 email.addReplyTo(replyTo);
             } catch (EmailException e) {
-                e.printStackTrace();
+                throw new MailPluginException("Invalid \"reply-to\" email address!", e);
             }
         }
         for ( String to:  CommonUtil.tokenize(evaluateAttribute("to", scraper), ",") ) {
             try {
                 email.addTo(to);
             } catch (EmailException e) {
-                e.printStackTrace();
+                throw new MailPluginException("Invalid \"to\" email address!", e);
             }
         }
         for ( String cc:  CommonUtil.tokenize(evaluateAttribute("cc", scraper), ",") ) {
             try {
                 email.addCc(cc);
             } catch (EmailException e) {
-                e.printStackTrace();
+                throw new MailPluginException("Invalid \"cc\" email address!", e);
             }
         }
         for ( String bcc:  CommonUtil.tokenize(evaluateAttribute("bcc", scraper), ",") ) {
             try {
                 email.addBcc(bcc);
             } catch (EmailException e) {
-                e.printStackTrace();
+                throw new MailPluginException("Invalid \"bcc\" email address!", e);
             }
         }
 
@@ -104,20 +104,20 @@ public class MailPlugin extends WebHarvestPlugin {
             try {
                 htmlEmail.setHtmlMsg(htmlContent);
             } catch (EmailException e) {
-                e.printStackTrace();
+                throw new MailPluginException(e);
             }
         } else {
             try {
                 email.setMsg(executeBody(scraper, context).toString());
             } catch (EmailException e) {
-                e.printStackTrace();
+                throw new MailPluginException(e);
             }
         }
 
         try {
             email.send();
         } catch (EmailException e) {
-            e.printStackTrace();
+            throw new MailPluginException(e);
         }
 
         email = null;
