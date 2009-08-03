@@ -63,4 +63,7 @@ public class FtpListPlugin extends WebHarvestPlugin {
         return new String[] {};
     }
 
+    public boolean hasBody() {
+        return false;
+    }
 }

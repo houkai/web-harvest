@@ -56,6 +56,8 @@ public class FtpPlugin extends WebHarvestPlugin {
                 ftpClient.changeWorkingDirectory(remoteDir);
             }
 
+            ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
+
             return executeBody(scraper, scraper.getContext());
         } catch (Exception e) {
             throw new FtpPluginException(e);
@@ -80,7 +82,8 @@ public class FtpPlugin extends WebHarvestPlugin {
 
     public Class[] getDependantProcessors() {
         return new Class[] {
-            FtpListPlugin.class
+            FtpListPlugin.class,
+            FtpGetPlugin.class
         };
     }
 

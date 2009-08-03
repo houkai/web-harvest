@@ -107,6 +107,10 @@ abstract public class WebHarvestPlugin extends BaseProcessor {
         return null;
     }
 
+    public boolean hasBody() {
+        return true;
+    }
+
     public final Variable execute(Scraper scraper, ScraperContext context) {
         // pre processing
         Variable variable = executePlugin(scraper, context);
@@ -125,6 +129,10 @@ abstract public class WebHarvestPlugin extends BaseProcessor {
     public abstract Variable executePlugin(Scraper scraper, ScraperContext context);
 
     public String getTagDesc() {
+        if (!hasBody()) {
+            return "";
+        }
+
         String[] validSubprocessors = getValidSubprocessors();
         if (validSubprocessors == null) {
             return null;
