@@ -8,6 +8,7 @@ import org.webharvest.runtime.variables.*;
 import org.webharvest.utils.*;
 
 import java.io.*;
+import java.util.*;
 
 /**
  * Ftp Get plugin - can be used only inside ftp plugin for retrieving file from remote directory.
@@ -30,9 +31,14 @@ public class FtpGetPlugin extends WebHarvestPlugin {
             try {
                 ByteOutputStream byteOutputStream = new ByteOutputStream();
                 ftpClient.retrieveFile(path, byteOutputStream);
-                NodeVariable var = new NodeVariable(byteOutputStream.getBytes());
                 byteOutputStream.close();
-                return var;
+                int count = byteOutputStream.getCount();
+                byte[] bytes = byteOutputStream.getBytes();
+                if (count > 0 && bytes.length >= count) {
+                    return new NodeVariable(Arrays.copyOf(bytes, count));
+                } else {
+                    return new NodeVariable(bytes);
+                }
             } catch (IOException e) {
                 throw new FtpPluginException(e);
             }
