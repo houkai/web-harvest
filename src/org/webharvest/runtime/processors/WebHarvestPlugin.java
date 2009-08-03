@@ -103,7 +103,7 @@ abstract public class WebHarvestPlugin extends BaseProcessor {
      * automatically be registered with this plugin.
      * @return Array of subprocessor classes
      */
-    public Class<WebHarvestPlugin>[] getDependantProcessors() {
+    public Class[] getDependantProcessors() {
         return null;
     }
 

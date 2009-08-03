@@ -71,11 +71,13 @@ public class LoopProcessor extends BaseProcessor {
         String index = BaseTemplater.execute( loopDef.getIndex(), scriptEngine);
         String maxLoopsString = BaseTemplater.execute( loopDef.getMaxloops(), scriptEngine);
         String filter = BaseTemplater.execute( loopDef.getFilter(), scriptEngine);
+        boolean isEmpty = CommonUtil.getBooleanValue( BaseTemplater.execute(loopDef.getEmpty(), scriptEngine), false );
 
         this.setProperty("Item", item);
         this.setProperty("Index", index);
         this.setProperty("Max Loops", maxLoopsString);
         this.setProperty("Filter", filter);
+        this.setProperty("Empty", String.valueOf(isEmpty));
 
         double maxLoops = Constants.DEFAULT_MAX_LOOPS;
         if (maxLoopsString != null && !"".equals(maxLoopsString.trim())) {
@@ -113,7 +115,9 @@ public class LoopProcessor extends BaseProcessor {
                 BaseElementDef bodyDef = loopDef.getLoopBodyDef();
                 Variable loopResult = bodyDef != null ? new BodyProcessor(bodyDef).run(scraper, context) : new EmptyVariable();
                 debug(bodyDef, scraper, loopResult);
-                resultList.addAll( loopResult.toList() );
+                if (!isEmpty) {
+                    resultList.addAll( loopResult.toList() );
+                }
             }
 
             // restores previous value of item variable
@@ -127,7 +131,7 @@ public class LoopProcessor extends BaseProcessor {
             }
         }
 
-        return new ListVariable(resultList);
+        return isEmpty ? new EmptyVariable() : new ListVariable(resultList);
     }
 
     /**

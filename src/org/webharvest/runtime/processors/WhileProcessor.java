@@ -41,9 +41,7 @@ import org.webharvest.runtime.Scraper;
 import org.webharvest.runtime.ScraperContext;
 import org.webharvest.runtime.scripting.ScriptEngine;
 import org.webharvest.runtime.templaters.BaseTemplater;
-import org.webharvest.runtime.variables.Variable;
-import org.webharvest.runtime.variables.ListVariable;
-import org.webharvest.runtime.variables.NodeVariable;
+import org.webharvest.runtime.variables.*;
 import org.webharvest.utils.CommonUtil;
 import org.webharvest.utils.Constants;
 
@@ -66,6 +64,7 @@ public class WhileProcessor extends BaseProcessor {
         ScriptEngine scriptEngine = scraper.getScriptEngine();
         String index = BaseTemplater.execute( whileDef.getIndex(), scriptEngine);
         String maxLoopsString = BaseTemplater.execute( whileDef.getMaxLoops(), scriptEngine);
+        boolean isEmpty = CommonUtil.getBooleanValue( BaseTemplater.execute(whileDef.getEmpty(), scriptEngine), false );
 
         double maxLoops = Constants.DEFAULT_MAX_LOOPS;
         if (maxLoopsString != null && !"".equals(maxLoopsString.trim())) {
@@ -88,11 +87,14 @@ public class WhileProcessor extends BaseProcessor {
         this.setProperty("Condition", condition);
         this.setProperty("Index", index);
         this.setProperty("Max Loops", maxLoopsString);
+        this.setProperty("Empty", String.valueOf(isEmpty));
 
         // iterates while testing variable represents boolean true or loop limit is exceeded
         while ( CommonUtil.isBooleanTrue(condition) && (i <= maxLoops) ) {
             Variable loopResult = new BodyProcessor(whileDef).execute(scraper, context);
-            resultList.addAll( loopResult.toList() );
+            if (!isEmpty) {
+                resultList.addAll( loopResult.toList() );
+            }
 
             i++;
             // define current value of index variable
@@ -108,7 +110,7 @@ public class WhileProcessor extends BaseProcessor {
             context.put(index, indexBeforeLoop);
         }
 
-        return new ListVariable(resultList);
+        return isEmpty ? new EmptyVariable() : new ListVariable(resultList);
     }
 
 }

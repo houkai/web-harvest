@@ -155,7 +155,7 @@ public class MailPlugin extends WebHarvestPlugin {
         return null;
     }
 
-    public Class<WebHarvestPlugin>[] getDependantProcessors() {
+    public Class[] getDependantProcessors() {
         return new Class[] {
             MailAttachPlugin.class,
         };

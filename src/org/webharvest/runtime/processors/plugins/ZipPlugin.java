@@ -38,7 +38,7 @@ public class ZipPlugin extends WebHarvestPlugin {
         return new String[] {};
     }
 
-    public Class<WebHarvestPlugin>[] getDependantProcessors() {
+    public Class[] getDependantProcessors() {
         return new Class[] {
             ZipEntryPlugin.class
         };

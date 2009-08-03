@@ -53,10 +53,10 @@ import org.webharvest.runtime.processors.plugins.*;
  */
 public class DefinitionResolver {
 
-    private static Map elementInfos = new TreeMap();
+    private static Map<String, ElementInfo> elementInfos = new TreeMap<String, ElementInfo>();
 
     // map containing pairs (class name, plugin name) of externally registered plugins
-    private static Map externalPlugins = new LinkedHashMap();
+    private static Map<String, String> externalPlugins = new LinkedHashMap<String, String>();
 
     // defines all valid elements of Web-Harvest configuration file
     static {
@@ -89,10 +89,10 @@ public class DefinitionResolver {
         elementInfos.put( "case", new ElementInfo("case", CaseDef.class, "!if,else", "id") );
         elementInfos.put( "if", new ElementInfo("if", BaseElementDef.class, null, "!condition,id") );
         elementInfos.put( "else", new ElementInfo("else", BaseElementDef.class, null, "id") );
-        elementInfos.put( "loop", new ElementInfo("loop", LoopDef.class, "!list,!body", "id,item,index,maxloops,filter") );
+        elementInfos.put( "loop", new ElementInfo("loop", LoopDef.class, "!list,!body", "id,item,index,maxloops,filter,empty") );
         elementInfos.put( "list", new ElementInfo("list", BaseElementDef.class, null, "id") );
         elementInfos.put( "body", new ElementInfo("body", BaseElementDef.class, null, "id") );
-        elementInfos.put( "while", new ElementInfo("while", WhileDef.class, null, "id,!condition,index,maxloops") );
+        elementInfos.put( "while", new ElementInfo("while", WhileDef.class, null, "id,!condition,index,maxloops,empty") );
         elementInfos.put( "function", new ElementInfo("function", FunctionDef.class, null, "id,!name") );
         elementInfos.put( "return", new ElementInfo("return", ReturnDef.class, null, "id") );
         elementInfos.put( "call", new ElementInfo("call", CallDef.class, null, "id,!name") );
@@ -136,9 +136,9 @@ public class DefinitionResolver {
                 externalPlugins.put(pluginClass.getName(), pluginName);
             }
 
-            Class<WebHarvestPlugin>[] subprocessorClasses = plugin.getDependantProcessors();
+            Class[] subprocessorClasses = plugin.getDependantProcessors();
             if (subprocessorClasses != null) {
-                for (Class<WebHarvestPlugin> subClass: subprocessorClasses) {
+                for (Class subClass: subprocessorClasses) {
                     registerPlugin(subClass, isInternalPlugin);
                 }
             }
@@ -170,7 +170,7 @@ public class DefinitionResolver {
     public static void unregisterPlugin(String className) {
         // only external plugins can be unregistered
         if ( isPluginRegistered(className)) {
-            String pluginName = (String) externalPlugins.get(className);
+            String pluginName = externalPlugins.get(className);
             elementInfos.remove(pluginName);
             externalPlugins.remove(className);
         }
@@ -201,7 +201,7 @@ public class DefinitionResolver {
      *         or null if no element is defined. 
      */
     public static ElementInfo getElementInfo(String name) {
-        return (ElementInfo) elementInfos.get(name);
+        return elementInfos.get(name);
     }
 
     /**

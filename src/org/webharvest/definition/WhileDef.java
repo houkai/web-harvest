@@ -44,13 +44,15 @@ public class WhileDef extends BaseElementDef {
 	private String condition;
     private String maxLoops;
     private String index;
+    private String empty;
 
     public WhileDef(XmlNode xmlNode) {
         super(xmlNode);
         
-        this.condition = (String) xmlNode.get("condition");
-        this.maxLoops = (String) xmlNode.get("maxloops");
-        this.index = (String) xmlNode.get("index");
+        this.condition = xmlNode.getAttribute("condition");
+        this.maxLoops = xmlNode.getAttribute("maxloops");
+        this.index = xmlNode.getAttribute("index");
+        this.empty = xmlNode.getAttribute("empty");
     }
 
     public String getCondition() {
@@ -61,7 +63,11 @@ public class WhileDef extends BaseElementDef {
 		return index;
 	}
 
-	public String getMaxLoops() {
+    public String getEmpty() {
+        return empty;
+    }
+
+    public String getMaxLoops() {
 		return maxLoops;
 	}
 

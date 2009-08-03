@@ -45,6 +45,7 @@ public class LoopDef extends BaseElementDef {
     private String item;
     private String index;
     private String filter;
+    private String empty;
     private BaseElementDef loopValueDef;
     private BaseElementDef loopBodyDef;
 
@@ -63,6 +64,7 @@ public class LoopDef extends BaseElementDef {
         this.item = (String) xmlNode.get("item");
         this.index = (String) xmlNode.get("index");
         this.filter = (String) xmlNode.get("filter");
+        this.empty = (String) xmlNode.get("empty");
     }
 
     public String getMaxloops() {
@@ -79,6 +81,10 @@ public class LoopDef extends BaseElementDef {
 
     public String getFilter() {
         return filter;
+    }
+
+    public String getEmpty() {
+        return empty;
     }
 
     public BaseElementDef getLoopValueDef() {
