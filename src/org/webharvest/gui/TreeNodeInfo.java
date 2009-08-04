@@ -37,15 +37,13 @@
 package org.webharvest.gui;
 
 import org.webharvest.definition.*;
-import org.webharvest.runtime.processors.BaseProcessor;
-import org.webharvest.runtime.processors.plugins.XmlToJsonPlugin;
 
-import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.*;
-import java.util.Map;
+import javax.swing.tree.DefaultMutableTreeNode;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * @author: Vladimir Nikic
