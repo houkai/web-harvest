@@ -80,6 +80,17 @@ public class TreeNodeInfo {
         icons.put("database", ResourceManager.getIcon("resources/icons/database.gif"));
         icons.put("xml-to-json", ResourceManager.getIcon("resources/icons/xmltojson.gif"));
         icons.put("json-to-xml", ResourceManager.getIcon("resources/icons/jsontoxml.gif"));
+        icons.put("mail", ResourceManager.getIcon("resources/icons/mail.gif"));
+        icons.put("mail-attach", ResourceManager.getIcon("resources/icons/mailattach.gif"));
+        icons.put("zip", ResourceManager.getIcon("resources/icons/zip.gif"));
+        icons.put("zip-entry", ResourceManager.getIcon("resources/icons/zipentry.gif"));
+        icons.put("ftp", ResourceManager.getIcon("resources/icons/ftp.gif"));
+        icons.put("ftp-del", ResourceManager.getIcon("resources/icons/ftp.gif"));
+        icons.put("ftp-get", ResourceManager.getIcon("resources/icons/ftp.gif"));
+        icons.put("ftp-list", ResourceManager.getIcon("resources/icons/ftp.gif"));
+        icons.put("ftp-put", ResourceManager.getIcon("resources/icons/ftp.gif"));
+        icons.put("ftp-mkdir", ResourceManager.getIcon("resources/icons/ftp.gif"));
+        icons.put("ftp-rmdir", ResourceManager.getIcon("resources/icons/ftp.gif"));
     }
 
     private DefaultMutableTreeNode node;
