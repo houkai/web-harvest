@@ -83,7 +83,8 @@ public class FtpPlugin extends WebHarvestPlugin {
     public Class[] getDependantProcessors() {
         return new Class[] {
             FtpListPlugin.class,
-            FtpGetPlugin.class
+            FtpGetPlugin.class,
+            FtpPutPlugin.class
         };
     }
 

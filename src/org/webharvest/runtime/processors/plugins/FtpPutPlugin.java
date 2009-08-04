@@ -9,12 +9,12 @@ import org.webharvest.utils.*;
 import java.io.*;
 
 /**
- * Ftp Get plugin - can be used only inside ftp plugin for retrieving file from remote directory.
+ * Ftp Put plugin - can be used only inside ftp plugin for storing file to remote directory.
  */
-public class FtpGetPlugin extends WebHarvestPlugin {
+public class FtpPutPlugin extends WebHarvestPlugin {
 
     public String getName() {
-        return "ftp-get";
+        return "ftp-put";
     }
 
     public Variable executePlugin(Scraper scraper, ScraperContext context) {
@@ -23,35 +23,39 @@ public class FtpGetPlugin extends WebHarvestPlugin {
             FTPClient ftpClient = ftpPlugin.getFtpClient();
 
             String path = CommonUtil.nvl( evaluateAttribute("path", scraper), "" );
+            String charset = CommonUtil.nvl( evaluateAttribute("charset", scraper), "" );
+            if (CommonUtil.isEmptyString(charset)) {
+                charset = scraper.getConfiguration().getCharset();
+            }
 
             setProperty("Path", path);
+            setProperty("Charset", charset);
+
+            Variable body = executeBody(scraper, scraper.getContext());
 
             try {
-                ByteArrayOutputStream byteOutputStream = new ByteArrayOutputStream();
-                boolean succ = ftpClient.retrieveFile(path, byteOutputStream);
-                byteOutputStream.close();
+                ByteArrayInputStream stream = new ByteArrayInputStream(body.toBinary(charset));
+                boolean succ = ftpClient.storeFile(path, stream);
+                stream.close();
                 if (!succ) {
-                    throw new FtpPluginException("Cannot retrieve file \"" + path + "\" from FTP server!");
+                    throw new FtpPluginException("Cannot store file \"" + path + "\" to FTP server!");
                 }
-                byte[] bytes = byteOutputStream.toByteArray();
-                return new NodeVariable(bytes);
             } catch (IOException e) {
                 throw new FtpPluginException(e);
             }
         } else {
-            throw new FtpPluginException("Cannot use ftp get plugin out of ftp plugin context!");
+            throw new FtpPluginException("Cannot use ftp put plugin out of ftp plugin context!");
         }
+
+        return new EmptyVariable();
     }
 
     public String[] getValidAttributes() {
-        return new String[] {"path"};
+        return new String[] {"path", "charset"};
     }
 
     public String[] getRequiredAttributes() {
         return new String[] {"path"};
     }
 
-    public boolean hasBody() {
-        return false;
-    }
 }
