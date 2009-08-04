@@ -8,6 +8,7 @@ import org.webharvest.utils.*;
 
 import java.io.*;
 import java.util.*;
+import java.util.regex.*;
 
 /**
  * Ftp List plugin - can be used only inside ftp plugin for listing file in working remote directory.
@@ -27,11 +28,32 @@ public class FtpListPlugin extends WebHarvestPlugin {
             boolean listFiles = evaluateAttributeAsBoolean("listfiles", true, scraper);
             boolean listDirs = evaluateAttributeAsBoolean("listdirs", true, scraper);
             boolean listLinks = evaluateAttributeAsBoolean("listlinks", true, scraper);
+            String listFilter = CommonUtil.nvl( evaluateAttribute("listfilter", scraper), "" );
+
+            Pattern pattern = null;
+            if ( !CommonUtil.isEmptyString(listFilter) ) {
+                StringBuffer buffer = new StringBuffer();
+                for (int i = 0; i < listFilter.length(); i++) {
+                    char ch = listFilter.charAt(i);
+                    switch (ch) {
+                        case '.' : buffer.append("\\."); break;
+                        case '*' : buffer.append(".*"); break;
+                        case '?' : buffer.append("."); break;
+                        default : buffer.append(ch); break;
+                    }
+                }
+                try {
+                    pattern = Pattern.compile( buffer.toString() );
+                } catch (Exception e) {
+                    pattern = Pattern.compile("");
+                }
+            }
 
             setProperty("Path", path);
             setProperty("List Files", listFiles);
             setProperty("List Directories", listDirs);
             setProperty("List Symbolic Links", listLinks);
+            setProperty("List Filter", listFilter);
 
             try {
                 FTPFile[] files = ftpClient.listFiles(path);
@@ -39,7 +61,10 @@ public class FtpListPlugin extends WebHarvestPlugin {
                     List<String> filenameList = new ArrayList<String>();
                     for (FTPFile ftpFile: files) {
                         if ( (listFiles && ftpFile.isFile()) || (listDirs && ftpFile.isDirectory()) || (listLinks && ftpFile.isSymbolicLink()) ) {
-                            filenameList.add(ftpFile.getName());
+                            String name = ftpFile.getName();
+                            if ( pattern == null || pattern.matcher(name).matches() ) {
+                                filenameList.add(name);
+                            }
                         }
                     }
 
@@ -56,7 +81,7 @@ public class FtpListPlugin extends WebHarvestPlugin {
     }
 
     public String[] getValidAttributes() {
-        return new String[] {"path", "listfiles", "listdirs", "listlinks"};
+        return new String[] {"path", "listfiles", "listdirs", "listlinks", "listfilter"};
     }
 
     public String[] getRequiredAttributes() {
