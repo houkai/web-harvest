@@ -41,8 +41,15 @@ package org.webharvest.definition;
  */
 public class TextDef extends BaseElementDef {
 
+    private String charset;
+
     public TextDef(XmlNode xmlNode) {
         super(xmlNode);
+        this.charset = (String) xmlNode.get("charset");
+    }
+
+    public String getCharset() {
+        return charset;
     }
 
     public String getShortElementName() {

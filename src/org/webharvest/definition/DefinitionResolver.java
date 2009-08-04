@@ -66,7 +66,7 @@ public class DefinitionResolver {
                                "allowhtmlinsideattributes,namespacesaware,hyphenreplacement,prunetags,booleanatts";
         elementInfos.put( "config", new ElementInfo("config", BaseElementDef.class, null, "charset,scriptlang,id") );
         elementInfos.put( "empty", new ElementInfo("empty", EmptyDef.class, null, "id") );
-        elementInfos.put( "text", new ElementInfo("text", TextDef.class, null, "id") );
+        elementInfos.put( "text", new ElementInfo("text", TextDef.class, null, "id,charset") );
         elementInfos.put( "file", new ElementInfo("file", FileDef.class, null, "id,!path,action,type,charset,listfilter,listfiles,listdirs,listrecursive") );
         elementInfos.put( "var-def", new ElementInfo("var-def", VarDefDef.class, null, "id,!name,overwrite") );
         elementInfos.put( "var", new ElementInfo("var", VarDef.class, "", "id,!name") );

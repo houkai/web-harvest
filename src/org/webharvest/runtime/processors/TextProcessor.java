@@ -39,8 +39,10 @@ package org.webharvest.runtime.processors;
 import org.webharvest.definition.TextDef;
 import org.webharvest.runtime.Scraper;
 import org.webharvest.runtime.ScraperContext;
+import org.webharvest.runtime.templaters.*;
 import org.webharvest.runtime.variables.Variable;
 import org.webharvest.runtime.variables.NodeVariable;
+import org.webharvest.utils.*;
 
 /**
  * Text processor.
@@ -55,8 +57,13 @@ public class TextProcessor extends BaseProcessor {
     }
 
     public Variable execute(Scraper scraper, ScraperContext context) {
+        String charset = BaseTemplater.execute( textDef.getCharset(), scraper.getScriptEngine() );
+        if (CommonUtil.isEmptyString(charset)) {
+            charset = scraper.getConfiguration().getCharset();
+        }
+
         Variable body = new BodyProcessor(textDef).execute(scraper, context);
-        return new NodeVariable( body.toString() );
+        return new NodeVariable( body.toString(charset) );
     }
 
 }

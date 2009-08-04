@@ -63,6 +63,20 @@ public class NodeVariable extends Variable {
         }
     }
 
+    public String toString(String charset) {
+        if (data == null) {
+            return "";
+        } else if (data instanceof byte[]) {
+            try {
+                return new String((byte[]) data, charset);
+            } catch (UnsupportedEncodingException e) {
+                throw new VariableException(e);
+            }
+        } else {
+            return data.toString();
+        }
+    }
+
     public byte[] toBinary() {
         if (data == null) {
             return new byte[] {};

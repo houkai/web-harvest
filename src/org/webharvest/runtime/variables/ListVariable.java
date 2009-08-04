@@ -46,16 +46,16 @@ import java.util.List;
  */
 public class ListVariable extends Variable {
 
-    private List list;
+    private List<Variable> list;
 
     private String cachedStringRepresentation = null;
 
     public ListVariable() {
-        this.list = new ArrayList();
+        this.list = new ArrayList<Variable>();
     }
 
     public ListVariable(List list) {
-        this.list = new ArrayList();
+        this.list = new ArrayList<Variable>();
         
         if (list != null) {
     		Iterator it = list.iterator();
@@ -89,6 +89,22 @@ public class ListVariable extends Variable {
         }
 
         return cachedStringRepresentation;
+    }
+
+    public String toString(String charset) {
+        StringBuffer buffer = new StringBuffer();
+
+        for (Variable var: list) {
+            String value = var.toString(charset).trim();
+            if (value.length() != 0) {
+                if (buffer.length() != 0) {
+                    buffer.append('\n');
+                }
+                buffer.append(value);
+            }
+        }
+
+        return buffer.toString();
     }
 
     public byte[] toBinary(String charset) {

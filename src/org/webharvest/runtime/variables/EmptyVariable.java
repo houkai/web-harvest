@@ -59,6 +59,10 @@ public class EmptyVariable extends Variable {
     	return EMPTY_VALUE_OBJECT;
     }
 
+    public String toString(String charset) {
+        return toString();
+    }
+
     public byte[] toBinary() {
         return new byte[] {};
     }
