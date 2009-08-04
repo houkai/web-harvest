@@ -84,7 +84,10 @@ public class FtpPlugin extends WebHarvestPlugin {
         return new Class[] {
             FtpListPlugin.class,
             FtpGetPlugin.class,
-            FtpPutPlugin.class
+            FtpPutPlugin.class,
+            FtpDelPlugin.class,
+            FtpMkdirPlugin.class,
+            FtpRmdirPlugin.class
         };
     }
 
