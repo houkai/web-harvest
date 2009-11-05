@@ -12,9 +12,7 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Instance of the class is responsible for auto completion of defined tags and
@@ -30,6 +28,7 @@ public class AutoCompleter {
     // editor context which decides about auto completion type  
     private static final int TAG_CONTEXT = 0;
     private static final int ATTRIBUTE_CONTEXT = 1;
+    private static final int ATTRIBUTE_VALUE_CONTEXT = 2;
 
     // special XML constructs
     private static final String CDATA_NAME = "<![CDATA[ ... ]]>";
@@ -170,6 +169,22 @@ public class AutoCompleter {
         }
     }
 
+    private void defineAttributeValuesMenu(String tagName, String attributeName, String attValuePrefix) {
+        this.model.clear();
+
+        ElementInfo elementInfo = DefinitionResolver.getElementInfo(tagName);
+        if (elementInfo != null) {
+            String[] suggs = elementInfo.getAttributeValueSuggestions(attributeName);
+            if (suggs != null) {
+                for (String s: suggs) {
+                    if (s.toLowerCase().startsWith(attValuePrefix)) {
+                        model.addElement(s);
+                    }
+                }
+            }
+        }
+    }
+
     /**
      * Performs auto completion.
      */
@@ -184,16 +199,46 @@ public class AutoCompleter {
 
             if (openindex > closeindex) {                   // inside tag definition
                 text = text.substring(openindex);
-                String identifier = getIdentifierFromEnd(text);
-                if ( containWhitespaces(text) ) {           // attributes context
-                    this.context = ATTRIBUTE_CONTEXT;
-                    String elementName = getIdentifierFromStart(text);
-                    defineAttributesMenu(elementName, identifier);
-                    this.prefixLength = identifier.length();
-                } else {
-                    this.context = TAG_CONTEXT;         // tag name context
-                    defineTagsMenu(identifier);
-                    this.prefixLength = identifier.length() + 1;
+
+                String tagName = text.length() > 1 ? getIdentifierAtStart(text.substring(1)) : null;
+                String trimmedText = text.trim();
+
+                this.context = TAG_CONTEXT;
+
+                if (tagName != null && tagName.length() > 0) {
+                    int quoteIndex = Math.max( trimmedText.lastIndexOf("\""), trimmedText.lastIndexOf("\'") );
+                    if (quoteIndex > 0) {
+                        int eqIndex = trimmedText.lastIndexOf("=");
+                        if ( eqIndex >= 0 && eqIndex < quoteIndex && "".equals(trimmedText.substring(eqIndex + 1, quoteIndex).trim()) ) {
+                            int firstQuoteIndex = trimmedText.indexOf("\"", eqIndex);
+                            if (firstQuoteIndex < 0) {
+                                firstQuoteIndex = trimmedText.indexOf("\'", eqIndex);
+                            }
+                            if (firstQuoteIndex < 0 || firstQuoteIndex == quoteIndex) {
+                                String attValuePrefix = trimmedText.substring(quoteIndex + 1);
+                                trimmedText = trimmedText.substring(0, eqIndex).trim();
+                                String attName = getIdentifierFromEnd(trimmedText);
+                                if (attName != null && attName.length() > 0) {
+                                    this.context = ATTRIBUTE_VALUE_CONTEXT;
+                                    defineAttributeValuesMenu( tagName.toLowerCase().trim(), attName.toLowerCase().trim(), attValuePrefix.toLowerCase().trim() );
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (this.context != ATTRIBUTE_VALUE_CONTEXT) {
+                    String identifier = getIdentifierFromEnd(text);
+                    if ( containWhitespaces(text) ) {           // attributes context
+                        this.context = ATTRIBUTE_CONTEXT;
+                        String elementName = getIdentifierFromStart(text);
+                        defineAttributesMenu(elementName, identifier);
+                        this.prefixLength = identifier.length();
+                    } else {
+                        this.context = TAG_CONTEXT;         // tag name context
+                        defineTagsMenu(identifier);
+                        this.prefixLength = identifier.length() + 1;
+                    }
                 }
             } else {                                        // ouside tag definition
                 this.context = TAG_CONTEXT;
@@ -275,6 +320,23 @@ public class AutoCompleter {
     }
 
     /**
+     * @param text
+     * @return Identifier name at start of given string.
+     */
+    private String getIdentifierAtStart(String text) {
+        StringBuffer result = new StringBuffer();
+        for (int i = 0; i < text.length(); i++) {
+            char ch = text.charAt(i);
+            if ( Character.isLetter(ch) || (i != 0 && (ch == '-' || ch == '_' || ch == '!'))  ) {
+                result.append(ch);
+            } else {
+                break;
+            }
+        }
+        return result.toString();
+    }
+
+    /**
      * Action for auto complete items
      */
     public void doComplete() {
@@ -284,6 +346,8 @@ public class AutoCompleter {
             try {
                 if (this.context == TAG_CONTEXT) {
                     completeTag(selectedValue);
+                } else if (this.context == ATTRIBUTE_VALUE_CONTEXT) {
+                    completeAttributeValue(selectedValue);
                 } else {
                     completeAttribute(selectedValue);
                 }
@@ -301,6 +365,21 @@ public class AutoCompleter {
         String template = (name + "=\"\"" + (toAppendSpace ? " " : "")).substring(this.prefixLength);
 
         document.insertString(pos, template, null);
+        xmlPane.setCaretPosition( xmlPane.getCaretPosition() - 1 );
+    }
+
+    private void completeAttributeValue(String value) throws BadLocationException {
+        Document document = xmlPane.getDocument();
+        int pos = xmlPane.getCaretPosition();
+        String text = document.getText(0, pos);
+        int startTagIndex = text.lastIndexOf("<");
+        if (startTagIndex >= 0) {
+            int quoteIndex = Math.max( text.lastIndexOf("\""), text.lastIndexOf("\'") );
+            if (quoteIndex > 0 && quoteIndex > startTagIndex) {
+                document.remove(quoteIndex + 1, pos - quoteIndex - 1);
+                document.insertString(quoteIndex + 1, value, null);
+            }
+        }
     }
 
     private void completeTag(String name) throws BadLocationException {

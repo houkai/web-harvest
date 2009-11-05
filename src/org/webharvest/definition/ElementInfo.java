@@ -3,17 +3,20 @@ package org.webharvest.definition;
 import org.webharvest.exception.ConfigurationException;
 import org.webharvest.exception.ErrMsg;
 import org.webharvest.runtime.processors.*;
+import org.webharvest.utils.*;
+import org.webharvest.gui.*;
 
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.StringTokenizer;
-import java.util.Iterator;
+import java.util.*;
+import java.nio.charset.*;
 
 /**
  * @author: Vladimir Nikic
  * Date: May 24, 2007
  */
 public class ElementInfo {
+
+    // properties containing suggested attribute values
+    private static final Properties attrValuesProperties = ResourceManager.getAttrValuesProperties();
 
     private String name;
     private Class pluginClass;
@@ -128,6 +131,23 @@ public class ElementInfo {
 
     public boolean areAllTagsAllowed() {
         return allTagsAllowed;
+    }
+
+    /**
+     * @return Array of suggested values for specified attribute - used for auto-completion in IDE.
+     */
+    public String[] getAttributeValueSuggestions(String attributeName) {
+        if (attrValuesProperties != null && attributeName != null) {
+            String key = name.toLowerCase() + "." + attributeName.toLowerCase();
+            String values = attrValuesProperties.getProperty(key);
+            if ("*charset".equalsIgnoreCase(values)) {
+                Set<String> charsetKeys = Charset.availableCharsets().keySet();
+                return new ArrayList<String>(charsetKeys).toArray(new String[charsetKeys.size()]);
+            } else {
+                return CommonUtil.tokenize(values, ",");
+            }
+        }
+        return null;
     }
     
 }

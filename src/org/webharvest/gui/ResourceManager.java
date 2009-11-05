@@ -39,6 +39,8 @@ package org.webharvest.gui;
 import javax.swing.*;
 import java.net.URL;
 import java.awt.*;
+import java.util.*;
+import java.io.*;
 
 /**
  * @author: Vladimir Nikic
@@ -111,6 +113,10 @@ public class ResourceManager {
 
     public static Image BREAKPOINT_IMAGE = getImage("resources/icons/breakpoint.gif");
 
+    public static InputStream getResourceAsStream(String path) {
+        return clazz.getResourceAsStream(path);
+    }
+
     public static Icon getIcon(String path) {
         return new ImageIcon(clazz.getResource(path));
     }
@@ -139,6 +145,16 @@ public class ResourceManager {
         }
 
         return urlString;
+    }
+
+    public static Properties getAttrValuesProperties() {
+        Properties properties = new Properties();
+        try {
+            properties.load(getResourceAsStream("resources/attrvalues.properties"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return properties;
     }
 
     public static Image getImage(String path) {

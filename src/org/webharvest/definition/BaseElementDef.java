@@ -36,9 +36,10 @@
 */
 package org.webharvest.definition;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import org.webharvest.utils.*;
+import org.webharvest.gui.*;
+
+import java.util.*;
 
 public class BaseElementDef implements IElementDef {
 
@@ -135,5 +136,5 @@ public class BaseElementDef implements IElementDef {
     public int getColumnNumber() {
         return columnNumber;
     }
-    
+
 }

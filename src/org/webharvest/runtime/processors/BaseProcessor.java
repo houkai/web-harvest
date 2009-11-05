@@ -36,24 +36,15 @@
 */
 package org.webharvest.runtime.processors;
 
-import org.webharvest.definition.BaseElementDef;
-import org.webharvest.definition.IElementDef;
-import org.webharvest.runtime.Scraper;
-import org.webharvest.runtime.ScraperContext;
-import org.webharvest.runtime.templaters.BaseTemplater;
+import org.webharvest.definition.*;
+import org.webharvest.runtime.*;
+import org.webharvest.runtime.templaters.*;
 import org.webharvest.runtime.variables.*;
-import org.webharvest.utils.CommonUtil;
-import org.webharvest.utils.Constants;
-import org.webharvest.utils.KeyValuePair;
+import org.webharvest.utils.*;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.Date;
-import java.util.Map;
-import java.util.LinkedHashMap;
-import java.text.SimpleDateFormat;
+import java.io.*;
+import java.text.*;
+import java.util.*;
 
 /**
  * Base processor that contains common processor logic.
