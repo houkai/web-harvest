@@ -7,6 +7,8 @@ import org.webharvest.runtime.variables.*;
 import org.webharvest.utils.*;
 
 import java.io.*;
+import java.util.*;
+import java.nio.charset.*;
 
 /**
  * Ftp Put plugin - can be used only inside ftp plugin for storing file to remote directory.
@@ -56,6 +58,14 @@ public class FtpPutPlugin extends WebHarvestPlugin {
 
     public String[] getRequiredAttributes() {
         return new String[] {"path"};
+    }
+
+    public String[] getAttributeValueSuggestions(String attributeName) {
+        if ("charset".equalsIgnoreCase(attributeName)) {
+            Set<String> charsetKeys = Charset.availableCharsets().keySet();
+            return new ArrayList<String>(charsetKeys).toArray(new String[charsetKeys.size()]);
+        }
+        return null;
     }
 
 }

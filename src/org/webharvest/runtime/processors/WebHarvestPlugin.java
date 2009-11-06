@@ -107,6 +107,15 @@ abstract public class WebHarvestPlugin extends BaseProcessor {
         return null;
     }
 
+    /**
+     * @param attributeName Name of plugin attribute
+     * @return Array of valuee suggestions for specified attribute (this is used for auto-complete feature in IDE).
+     * null means nothing to suggest.
+     */
+    public String[] getAttributeValueSuggestions(String attributeName) {
+        return null;
+    }
+
     public boolean hasBody() {
         return true;
     }

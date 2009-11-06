@@ -6,6 +6,8 @@ import org.webharvest.runtime.variables.*;
 import org.webharvest.utils.*;
 
 import java.io.*;
+import java.nio.charset.*;
+import java.util.*;
 import java.util.zip.*;
 
 /**
@@ -50,6 +52,14 @@ public class ZipEntryPlugin extends WebHarvestPlugin {
 
     public String[] getRequiredAttributes() {
         return new String[] {"name"};
+    }
+
+    public String[] getAttributeValueSuggestions(String attributeName) {
+        if ("charset".equalsIgnoreCase(attributeName)) {
+            Set<String> charsetKeys = Charset.availableCharsets().keySet();
+            return new ArrayList<String>(charsetKeys).toArray(new String[charsetKeys.size()]);
+        }
+        return null;
     }
 
 }

@@ -9,6 +9,7 @@ import org.webharvest.utils.*;
 import java.io.*;
 import java.util.*;
 import java.util.regex.*;
+import java.nio.charset.*;
 
 /**
  * Ftp List plugin - can be used only inside ftp plugin for listing file in working remote directory.
@@ -91,4 +92,14 @@ public class FtpListPlugin extends WebHarvestPlugin {
     public boolean hasBody() {
         return false;
     }
+
+    public String[] getAttributeValueSuggestions(String attributeName) {
+        if ( "listfiles".equalsIgnoreCase(attributeName) ||
+             "listdirs".equalsIgnoreCase(attributeName) ||
+             "listlinks".equalsIgnoreCase(attributeName) ) {
+            return new String[] {"true", "false"};
+        }
+        return null;
+    }
+
 }

@@ -32,6 +32,9 @@ public class ElementInfo {
 
     private boolean allTagsAllowed;
 
+    // pluging instance for this element, if element represents Web-Harvest plugin
+    private WebHarvestPlugin plugin = null;
+
     public ElementInfo(String name, Class definitionClass, String validTags, String validAtts) {
         this(name, null, true, definitionClass, validTags, validAtts);
     }
@@ -137,17 +140,28 @@ public class ElementInfo {
      * @return Array of suggested values for specified attribute - used for auto-completion in IDE.
      */
     public String[] getAttributeValueSuggestions(String attributeName) {
-        if (attrValuesProperties != null && attributeName != null) {
-            String key = name.toLowerCase() + "." + attributeName.toLowerCase();
-            String values = attrValuesProperties.getProperty(key);
-            if ("*charset".equalsIgnoreCase(values)) {
-                Set<String> charsetKeys = Charset.availableCharsets().keySet();
-                return new ArrayList<String>(charsetKeys).toArray(new String[charsetKeys.size()]);
-            } else {
-                return CommonUtil.tokenize(values, ",");
+        if (plugin != null) {
+            return plugin.getAttributeValueSuggestions(attributeName);
+        } else {
+            if (attrValuesProperties != null && attributeName != null) {
+                String key = name.toLowerCase() + "." + attributeName.toLowerCase();
+                String values = attrValuesProperties.getProperty(key);
+                if ("*charset".equalsIgnoreCase(values)) {
+                    Set<String> charsetKeys = Charset.availableCharsets().keySet();
+                    return new ArrayList<String>(charsetKeys).toArray(new String[charsetKeys.size()]);
+                } else if ("*mime".equalsIgnoreCase(values)) {
+                    return ResourceManager.MIME_TYPES;
+                } else {
+                    return CommonUtil.tokenize(values, ",");
+                }
             }
         }
+        
         return null;
     }
-    
+
+    public void setPlugin(WebHarvestPlugin plugin) {
+        this.plugin = plugin;
+    }
+
 }

@@ -134,5 +134,14 @@ public class DatabasePlugin extends WebHarvestPlugin {
     public String[] getRequiredSubprocessors() {
         return null;
     }
-    
+
+    public String[] getAttributeValueSuggestions(String attributeName) {
+        if ("output".equalsIgnoreCase(attributeName)) {
+            return new String[] {"text", "xml"};
+        } else if ("autocommit".equalsIgnoreCase(attributeName)) {
+            return new String[] {"true", "false"};
+        }
+        return null;
+    }
+
 }

@@ -132,6 +132,7 @@ public class DefinitionResolver {
             String subtags = plugin.getTagDesc();
             String atts = plugin.getAttributeDesc();
             ElementInfo elementInfo = new ElementInfo(pluginName, pluginClass, isInternalPlugin, WebHarvestPluginDef.class, subtags, atts);
+            elementInfo.setPlugin(plugin);
             elementInfos.put(pluginName, elementInfo);
             if (!isInternalPlugin) {
                 externalPlugins.put(pluginClass.getName(), pluginName);

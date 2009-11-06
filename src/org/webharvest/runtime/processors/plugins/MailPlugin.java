@@ -9,6 +9,8 @@ import org.apache.commons.mail.*;
 
 import javax.activation.*;
 import java.io.*;
+import java.util.*;
+import java.nio.charset.*;
 
 /**
  * Mail sending processor.
@@ -163,6 +165,18 @@ public class MailPlugin extends WebHarvestPlugin {
 
     public Email getEmail() {
         return email;
+    }
+
+    public String[] getAttributeValueSuggestions(String attributeName) {
+        if ("type".equalsIgnoreCase(attributeName)) {
+            return new String[] {"html", "text"};
+        } else if ("charset".equalsIgnoreCase(attributeName)) {
+            Set<String> charsetKeys = Charset.availableCharsets().keySet();
+            return new ArrayList<String>(charsetKeys).toArray(new String[charsetKeys.size()]);
+        } else if ("security".equalsIgnoreCase(attributeName)) {
+            return new String[] {"ssl", "tsl", "none"};
+        }
+        return null;
     }
 
 }
