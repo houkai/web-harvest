@@ -369,6 +369,11 @@ public class ViewerFrame extends JFrame implements DropDownButtonListener, Actio
         this.imagePanel.setBackground(Color.white);
         this.imageLabel = new JLabel("", JLabel.CENTER);
         this.imagePanel.add(imageLabel, BorderLayout.CENTER);
+        this.imageLabel.addMouseWheelListener(new MouseWheelListener() {
+            public void mouseWheelMoved(MouseWheelEvent e) {
+                zoom( e.getWheelRotation() > 0 );
+            }
+        });
         this.cardPanel.add( new WHScrollPane(this.imagePanel), String.valueOf(IMAGE_VIEW) );
 
         // List view
@@ -626,10 +631,13 @@ public class ViewerFrame extends JFrame implements DropDownButtonListener, Actio
         int newWidth = (int) (img.getWidth(this) * zoomFactor / 100.0); 
         int newHeight = (int) (img.getHeight(this) * zoomFactor / 100.0);
 
-        Image resizedImg = zoomFactor != 100 ? img.getScaledInstance(newWidth, newHeight, Image.SCALE_FAST) : img;
-        imageIcon.setImage(resizedImg);
+        if (newWidth > 0 && newHeight > 0) {
+            Image resizedImg = zoomFactor != 100 ? img.getScaledInstance(newWidth, newHeight, Image.SCALE_FAST) : img;
+            imageIcon.setImage(resizedImg);
+            return imageIcon;
+        }
 
-        return imageIcon;
+        return null;
     }
 
     public void setVisible(boolean b) {

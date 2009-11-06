@@ -1,16 +1,14 @@
 package org.webharvest.runtime.processors.plugins;
 
 import org.apache.commons.mail.*;
+import org.webharvest.gui.*;
 import org.webharvest.runtime.*;
 import org.webharvest.runtime.processors.*;
 import org.webharvest.runtime.variables.*;
 import org.webharvest.utils.*;
-import org.webharvest.gui.*;
 
 import javax.activation.*;
 import java.io.*;
-import java.util.*;
-import java.nio.charset.*;
 
 /**
  * Mail attachment plugin - can be used only inside mail plugin.
