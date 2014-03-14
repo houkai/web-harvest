@@ -37,6 +37,11 @@ public class ClassLoaderUtil {
         public boolean jdbcCompliant() {
             return this.driver.jdbcCompliant();
         }
+        @Override
+		public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+			// TODO Auto-generated method stub
+			return null;
+		}
     }
 
     // class loader that insludes all JAR libraries in the working folder of the application. 
